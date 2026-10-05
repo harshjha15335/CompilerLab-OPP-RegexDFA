@@ -27,7 +27,7 @@ function ConflictRoll({ conflicts, onSelect }) {
             </button>
             <span> contains more than one precedence relation: </span>
             <span className="conflicts__rels">{c.relations.map((r, i) => <span key={r}>{i > 0 && ' / '}<Rel r={r} /></span>)}</span>
-            <b> — {c.relations.length} RELATIONS</b>
+            <b> ({c.relations.length} relations)</b>
           </li>
         ))}
       </ul>
@@ -42,7 +42,7 @@ function CellProvenance({ cell, grammar, onClose, onJump }) {
         <h3 className="label">Provenance · cell (<span className="mono">{cell.left}</span>, <span className="mono">{cell.right}</span>)</h3>
         <button type="button" className="linkbtn" onClick={onClose}>Close</button>
       </header>
-      {cell.conflict && <p><Tag kind="conflict">CONFLICT — {cell.relations.length} RELATIONS</Tag> Distinct relations were derived for this cell.</p>}
+      {cell.conflict && <p><Tag kind="conflict">CONFLICT: {cell.relations.length} RELATIONS</Tag></p>}
       <ol className="provlist provlist--cell">
         {cell.sources.map((s) => {
           const p = grammar.productions.find((x) => x.id === s.productionId);
@@ -53,7 +53,7 @@ function CellProvenance({ cell, grammar, onClose, onJump }) {
                 <span className="mono">{cell.left}</span> <Rel r={s.relation} /> <span className="mono">{cell.right}</span>
                 {' '}by {s.rule}{p ? <> from <Production p={p} /></> : ' (end-marker rule)'}
                 <br />because <Tx>{s.explanation}</Tx>.
-                {!s.changed && <em> Same relation again — not a conflict.</em>}
+                {!s.changed && <em> Same relation again, so no conflict.</em>}
               </span>
             </li>
           );
@@ -84,8 +84,8 @@ export function TableStage({ model, stage }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="Precedence relation table"
-        aside={conflicts.length ? <Tag kind="conflict">{conflicts.length} CONFLICT {conflicts.length === 1 ? 'CELL' : 'CELLS'}</Tag> : <Tag kind="plain">{cells.size} cells filled</Tag>}>
-        One relation is inserted per step. A cell that receives two different relations is a conflict; the same relation twice is not.
+        aside={conflicts.length ? <Tag kind="conflict">{conflicts.length} CONFLICT {conflicts.length === 1 ? 'CELL' : 'CELLS'}</Tag> : null}>
+        Two different relations in one cell is a conflict. The same relation twice is not.
       </PlateHead>
       <div className="plate__body cols cols--table">
         <section className="pane pane--table">
@@ -96,7 +96,7 @@ export function TableStage({ model, stage }) {
         </section>
 
         <section className="pane pane--note">
-          <StepNote replay={replay} idle="The table starts blank. Each step reads one production (or an end-marker rule) and inserts one relation. Select any filled cell to see where it came from.">
+          <StepNote replay={replay} idle="The table starts blank. Each step inserts one relation. Select a filled cell to see where it came from.">
             {isAdd && (
               <>
                 <p className="note__relation">
@@ -117,8 +117,8 @@ export function TableStage({ model, stage }) {
                   </NoteRow>
                 )}
                 <NoteRow label={`Rule ${step.rule}`}><span className="mono"><Tx>{REL_RULES[step.rule]}</Tx></span></NoteRow>
-                {activeState === 'dup' && <p className="note__aside">The cell already held this relation. Several rules may derive the same relation; that is not a conflict.</p>}
-                {activeState === 'conflict' && <p className="note__aside note__aside--conflict">The cell now holds {cells.get(cellKey(step.left, step.right))?.relations.length} distinct relations. The parser could not decide between shift and reduce here.</p>}
+                {activeState === 'dup' && <p className="note__aside">The cell already held this relation. That is not a conflict.</p>}
+                {activeState === 'conflict' && <p className="note__aside note__aside--conflict">The cell now holds {cells.get(cellKey(step.left, step.right))?.relations.length} different relations, so the parser cannot choose between shift and reduce here.</p>}
               </>
             )}
             {step?.type === 'VERDICT' && (
@@ -127,7 +127,7 @@ export function TableStage({ model, stage }) {
                   {step.ok ? 'OPERATOR-PRECEDENCE GRAMMAR' : 'NOT AN OPERATOR-PRECEDENCE GRAMMAR'}
                 </p>
                 <p><Tx>{step.message}</Tx></p>
-                {!step.ok && <p className="note__aside">Construction was not stopped at the first conflict, so every conflicting cell can be inspected.</p>}
+                
               </>
             )}
           </StepNote>

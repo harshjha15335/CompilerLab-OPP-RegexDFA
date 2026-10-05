@@ -47,7 +47,7 @@ function SetBlock({ kind, sets, nonterminals, step, inspect, onInspect, dim }) {
   const sourceNt = act && (act.rule === 'L2' || act.rule === 'T2') ? act.sourceSymbols[0] : null;
   return (
     <section className={cx('pane-block setblock', dim && 'is-waiting')} aria-label={`${kind} sets`}>
-      <h3 className="label">{kind} {dim && <span className="label__note">— not started</span>}</h3>
+      <h3 className="label">{kind} {dim && <span className="label__note">(not started)</span>}</h3>
       {nonterminals.map((n) => (
         <SetLine key={n} kind={kind} nonTerminal={n} members={sets[n] ?? []}
           active={act?.nonTerminal === n ? act : null} source={sourceNt === n}
@@ -83,7 +83,6 @@ export function SetsStage({ model, stage }) {
     <div className="plate">
       <PlateHead no={stage.no} title="LEADING and TRAILING sets"
         aside={<Tag kind="plain">{step?.phase ?? 'LEADING'}{step?.pass ? ` · pass ${step.pass}` : ''}</Tag>}>
-        One derivation attempt per step, repeated in passes until no set changes. Attempts that find nothing new stay visible.
       </PlateHead>
       <div className="plate__body cols cols--sets">
         <section className="pane">
@@ -105,17 +104,17 @@ export function SetsStage({ model, stage }) {
         </section>
 
         <section className="pane pane--note">
-          <StepNote replay={replay} idle="Every set starts empty. Press Next (→) to try the first production, or Play to run to the fixed point.">
+          <StepNote replay={replay} idle="Every set starts empty. Press Next (→) to try the first production.">
             {step?.type === 'PASS' && (
               <>
                 <p className="note__headline">{step.phase} · pass {step.pass}</p>
-                <p>Every production is examined again, in order. The pass that changes no set is the last one.</p>
+                <p>Each production is tried again, in order. A pass that changes no set is the last.</p>
               </>
             )}
             {step?.type === 'DONE' && (
               <>
                 <p className="note__headline">{step.phase} is complete</p>
-                <p>{step.message} The last pass added nothing, so no further pass can.</p>
+                <p>{step.message}</p>
               </>
             )}
             {isAdd && (

@@ -30,7 +30,7 @@ export function DFATable({ alphabet, states, transitions, start, activeCell, act
                 const hit = activeCell && activeCell.from === s.name && activeCell.symbol === a;
                 return (
                   <td key={a} className={cx('dtable__cell', hit && 'is-hit', to === undefined && 'is-blank')}>
-                    {to ?? <span aria-label="no transition">—</span>}
+                    {to ?? <span aria-label="no transition">∅</span>}
                     {hit && <span className="corners" aria-hidden="true"><i /><i /><i /><i /></span>}
                   </td>
                 );
@@ -39,7 +39,7 @@ export function DFATable({ alphabet, states, transitions, start, activeCell, act
           ))}
         </tbody>
       </table>
-      <p className="help dtable__key"><span aria-hidden="true">→</span> start · <span className="dtable__state is-accepting">X</span> accepting · — no transition (reject)</p>
+      <p className="help dtable__key"><span aria-hidden="true">→</span> start · <span className="dtable__state is-accepting">X</span> accepting · ∅ no transition</p>
     </div>
   );
 }

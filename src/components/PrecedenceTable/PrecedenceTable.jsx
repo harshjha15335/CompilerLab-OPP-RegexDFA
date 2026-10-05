@@ -61,10 +61,10 @@ const Corners = () => <span className="corners" aria-hidden="true"><i /><i /><i 
 export function RelationLegend() {
   return (
     <ul className="legend" aria-label="Relation legend">
-      <li><Rel r="⋖" /> <span>a ⋖ b — a yields precedence: shift</span></li>
-      <li><Rel r="≐" /> <span>a ≐ b — same handle: shift</span></li>
-      <li><Rel r="⋗" /> <span>a ⋗ b — a takes precedence: reduce</span></li>
-      <li><span className="legend__blank" aria-hidden="true" /> <span>blank — no relation: error</span></li>
+      <li><Rel r="⋖" /> <span>a ⋖ b: shift</span></li>
+      <li><Rel r="≐" /> <span>a ≐ b: shift (same handle)</span></li>
+      <li><Rel r="⋗" /> <span>a ⋗ b: reduce</span></li>
+      <li><span className="legend__blank" aria-hidden="true" /> <span>blank: error</span></li>
     </ul>
   );
 }

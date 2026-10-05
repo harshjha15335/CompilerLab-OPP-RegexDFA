@@ -43,7 +43,7 @@ export function ModesStage({ model, go, stage }) {
     <div className="plate">
       <PlateHead no={stage.no} title="Classic N versus Safeguarded reduction"
         aside={<Tag kind={cmp.differ ? 'conflict' : 'plain'}>{cmp.differ ? 'MODES DIFFER' : 'MODES AGREE'}</Tag>}>
-        Both modes use the same precedence table and find the same handles. They differ in what a reduction leaves on the stack.
+        Same table, same handles. The modes differ in what a reduction leaves on the stack.
       </PlateHead>
       <div className="plate__body cols cols--modes">
         <section className="pane pane--modes-side">
@@ -77,14 +77,14 @@ export function ModesStage({ model, go, stage }) {
               <div>
                 <dt>Stacks first read differently</dt>
                 <dd>{cmp.firstStateDivergence
-                  ? <><button type="button" className="linkbtn" onClick={() => replay.api.goto(cmp.firstStateDivergence)}>Step {cmp.firstStateDivergence}</button> — the first reduction: N on one side, a non-terminal set on the other.</>
+                  ? <><button type="button" className="linkbtn" onClick={() => replay.api.goto(cmp.firstStateDivergence)}>Step {cmp.firstStateDivergence}</button>, the first reduction.</>
                   : 'Never.'}</dd>
               </div>
               <div>
                 <dt>Decisions first differ</dt>
                 <dd>{cmp.firstDecisionDivergence
                   ? <button type="button" className="linkbtn" onClick={() => replay.api.goto(cmp.firstDecisionDivergence)}>Step {cmp.firstDecisionDivergence}</button>
-                  : 'Never: both modes take the same action at every step.'}</dd>
+                  : 'Never.'}</dd>
               </div>
               {cmp.differ && rej && (
                 <div>
@@ -92,8 +92,8 @@ export function ModesStage({ model, go, stage }) {
                   <dd>
                     <button type="button" className="linkbtn" onClick={() => replay.api.goto(rej.step)}>Step {rej.step}</button>
                     {rej.atReduction
-                      ? <> — at the reduction of handle <b className="mono">{rej.handle.symbols.map((h) => h.symbol).join(' ')}</b>: no production has these non-terminals in these places. Classic N reduces the same handle because it only sees <span className="mono">N</span>.</>
-                      : <> — {rej.reason}</>}
+                      ? <>, at handle <b className="mono">{rej.handle.symbols.map((h) => h.symbol).join(' ')}</b>: no production has these non-terminals. Classic N reduces it because it sees only <span className="mono">N</span>.</>
+                      : <>: {rej.reason}</>}
                   </dd>
                 </div>
               )}
@@ -101,7 +101,7 @@ export function ModesStage({ model, go, stage }) {
           </div>
         </section>
         {steps.length === 0 ? (
-          <section className="pane"><p className="note__idle">{cmp.classic.reason} Neither mode can start: the string must be made of the grammar's terminals.</p></section>
+          <section className="pane"><p className="note__idle">{cmp.classic.reason}</p></section>
         ) : (
           <>
             {[['classic', 'Classic N'], ['safeguarded', 'Safeguarded']].map(([side, title]) => (

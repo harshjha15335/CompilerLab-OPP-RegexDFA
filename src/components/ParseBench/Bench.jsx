@@ -101,7 +101,7 @@ export function Bench({ step, tokens, mode, title, compact, finished }) {
                 : <>The table cell (<span className="mono">{step.top}</span>, <span className="mono">{step.lookahead}</span>) is blank.</>}
             </span>
           </>
-        ) : <span className="bench__why">{finished ? 'This mode has already finished.' : 'The stack holds only the end marker $. Press Next to compare it with the first input symbol.'}</span>}
+        ) : <span className="bench__why">{finished ? 'This mode has already finished.' : 'The stack holds only $. Press Next (→).'}</span>}
       </div>
 
       <div className="bench__zone">
@@ -124,8 +124,8 @@ export function Bench({ step, tokens, mode, title, compact, finished }) {
             </p>
             <p className="decision__mode">
               {mode === 'classic'
-                ? <>Classic N replaces the handle with the anonymous non-terminal <b className="mono">N</b>.</>
-                : <>Safeguarded keeps every non-terminal the handle can be: <b className="mono">{produced}</b> (unit productions followed).</>}
+                ? <>The handle becomes <b className="mono">N</b>.</>
+                : <>The handle becomes <b className="mono">{produced}</b>: every non-terminal it can be, following unit productions.</>}
             </p>
             <div className="decision__after"><span className="label">After</span><StackRow stack={v.after} markTop={false} freshIndex={v.handle.from} /></div>
           </>
@@ -155,7 +155,7 @@ export function TraceTable({ steps, tokens, count, onJump }) {
                 ref={i + 1 === count ? (el) => el?.scrollIntoView({ block: 'nearest' }) : undefined}>
                 <td><button type="button" className="trace__jump" onClick={() => onJump(i + 1)} aria-label={`Go to step ${i + 1}`}>{i + 1}</button></td>
                 <td className="mono">{(s.stackBefore ?? s.stack).map((x) => x.symbol).join(' ')}</td>
-                <td>{s.relation ? <Rel r={s.relation} /> : '—'}</td>
+                <td>{s.relation ? <Rel r={s.relation} /> : ''}</td>
                 <td className="mono trace__input">{input(s)}</td>
                 <td className="trace__action">
                   <b>{s.type}</b>
@@ -188,8 +188,8 @@ export function ModeSwitch({ mode, onChange, name = 'mode' }) {
 
 export const MODE_TEXT = (
   <>
-    <p><b>Classic N</b> forgets the exact non-terminal identity during reductions: every handle collapses to <span className="mono">N</span>.</p>
-    <p><b>Safeguarded</b> mode retains grammar compatibility information: each reduced item carries the set of non-terminals it may be, and a handle must match a production with those non-terminals.</p>
+    <p><b>Classic N</b> forgets the exact non-terminal identity during reductions.</p>
+    <p><b>Safeguarded</b> mode retains grammar compatibility information: each reduced item carries the non-terminals it may be.</p>
   </>
 );
 

@@ -21,8 +21,7 @@ function Result({ model, go }) {
   if (dirty)
     return (
       <div className="result result--pending" role="status">
-        <p className="result__head"><Tag kind="plain">EDITED</Tag> The editor differs from the last validated grammar.</p>
-        <p>Press <b>Validate grammar</b> (Ctrl + Enter) to check it and rebuild every later stage.</p>
+        <p className="result__head"><Tag kind="plain">EDITED</Tag> Press <b>Validate grammar</b> (Ctrl + Enter) to check this text.</p>
       </div>
     );
   if (status === 'empty')
@@ -65,8 +64,7 @@ function Result({ model, go }) {
       </dl>
       {!analysis.conflictFree && (
         <p className="result__warn">
-          <Tag kind="conflict">CONFLICT</Tag> The precedence table built from this grammar is not conflict-free.
-          Stage 1.3 shows the step where each conflict appears.
+          <Tag kind="conflict">CONFLICT</Tag> Its precedence table is not conflict-free. Stage 1.3 shows where each conflict appears.
         </p>
       )}
       <button type="button" className="btn btn--primary" onClick={() => go('sets')}>Continue to 1.2 LEADING / TRAILING</button>
@@ -84,7 +82,7 @@ export function GrammarStage({ model, go, stage }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="Operator grammar">
-        Write one rule per line. Symbols are separated by spaces, so <code>id</code> is a single terminal.
+        One rule per line. Separate symbols with spaces: <code>id</code> is one terminal.
       </PlateHead>
       <div className="plate__body cols cols--grammar">
         <section className="pane">
@@ -102,12 +100,11 @@ export function GrammarStage({ model, go, stage }) {
                 aria-describedby="grammar-help" />
             </div>
             <p id="grammar-help" className="help">
-              <code>A -&gt; α | β</code> · alternatives with <code>|</code> · the first rule's left side is the start symbol ·
-              <code>$</code> is reserved as the end marker.
+              <code>A -&gt; α | β</code> · the first rule's left side is the start symbol · <code>$</code> is reserved.
             </p>
             <div className="actions">
               <button type="button" className="btn btn--primary" onClick={commit}>Validate grammar</button>
-              <span className="actions__state">{dirty ? 'Not validated yet' : analysis.status === 'ok' ? 'Validated' : 'Validated — see result'}</span>
+              <span className="actions__state">{dirty ? 'Not validated yet' : analysis.status === 'ok' ? 'Validated' : 'Validated, see result'}</span>
             </div>
           </div>
         </section>

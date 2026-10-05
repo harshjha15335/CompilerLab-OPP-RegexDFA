@@ -15,9 +15,8 @@ export function ConflictBlock({ analysis, go, stage }) {
       <div className="plate__body plate__body--single">
         <Empty title="Build a conflict-free precedence table before parsing a string."
           action={<button type="button" className="btn" onClick={() => go('table')}>Open 1.3 Precedence table</button>}>
-          This table is not conflict-free. {analysis.table.conflicts.map((c) => `Cell (${c.left}, ${c.right})`).join(', ')}{' '}
-          {analysis.table.conflicts.length === 1 ? 'contains' : 'each contain'} more than one precedence relation, so the parser
-          cannot choose between shift and reduce.
+          {analysis.table.conflicts.map((c) => `Cell (${c.left}, ${c.right})`).join(', ')}{' '}
+          {analysis.table.conflicts.length === 1 ? 'contains' : 'each contain'} more than one precedence relation.
         </Empty>
       </div>
     </div>
@@ -42,7 +41,6 @@ export function ParseStage({ model, go, stage }) {
     <div className="plate">
       <PlateHead no={stage.no} title="Shift / reduce parse"
         aside={count === steps.length && steps.length > 0 ? <Tag kind={run.result === 'ACCEPT' ? 'accept' : 'reject'}>{run.result}</Tag> : <Tag kind="plain">{parseReq.mode === 'classic' ? 'CLASSIC N' : 'SAFEGUARDED'}</Tag>}>
-        The topmost terminal on the stack is compared with the lookahead; the table relation decides between shift and reduce.
       </PlateHead>
       <form className="controls" onSubmit={(e) => { e.preventDefault(); parse(parseDraft, parseReq.mode); }}>
         <label className="field">
@@ -63,7 +61,7 @@ export function ParseStage({ model, go, stage }) {
       </form>
       {steps.length === 0 ? (
         <div className="plate__body plate__body--single">
-          <Verdict result="REJECT" reason={`${run.reason} The string was not parsed: it must be made of the grammar's terminals (${analysis.grammar.terminals.join(' ')}).`} />
+          <Verdict result="REJECT" reason={`${run.reason} Use only this grammar's terminals: ${analysis.grammar.terminals.join(' ')}`} />
         </div>
       ) : (
         <div className="plate__body cols cols--parse">
@@ -83,7 +81,7 @@ export function ParseStage({ model, go, stage }) {
                   <PrecedenceTable axes={analysis.table.axes} cells={finalCells} lookup={lookup} compact />
                   <p className="help">
                     {lookup
-                      ? <>Lookup for this step: row <b className="mono">{lookup.left}</b>, column <b className="mono">{lookup.right}</b>{finalCells.get(cellKey(lookup.left, lookup.right)) ? '.' : ' — blank cell, so the string is rejected.'}</>
+                      ? <>Lookup for this step: row <b className="mono">{lookup.left}</b>, column <b className="mono">{lookup.right}</b>{finalCells.get(cellKey(lookup.left, lookup.right)) ? '.' : ': blank, so the string is rejected.'}</>
                       : 'The cell consulted at each step is bracketed here.'}
                   </p>
                 </div>

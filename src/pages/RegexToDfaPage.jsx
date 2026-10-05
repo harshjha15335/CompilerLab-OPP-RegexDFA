@@ -47,7 +47,7 @@ function TreeStage({ model, stage, go }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="Regular expression and its syntax tree">
-        The expression is augmented with the end marker <code>#</code> automatically; every leaf gets a position number.
+        The end marker <code>#</code> is added for you.
       </PlateHead>
       <form className="controls" onSubmit={(e) => { e.preventDefault(); commit(); }}>
         <label className="field field--wide">
@@ -56,15 +56,14 @@ function TreeStage({ model, stage, go }) {
             onChange={(e) => setDraft(e.target.value)} placeholder="(a|b)*abb" aria-describedby="regex-help" />
         </label>
         <button type="submit" className="btn btn--primary">Build syntax tree</button>
-        <span className="actions__state">{dirty ? 'Edited — not built yet' : ok ? 'Built' : 'Not built'}</span>
+        <span className="actions__state">{dirty ? 'Edited, not built' : ok ? 'Built' : 'Not built'}</span>
         <p id="regex-help" className="help controls__help">
-          <code>|</code> union · juxtaposition concatenates · <code>*</code> <code>+</code> <code>?</code> postfix · <code>( )</code> group ·
-          <code>\</code> escapes the next character · unescaped <code>#</code> is reserved
+          <code>|</code> union · <code>*</code> <code>+</code> <code>?</code> postfix · <code>( )</code> group · <code>\</code> escape · <code>#</code> reserved
         </p>
       </form>
       <div className="plate__body cols cols--regex">
         <section className="pane pane--tree">
-          {dirty && <p className="result result--pending"><Tag kind="plain">EDITED</Tag> Press <b>Build syntax tree</b> (Enter) to parse the new expression.</p>}
+          {dirty && <p className="result result--pending"><Tag kind="plain">EDITED</Tag> Press <b>Build syntax tree</b> (Enter).</p>}
           {!dirty && analysis.status === 'empty' && <Empty title="Enter a regular expression to begin.">For example <code>(a|b)*abb</code>.</Empty>}
           {!dirty && analysis.status === 'error' && (
             <div className="result result--invalid" role="alert">
@@ -90,7 +89,7 @@ function TreeStage({ model, stage, go }) {
                 <thead><tr><th scope="col">Position</th>{analysis.leaves.map((l) => <th key={l.pos} scope="col">{l.pos}</th>)}</tr></thead>
                 <tbody><tr><th scope="row">Symbol</th>{analysis.leaves.map((l) => <td key={l.pos}>{l.symbol}</td>)}</tr></tbody>
               </table>
-              <p className="help">Position {analysis.endPos} is the end marker <code>#</code>. A DFA state is accepting exactly when it contains position {analysis.endPos}.</p>
+              <p className="help">A DFA state accepts when it contains position {analysis.endPos}, the end marker.</p>
               <button type="button" className="btn btn--primary" onClick={() => go('props')}>Continue to stage 3.2</button>
             </div>
           )}
@@ -130,8 +129,8 @@ function PropsStage({ model, stage }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="nullable, firstpos and lastpos"
-        aside={<Tag kind="plain">{props.size} / {analysis.nodes.length} nodes</Tag>}>
-        Computed bottom-up, one node per step. A parent is computed only after its children.
+>
+        Bottom-up: a parent is computed after its children.
       </PlateHead>
       <div className="plate__body cols cols--props">
         <section className="pane pane--tree">
@@ -139,7 +138,7 @@ function PropsStage({ model, stage }) {
           <TreeLegend sets />
         </section>
         <section className="pane pane--note">
-          <StepNote replay={replay} idle="No node has been evaluated. Press Next (→): leaves are visited first, left to right, and each operator after its operands.">
+          <StepNote replay={replay} idle="Nothing computed yet. Press Next (→). Leaves come first, left to right.">
             {node && (
               <>
                 <p className="note__headline"><span className="mono">{describe(node)}</span> <Tag kind="new">{NODE_NAME[node.type].toUpperCase()}</Tag></p>
@@ -208,8 +207,8 @@ function FollowStage({ model, stage }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="followpos"
-        aside={<Tag kind="plain">{steps.length} contributions</Tag>}>
-        Only concatenation, star and plus nodes create followpos. Each step applies one node to one position.
+>
+        Only concatenation, star and plus nodes add to followpos.
       </PlateHead>
       <div className="plate__body cols cols--props">
         <section className="pane pane--tree">
@@ -221,14 +220,14 @@ function FollowStage({ model, stage }) {
         </section>
         <section className="pane pane--note">
           <FollowposTable leaves={analysis.leaves} follow={follow} active={step} selected={selected} onSelect={setSelected} />
-          <StepNote replay={replay} idle="Every followpos set starts empty. Press Next (→) to apply the first concatenation node.">
+          <StepNote replay={replay} idle="Every followpos set starts empty. Press Next (→).">
             {node && (
               <>
                 <p className="note__headline">
                   <span className="mono">followpos({step.position})</span> gains <span className="mono">{braces(step.added)}</span>{' '}
                   <Tag kind={step.changed ? 'new' : 'plain'}>{step.changed ? 'NEW' : 'NO CHANGE'}</Tag>
                 </p>
-                <NoteRow label="Node"><span className="mono">{describe(node)}</span> — {NODE_NAME[node.type]} node</NoteRow>
+                <NoteRow label="Node"><span className="mono">{describe(node)}</span></NoteRow>
                 <NoteRow label="Because">
                   {isCat ? (
                     <>this concatenation node has<br />
@@ -245,7 +244,7 @@ function FollowStage({ model, stage }) {
                 <NoteRow label="Rule">{isCat
                   ? 'for c₁c₂: every position in firstpos(c₂) follows every position in lastpos(c₁).'
                   : 'for c* and c+: every position in firstpos(c) follows every position in lastpos(c).'}</NoteRow>
-                {!step.changed && <p className="note__aside">Every added position was already in the set, so the table does not change.</p>}
+                
               </>
             )}
           </StepNote>
@@ -298,12 +297,12 @@ function DfaStage({ model, stage }) {
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="DFA construction from followpos"
-        aside={<Tag kind="plain">{seen.states.length} states · {seen.transitions.length} transitions</Tag>}>
-        Each state is a set of positions. From a state, on symbol a, take the union of followpos over its positions labelled a.
+>
+        A state is a set of positions.
       </PlateHead>
       <div className="plate__body cols cols--dfa">
         <section className="pane pane--note">
-          <StepNote replay={replay} idle="No state exists yet. Press Next (→): the start state is firstpos of the root.">
+          <StepNote replay={replay} idle="No state yet. Press Next (→). The start state is firstpos(root).">
             {step?.type === 'DFA_START' && (
               <>
                 <p className="note__headline">Start state <span className="mono">{step.state} = {braces(step.positions)}</span> <Tag kind="new">NEW STATE</Tag></p>
@@ -334,9 +333,9 @@ function DfaStage({ model, stage }) {
             {step?.type === 'DFA_DONE' && (
               <>
                 <p className="note__headline">Construction complete</p>
-                <p>{step.message} No unprocessed state remains.</p>
+                <p>{step.message}</p>
                 <NoteRow label="Start">{dfa.start}</NoteRow>
-                <NoteRow label="Accepting">{dfa.accepting.join(', ') || 'none'} — the states containing position {endPos} (#)</NoteRow>
+                <NoteRow label="Accepting">{dfa.accepting.join(', ') || 'none'} (states containing position {endPos})</NoteRow>
               </>
             )}
           </StepNote>
@@ -381,7 +380,6 @@ function SimStage({ model, stage }) {
     <div className="plate">
       <PlateHead no={stage.no} title="Running the DFA on a test string"
         aside={s.verdict ? <Tag kind={s.verdict === 'ACCEPT' ? 'accept' : 'reject'}>{s.verdict}</Tag> : <Tag kind="code">{analysis.source}</Tag>}>
-        One input symbol per step. The graph is frozen: only the current state and the edge taken change.
       </PlateHead>
       <form className="controls" onSubmit={(e) => { e.preventDefault(); simulate(simDraft); }}>
         <label className="field">
@@ -415,15 +413,15 @@ function SimStage({ model, stage }) {
           <DFAGraph dfa={dfa} activeState={s.state} activeEdge={s.edge} stuck={stuck} />
           <div className="tworow tworow--sim">
             <dl className="readout">
-              <div><dt>Current state</dt><dd>{state ? <><b className="mono">{state.name}</b> <span className="mono">{braces(state.positions)}</span>{state.accepting ? ' · accepting' : ''}</> : '—'}</dd></div>
+              <div><dt>Current state</dt><dd>{state ? <><b className="mono">{state.name}</b> <span className="mono">{braces(state.positions)}</span>{state.accepting ? ' · accepting' : ''}</> : 'none'}</dd></div>
               <div><dt>Transition used</dt><dd>{s.edge
                 ? <span className="note__move"><span className="mono">{s.edge.from}</span><span className="arrowlab"><i>{s.edge.symbol}</i></span><span className="mono">{s.edge.to}</span></span>
-                : stuck ? <>none from <span className="mono">{s.state}</span> on <span className="mono">{step.symbol}</span></> : '—'}</dd></div>
+                : stuck ? <>none from <span className="mono">{s.state}</span> on <span className="mono">{step.symbol}</span></> : 'none'}</dd></div>
               <div><dt>Remaining input</dt><dd className="mono">{chars.slice(s.index).join('') || 'ε'}</dd></div>
             </dl>
-            <StepNote replay={replay} idle={`The DFA has not started. Press Next (→) to enter the start state ${dfa.start}.`}>
+            <StepNote replay={replay} idle={`Press Next (→) to enter the start state ${dfa.start}.`}>
               {step && !s.verdict && <p className="note__headline">{step.message}</p>}
-              {step?.type === 'MOVE' && <p>Symbol <b className="mono">{step.symbol}</b> is read; the table row <span className="mono">{step.from}</span>, column <span className="mono">{step.symbol}</span> gives <span className="mono">{step.to}</span>.</p>}
+              {step?.type === 'MOVE' && <p>Row <span className="mono">{step.from}</span>, column <span className="mono">{step.symbol}</span> gives <span className="mono">{step.to}</span>.</p>}
               {s.verdict && <Verdict result={s.verdict} reason={step.message} />}
             </StepNote>
           </div>

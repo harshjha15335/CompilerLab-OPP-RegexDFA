@@ -8,11 +8,10 @@ import { ModesStage } from '../components/ParseBench/ModesStage.jsx';
 function LrPlaceholder() {
   return (
     <div className="plate">
-      <PlateHead no="02" title="LR Parsing">Reserved workspace inside the Bottom-Up Parsing shell.</PlateHead>
+      <PlateHead no="02" title="LR Parsing" />
       <div className="plate__body plate__body--single">
         <Empty title="This workspace will host the LR parsing branch.">
-          LR parsing is not implemented in this build. Operator-precedence parsing, the other bottom-up
-          method in this shell, is complete under chapter 01.
+          LR parsing is not implemented in this build.
         </Empty>
       </div>
     </div>
@@ -24,7 +23,7 @@ function Blocked({ stage, model, go }) {
   const { analysis } = model;
   const reason = analysis.status === 'empty'
     ? 'Enter productions to begin. Separate grammar symbols with spaces.'
-    : 'This grammar cannot be used by the operator-precedence parser. Its errors are listed on the Grammar stage.';
+    : 'This grammar cannot be used by the operator-precedence parser. Stage 1.1 lists the errors.';
   return (
     <div className="plate">
       <PlateHead no={stage.no} title={stage.title} />

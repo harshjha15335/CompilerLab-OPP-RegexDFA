@@ -1,8 +1,9 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useMemo, useRef, useState } from 'react';
 import { useReplay } from '../../replay/useReplay.js';
 import { phaseMarkers, setProvenance, setsAt } from '../../replay/selectors.js';
 import { cx, NoteRow, PlateHead, Production, ProductionList, StepNote, Tag } from '../common/common.jsx';
 import { StepPlayer } from '../StepPlayer/StepPlayer.jsx';
+import { emphasize, settleIn, useStepEffect } from '../../motion/effects.js';
 
 export const SET_RULES = {
   L1: 'A → a …  ⟹  a ∈ LEADING(A)',
@@ -31,7 +32,7 @@ export function SetLine({ kind, nonTerminal, members, active, source, onInspect,
                 onClick={() => onInspect?.({ kind, nonTerminal, element: m })}
                 aria-label={`${m} in ${kind}(${nonTerminal})${state === 'new' ? ', new' : state === 'dup' ? ', already present' : ''}. Show provenance.`}>
                 {m}
-                {state && <span className="member__tag" key={state}>{state === 'new' ? 'new' : 'already in set'}</span>}
+                {state && <span className="member__tag" key={state}>{state === 'new' ? 'new' : 'no set change'}</span>}
               </button>
             </Fragment>
           );
@@ -78,13 +79,18 @@ export function SetsStage({ model, stage }) {
     return new Set(Array.from({ length: k }, (_, i) => (step.phase === 'LEADING' ? i : n - 1 - i)));
   }, [prod, step]);
   const prov = inspect ? setProvenance(steps, count, inspect.kind, inspect.nonTerminal, inspect.element) : [];
+  const body = useRef(null);
+  useStepEffect(replay, ({ step: s }) => {
+    if (!s.type.startsWith('ADD_')) return undefined;
+    return s.changed ? settleIn(body.current?.querySelector('.member.is-new')) : emphasize(body.current?.querySelector('.member.is-dup'));
+  });
 
   return (
     <div className="plate">
       <PlateHead no={stage.no} title="LEADING and TRAILING sets"
         aside={<Tag kind="plain">{step?.phase ?? 'LEADING'}{step?.pass ? ` · pass ${step.pass}` : ''}</Tag>}>
       </PlateHead>
-      <div className="plate__body cols cols--sets">
+      <div className="plate__body cols cols--sets" ref={body}>
         <section className="pane">
           <ProductionList grammar={grammar} activeId={prod?.id} marks={marks} />
           <div className="pane-block">

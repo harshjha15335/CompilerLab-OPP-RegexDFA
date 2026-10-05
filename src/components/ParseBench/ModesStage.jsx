@@ -54,6 +54,11 @@ export function ModesStage({ model, go, stage }) {
             </label>
             <button type="submit" className="btn btn--primary">Compare</button>
           </form>
+          <div className={cx('split', cmp.differ && 'is-differ')} role="status">
+            <div><span className="label">Classic N</span><ResultTag r={cmp.classic.result} /></div>
+            <div><span className="label">Safeguarded</span><ResultTag r={cmp.safeguarded.result} /></div>
+            {cmp.differ && rej && <button type="button" className="btn" onClick={() => replay.api.goto(rej.step)}>Go to the divergence (step {rej.step})</button>}
+          </div>
           <table className="cmptable">
             <caption className="label">Results for this grammar</caption>
             <thead><tr><th scope="col">String</th><th scope="col">Classic N</th><th scope="col">Safeguarded</th></tr></thead>
@@ -107,6 +112,7 @@ export function ModesStage({ model, go, stage }) {
             {[['classic', 'Classic N'], ['safeguarded', 'Safeguarded']].map(([side, title]) => (
               <section key={side} className="pane pane--bench">
                 <Bench compact title={<>{title} <ResultTag r={cmp[side].result} /></>} mode={side} tokens={cmp.tokens}
+                  fx={replay.animate && count <= cmp[side].steps.length ? (replay.rich ? 'rich' : 'fast') : null}
                   step={sideStep(side)} finished={count > cmp[side].steps.length || (step && !step[side] && count > 0)} />
               </section>
             ))}

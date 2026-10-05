@@ -26,14 +26,16 @@ function layoutTree(root) {
 
 /** Hand-drawn SVG of the real AST from the core (including the augmenting # leaf).
  *  props: Map nodeId -> {nullable, firstpos, lastpos} for nodes whose properties are known.
- *  arcs: { from, to[], changed } — temporary followpos arrows between leaves. */
-export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = 'none', arcs, selectedId, onSelect }) {
+ *  arcs: { from, to[], changed }: temporary followpos arrows between leaves.
+ *  built: Set of node ids that exist so far. Others are drawn as faint outlines, and the edges
+ *  of the node being built draw toward it. Omit it to show the whole tree. */
+export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = 'none', arcs, selectedId, onSelect, built }) {
   const { place, width, height } = useMemo(() => layoutTree(root), [root]);
   const leafByPos = useMemo(() => new Map(nodes.filter((n) => n.type === 'leaf').map((n) => [n.pos, n])), [nodes]);
   const baseY = height - PAD_BOTTOM + 18;
 
   return (
-    <svg className="tree" viewBox={`0 0 ${width} ${height}`} role="group" aria-label="Syntax tree of the augmented regular expression" preserveAspectRatio="xMidYMid meet">
+    <svg className={cx('tree', built && 'tree--build')} viewBox={`0 0 ${width} ${height}`} role="group" aria-label="Syntax tree of the augmented regular expression" preserveAspectRatio="xMidYMid meet">
       <defs>
         <marker id="tree-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0,0 L10,5 L0,10 z" className="tree__arrowhead" />
@@ -42,7 +44,9 @@ export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = '
       <g className="tree__edges">
         {nodes.flatMap((n) => (n.children ?? []).map((c) => {
           const a = place.get(n.id), b = place.get(c.id);
-          return <line key={`${n.id}-${c.id}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className={cx(activeId === n.id && readIds?.has(c.id) && 'is-read')} />;
+          // drawn from the child up to the parent, so the stroke grows toward the node being built
+          return <line key={`${n.id}-${c.id}`} x1={b.x} y1={b.y} x2={a.x} y2={a.y} pathLength="1"
+            className={cx(activeId === n.id && readIds?.has(c.id) && 'is-read', built && !built.has(n.id) && 'is-ghost', built && activeId === n.id && 'is-drawing')} />;
         }))}
       </g>
       {arcs && arcs.to.map((q) => {
@@ -65,7 +69,7 @@ export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = '
           : `${NODE_NAME[n.type]} node`;
         return (
           <g key={n.id} className={cx('tnode', leaf ? 'tnode--leaf' : 'tnode--op', n.isEnd && 'tnode--end', active && 'is-active', read && 'is-read',
-            p && 'is-known', selectedId === n.id && 'is-selected')}
+            p && 'is-known', selectedId === n.id && 'is-selected', built && !built.has(n.id) && 'is-ghost')}
             transform={`translate(${x} ${y})`} tabIndex={onSelect ? 0 : undefined} role={onSelect ? 'button' : 'img'}
             aria-label={`${label}${p ? `. nullable ${p.nullable}, firstpos ${setStr(p.firstpos)}, lastpos ${setStr(p.lastpos)}` : ''}`}
             onClick={onSelect ? () => onSelect(n) : undefined}

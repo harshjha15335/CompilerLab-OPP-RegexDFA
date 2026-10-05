@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import cytoscape from 'cytoscape';
 import { edgeId, layoutDfa, visibleEdgeLabels } from './graphModel.js';
 import { useSettings } from '../../replay/useReplay.js';
+import { travel } from '../../motion/effects.js';
 
 const MONO = '"JetBrains Mono Variable", "JetBrains Mono", "Cascadia Mono", Consolas, monospace';
 
@@ -41,7 +42,7 @@ const styleFor = (C) => [
 
 /** Cytoscape is only the renderer. It receives the canonical DFA plus which parts are visible
  *  and active; node positions are preset once per DFA and locked, so nothing ever rearranges. */
-export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck, tools }) {
+export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck, tools, fx }) {
   const box = useRef(null);
   const cyRef = useRef(null);
   const { theme } = useSettings();
@@ -102,7 +103,27 @@ export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, 
         e.toggleClass('active', Boolean(activeEdge) && e.id() === edgeId(activeEdge.from, activeEdge.to));
       });
     });
-  }, [dfa, model, theme, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck]);
+    // Motion overlay for a single forward step. The classes above already show the final state.
+    if (!fx || !activeEdge) return undefined;
+    const edge = cy.getElementById(edgeId(activeEdge.from, activeEdge.to));
+    if (edge.empty()) return undefined;
+    if (fx === 'build') {
+      // source is already marked; the edge appears, then the state it discovers
+      edge.stop(true).style('opacity', 0).animate({ style: { opacity: 1 } }, { duration: 220, complete: () => edge.removeStyle('opacity') });
+      const fresh = freshState ? cy.getElementById(freshState) : null;
+      if (fresh && fresh.nonempty())
+        fresh.stop(true).style('opacity', 0).delay(170).animate({ style: { opacity: 1 } }, { duration: 200, complete: () => fresh.removeStyle('opacity') });
+      return () => { edge.stop(true).removeStyle('opacity'); if (fresh) fresh.stop(true).removeStyle('opacity'); };
+    }
+    // simulation: a marker rides the edge that was taken
+    // read positions on the next frame, after any pending resize of the canvas has been applied
+    let stop = null;
+    const frame = requestAnimationFrame(() => {
+      const a = cy.getElementById(activeEdge.from).renderedPosition(), b = cy.getElementById(activeEdge.to).renderedPosition();
+      stop = travel(box.current, [a, edge.renderedMidpoint(), b], { duration: 0.26 });
+    });
+    return () => { cancelAnimationFrame(frame); if (stop) stop(); };
+  }, [dfa, model, theme, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck, fx]);
 
   const summary = `DFA with ${dfa.states.length} states. Start state ${dfa.start}. Accepting: ${dfa.accepting.join(', ') || 'none'}. `
     + dfa.transitions.map((t) => `${t.from} on ${t.symbol} goes to ${t.to}`).join('; ') + '.';

@@ -66,7 +66,7 @@ export function ParseStage({ model, go, stage }) {
       ) : (
         <div className="plate__body cols cols--parse">
           <section className="pane pane--bench">
-            <Bench step={step} tokens={run.tokens} mode={parseReq.mode} />
+            <Bench step={step} tokens={run.tokens} mode={parseReq.mode} fx={replay.animate ? (replay.rich ? 'rich' : 'fast') : null} />
           </section>
           <section className="pane pane--side">
             <div className="tabs" role="tablist" aria-label="Side panel">

@@ -1,6 +1,6 @@
 import { SPEEDS, useSettings } from '../../replay/useReplay.js';
 import { CHAPTERS, hashFor, parseHash } from '../../data/nav.js';
-import { cx } from '../common/common.jsx';
+import { cx, Tx } from '../common/common.jsx';
 
 const Icon = ({ children }) => <svg className="tbtn__icon" viewBox="0 0 12 12" aria-hidden="true">{children}</svg>;
 const IStart = () => <Icon><rect x="1" y="1.5" width="1.8" height="9" rx="0.6" /><polygon points="10.5,1.5 10.5,10.5 3.8,6" /></Icon>;
@@ -53,15 +53,18 @@ export function StepPlayer({ replay, label }) {
         <div className="timeline__marks">
           {marks.map((m) => (
             <button key={m.at} type="button" tabIndex={-1} className={cx('timeline__mark', count >= m.at && 'is-passed', m.frac > 0.9 && 'is-flipped')}
-              style={{ '--at': m.frac }} onClick={() => api.goto(m.at)} title={`Jump to ${m.label} (step ${m.at})`}>
+              style={{ '--at': m.frac }} onClick={() => api.goto(m.at)} aria-label={`Jump to ${m.label}, step ${m.at}`}>
               <i aria-hidden="true" />
               {m.labelled && <span>{m.label}</span>}
+              <em className="timeline__tip" role="tooltip"><b>Step {m.at} · {m.label}</b><Tx>{replay.steps[m.at - 1]?.message}</Tx></em>
             </button>
           ))}
         </div>
+        <span className="timeline__track" aria-hidden="true"><span className="timeline__fill" /></span>
         <input type="range" className="timeline__range" min={0} max={total} step={1} value={count} disabled={!total}
           onChange={(e) => api.goto(Number(e.target.value))}
           aria-label={`${label} timeline`} aria-valuetext={`Step ${count} of ${total}`} />
+        <span className="timeline__thumb" aria-hidden="true" />
       </div>
       <div className="speed" role="radiogroup" aria-label="Playback speed">
         {SPEEDS.map((v) => (

@@ -1,4 +1,7 @@
+import { useLayoutEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { cx, Production, Rel, Verdict } from '../common/common.jsx';
+import { DUR, EASE, fly, run } from '../../motion/effects.js';
 
 const START = [{ symbol: '$', kind: 'T' }];
 
@@ -73,14 +76,32 @@ const DECIDES = {
   '⋗': 'the stack terminal takes precedence, so a handle is complete and must be reduced',
 };
 
-/** Stack bench + input tape + current relation + decision, for one step. */
-export function Bench({ step, tokens, mode, title, compact, finished }) {
+/** Motion for one parser step. SHIFT: the lookahead token travels from the tape onto the stack.
+ *  REDUCE: the bracket draws, the handle draws together, then collapses into its replacement. */
+function playStep(root, step, rich) {
+  if (step.type === 'SHIFT')
+    return fly(root, { from: '.tape .tcell.is-current', to: '.decision .scell.is-fresh', duration: rich ? 0.26 : 0.15 });
+  if (step.type !== 'REDUCE') return undefined;
+  if (!rich) return fly(root, { from: '.handle__cells', to: '.decision .scell.is-fresh', duration: 0.15, shrink: true });
+  const cells = [...root.querySelectorAll('.handle .scell')];
+  const mid = (cells.length - 1) / 2;
+  const runs = [run(root.querySelector('.handle__bracket'), { scaleX: [0, 1] }, { duration: 0.12, ease: EASE })];
+  cells.forEach((c, i) => runs.push(run(c, { x: [0, (mid - i) * 8, 0] }, { duration: 0.3, delay: 0.1, ease: EASE })));
+  const stopFly = fly(root, { from: '.handle__cells', to: '.decision .scell.is-fresh', delay: 0.2, duration: 0.18, shrink: true });
+  return () => { runs.forEach((r) => r.stop()); stopFly(); };
+}
+
+/** Stack bench + input tape + current relation + decision, for one step.
+ *  fx: 'rich' | 'fast' | null. Motion is an overlay; the markup below is already the final state. */
+export function Bench({ step, tokens, mode, title, compact, finished, fx }) {
   const v = benchView(step);
   const type = step?.type;
   const done = type === 'ACCEPT' || type === 'REJECT';
   const produced = type === 'REDUCE' ? v.after[v.handle.from].symbol : null;
+  const root = useRef(null);
+  useLayoutEffect(() => (fx && step && root.current ? playStep(root.current, step, fx === 'rich') : undefined), [step, fx]);
   return (
-    <div className={cx('bench', compact && 'bench--compact')}>
+    <div className={cx('bench', compact && 'bench--compact')} ref={root}>
       {title && <h3 className="bench__title">{title}</h3>}
       <div className="bench__zone">
         <span className="label">Stack</span>
@@ -153,7 +174,10 @@ export function TraceTable({ steps, tokens, count, onJump }) {
             return (
               <tr key={i} className={state} aria-current={i + 1 === count ? 'step' : undefined}
                 ref={i + 1 === count ? (el) => el?.scrollIntoView({ block: 'nearest' }) : undefined}>
-                <td><button type="button" className="trace__jump" onClick={() => onJump(i + 1)} aria-label={`Go to step ${i + 1}`}>{i + 1}</button></td>
+                <td>
+                  {i + 1 === count && <motion.span layoutId="trace-marker" className="trace__marker" aria-hidden="true" transition={{ duration: DUR.normal, ease: EASE }} />}
+                  <button type="button" className="trace__jump" onClick={() => onJump(i + 1)} aria-label={`Go to step ${i + 1}`}>{String(i + 1).padStart(2, '0')}</button>
+                </td>
                 <td className="mono">{(s.stackBefore ?? s.stack).map((x) => x.symbol).join(' ')}</td>
                 <td>{s.relation ? <Rel r={s.relation} /> : ''}</td>
                 <td className="mono trace__input">{input(s)}</td>
@@ -178,7 +202,8 @@ export function ModeSwitch({ mode, onChange, name = 'mode' }) {
       <div className="modes__row">
         {[['safeguarded', 'Safeguarded'], ['classic', 'Classic N']].map(([id, text]) => (
           <button key={id} type="button" role="radio" aria-checked={mode === id} className={cx('modes__opt', mode === id && 'is-on')} onClick={() => onChange(id)}>
-            <i aria-hidden="true" /><span>{text}</span>
+            {mode === id && <motion.i layoutId={`${name}-rule`} className="modes__rule" aria-hidden="true" transition={{ duration: DUR.normal, ease: EASE }} />}
+            <span>{text}</span>
           </button>
         ))}
       </div>

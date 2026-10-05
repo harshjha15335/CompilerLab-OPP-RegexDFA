@@ -19,7 +19,7 @@ export default defineConfig({
   plugins: [react(), portableHtml()],
   build: {
     modulePreload: false,
-    chunkSizeWarningLimit: 1200,
+    chunkSizeWarningLimit: 2400,
     rollupOptions: { output: { format: 'iife' } },
   },
 });

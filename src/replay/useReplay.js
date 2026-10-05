@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { stepAt } from './selectors.js';
 
-export const SPEEDS = [0.5, 1, 2, 4];
+export const SPEEDS = [0.5, 1, 1.5, 2, 4];
 const BASE_MS = 1100;
 
 export const SettingsContext = createContext({ speed: 1, setSpeed: () => {}, reduced: false, setReduced: () => {}, theme: 'light' });
@@ -36,7 +36,7 @@ function reducer(state, action) {
 }
 
 export function useReplay(steps, { markers = [], active = true } = {}) {
-  const { speed, setSpeed } = useSettings();
+  const { speed, setSpeed, reduced } = useSettings();
   const [state, dispatch] = useReducer(reducer, steps, (s) => ({ steps: s, count: Math.min(memory.get(s) ?? 0, s.length), playing: false }));
   if (state.steps !== steps) dispatch({ type: 'bind', steps });
   const bound = state.steps === steps;
@@ -46,6 +46,12 @@ export function useReplay(steps, { markers = [], active = true } = {}) {
 
   const live = useRef({ markers, speed });
   live.current = { markers, speed };
+  // Motion is only played for a single forward step. Jumps, Back and scrubbing show the state at once.
+  const prev = useRef({ steps, count });
+  const forward = prev.current.steps === steps && count === prev.current.count + 1;
+  useEffect(() => { prev.current = { steps, count }; }, [steps, count]);
+  const animate = forward && !reduced;
+  const rich = animate && speed < 2;      // long explanatory motion is skipped at 2x and above
 
   const api = useMemo(() => ({
     start: () => dispatch({ type: 'goto', count: 0 }),
@@ -99,5 +105,5 @@ export function useReplay(steps, { markers = [], active = true } = {}) {
     return () => window.removeEventListener('keydown', onKey);
   }, [active, api]);
 
-  return { steps, count, total, playing, markers, step: stepAt(steps, count), nextStep: steps[count] ?? null, api };
+  return { steps, count, total, playing, markers, step: stepAt(steps, count), nextStep: steps[count] ?? null, api, forward, animate, rich };
 }

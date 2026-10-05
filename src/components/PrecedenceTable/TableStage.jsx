@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { useReplay } from '../../replay/useReplay.js';
 import { cellKey, conflictsOf, phaseMarkers, tableAt } from '../../replay/selectors.js';
 import { cx, NoteRow, PlateHead, Production, Rel, SetText, StepNote, Tag, Tx } from '../common/common.jsx';
 import { StepPlayer } from '../StepPlayer/StepPlayer.jsx';
 import { PrecedenceTable, RelationLegend } from './PrecedenceTable.jsx';
+import { all, beam, DUR, EASE, emphasize, pop, useStepEffect } from '../../motion/effects.js';
 
 export const REL_RULES = {
   R1: '… a b …  ⟹  a ≐ b',
@@ -37,7 +39,8 @@ function ConflictRoll({ conflicts, onSelect }) {
 
 function CellProvenance({ cell, grammar, onClose, onJump }) {
   return (
-    <section className="inspect" aria-label="Cell provenance">
+    <motion.section className="inspect" aria-label="Cell provenance" key={`${cell.left} ${cell.right}`}
+      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ duration: DUR.algorithm, ease: EASE }}>
       <header>
         <h3 className="label">Provenance · cell (<span className="mono">{cell.left}</span>, <span className="mono">{cell.right}</span>)</h3>
         <button type="button" className="linkbtn" onClick={onClose}>Close</button>
@@ -59,7 +62,7 @@ function CellProvenance({ cell, grammar, onClose, onJump }) {
           );
         })}
       </ol>
-    </section>
+    </motion.section>
   );
 }
 
@@ -80,6 +83,20 @@ export function TableStage({ model, stage }) {
   const selectedCell = selected ? cells.get(cellKey(selected.left, selected.right)) : null;
   const viaSet = isAdd && step.nonTerminal && step.rule !== 'R2'
     ? { kind: step.rule === 'R3' || step.rule === 'R5' ? 'LEADING' : 'TRAILING', nt: step.nonTerminal } : null;
+  const body = useRef(null);
+  // A new conflict opens its own provenance, so both derivations are on screen at once.
+  useEffect(() => { if (replay.forward && step?.conflict && step.changed) setSelected({ left: step.left, right: step.right }); }, [replay.forward, step]);
+  useStepEffect(replay, ({ step: s, rich }) => {
+    if (s.type !== 'ADD_RELATION') return undefined;
+    const root = body.current;
+    const cell = root?.querySelector('.pcell.is-active');
+    const glyphs = cell?.querySelectorAll('.rel');
+    const glyph = glyphs?.[glyphs.length - 1];
+    if (!s.changed) return emphasize(glyph);                       // same relation again: nothing is inserted
+    if (!rich) return pop(glyph);
+    const wait = 0.34;                                             // cause first, then the value
+    return all(beam(root, { from: '[data-cause]', to: cell, duration: wait }), pop(glyph, { delay: wait - 0.04 }));
+  });
 
   return (
     <div className="plate">
@@ -87,7 +104,7 @@ export function TableStage({ model, stage }) {
         aside={conflicts.length ? <Tag kind="conflict">{conflicts.length} CONFLICT {conflicts.length === 1 ? 'CELL' : 'CELLS'}</Tag> : null}>
         Two different relations in one cell is a conflict. The same relation twice is not.
       </PlateHead>
-      <div className="plate__body cols cols--table">
+      <div className="plate__body cols cols--table" ref={body}>
         <section className="pane pane--table">
           <PrecedenceTable axes={table.axes} cells={cells} active={isAdd ? { left: step.left, right: step.right } : null}
             activeState={activeState} selected={selected} onSelect={setSelected} />
@@ -107,13 +124,13 @@ export function TableStage({ model, stage }) {
                 </p>
                 <p><Tx>{step.message}</Tx></p>
                 <NoteRow label="Derived from">
-                  {prod ? <><span className="mono">{prod.id}.</span> <Production p={prod} active /></> : <span>the end marker <span className="mono">$</span> around the start symbol {grammar.start}</span>}
+                  <span data-cause={viaSet ? undefined : ''}>{prod ? <><span className="mono">{prod.id}.</span> <Production p={prod} active /></> : <span>the end marker <span className="mono">$</span> around the start symbol {grammar.start}</span>}</span>
                 </NoteRow>
                 <NoteRow label="Because"><Tx>{step.explanation}</Tx></NoteRow>
                 {viaSet && (
                   <NoteRow label="Source set">
-                    <span className="mono">{viaSet.kind}({viaSet.nt}) = </span>
-                    <SetText items={(viaSet.kind === 'LEADING' ? leading : trailing).sets[viaSet.nt]} />
+                    <span data-cause=""><span className="mono">{viaSet.kind}({viaSet.nt}) = </span>
+                    <SetText items={(viaSet.kind === 'LEADING' ? leading : trailing).sets[viaSet.nt]} /></span>
                   </NoteRow>
                 )}
                 <NoteRow label={`Rule ${step.rule}`}><span className="mono"><Tx>{REL_RULES[step.rule]}</Tx></span></NoteRow>

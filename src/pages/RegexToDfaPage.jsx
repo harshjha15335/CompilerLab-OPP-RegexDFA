@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { Board } from '../motion/Board.jsx';
+import { all, beam, emphasize, pop, useStepEffect } from '../motion/effects.js';
 import { REGEX_SAMPLES } from '../data/samples.js';
 import { useReplay } from '../replay/useReplay.js';
 import { dfaAt, followposAt, followposProvenance, nodePropsAt, phaseMarkers, simAt } from '../replay/selectors.js';
@@ -7,7 +9,7 @@ import { StepPlayer } from '../components/StepPlayer/StepPlayer.jsx';
 import { NODE_NAME, SyntaxTree, TreeLegend } from '../components/SyntaxTree/SyntaxTree.jsx';
 import { FollowposTable } from '../components/FollowposTable/FollowposTable.jsx';
 import { DFATable } from '../components/DFATable/DFATable.jsx';
-import { DFAGraph } from '../components/DFAGraph/DFAGraph.jsx';
+import { DFAView } from '../components/DFAGraph/DFAView.jsx';
 import { SimulationTape } from '../components/SimulationTape/SimulationTape.jsx';
 
 const SHORT = { or: 'union', cat: 'concat', star: 'star', plus: 'plus', opt: 'optional' };
@@ -76,7 +78,7 @@ function TreeStage({ model, stage, go }) {
             <>
               <p className="augmented"><span className="label">Augmented expression</span>
                 <span className="mono">( {analysis.source} ) <b>#</b></span></p>
-              <div className="tree-box"><SyntaxTree root={analysis.root} nodes={analysis.nodes} /></div>
+              <Board className="tree-box" tilt><SyntaxTree root={analysis.root} nodes={analysis.nodes} /></Board>
               <TreeLegend />
             </>
           )}
@@ -125,6 +127,7 @@ function PropsStage({ model, stage }) {
   const byId = useMemo(() => new Map(analysis.nodes.map((n) => [n.id, n])), [analysis]);
   const node = step ? byId.get(step.nodeId) : null;
   const readIds = useMemo(() => new Set((node?.children ?? []).map((c) => c.id)), [node]);
+  const built = useMemo(() => new Set(props.keys()), [props]);
 
   return (
     <div className="plate">
@@ -134,7 +137,7 @@ function PropsStage({ model, stage }) {
       </PlateHead>
       <div className="plate__body cols cols--props">
         <section className="pane pane--tree">
-          <div className="tree-box"><SyntaxTree root={analysis.root} nodes={analysis.nodes} props={props} activeId={step?.nodeId} readIds={readIds} annotate="all" /></div>
+          <Board className="tree-box" tilt><SyntaxTree root={analysis.root} nodes={analysis.nodes} props={props} activeId={step?.nodeId} readIds={readIds} annotate="all" built={built} /></Board>
           <TreeLegend sets />
         </section>
         <section className="pane pane--note">
@@ -203,6 +206,17 @@ function FollowStage({ model, stage }) {
   const isCat = node?.type === 'cat';
   const readIds = useMemo(() => new Set(isCat ? node.children.map((c) => c.id) : []), [node, isCat]);
   const prov = selected != null ? followposProvenance(steps, count, selected) : [];
+  const body = useRef(null);
+  // The node that causes the update sends a marker to the followpos row it changes.
+  useStepEffect(replay, ({ step: s, rich }) => {
+    const root = body.current;
+    const fresh = [...(root?.querySelectorAll('.fitem.is-new, .fitem.is-dup') ?? [])];
+    if (!s.changed) return all(...fresh.map((el) => emphasize(el)));
+    if (!rich) return all(...fresh.map((el) => pop(el)));
+    const wait = 0.38;
+    return all(beam(root, { from: '.tnode.is-active .tnode__shape', to: '.ftable tr.is-active .ftable__set', duration: wait }),
+      ...fresh.map((el) => pop(el, { delay: wait - 0.04 })));
+  });
 
   return (
     <div className="plate">
@@ -210,12 +224,12 @@ function FollowStage({ model, stage }) {
 >
         Only concatenation, star and plus nodes add to followpos.
       </PlateHead>
-      <div className="plate__body cols cols--props">
+      <div className="plate__body cols cols--props" ref={body}>
         <section className="pane pane--tree">
-          <div className="tree-box">
+          <Board className="tree-box">
             <SyntaxTree root={analysis.root} nodes={analysis.nodes} props={allProps} activeId={step?.nodeId} readIds={readIds} annotate="active"
               arcs={step ? { from: step.position, to: step.added, changed: step.changed } : null} />
-          </div>
+          </Board>
           <TreeLegend sets />
         </section>
         <section className="pane pane--note">
@@ -293,6 +307,7 @@ function DfaStage({ model, stage }) {
   const activeEdge = useMemo(() => (isMove ? { from: step.from, to: step.to, symbol: step.symbol } : null), [step, isMove]);
   const fresh = isMove && step.isNew ? step.to : step?.type === 'DFA_START' ? step.state : null;
   const [wide, setWide] = useState(false);
+  const [threeD, setThreeD] = useState(false);
 
   return (
     <div className="plate">
@@ -341,10 +356,10 @@ function DfaStage({ model, stage }) {
           </StepNote>
         </section>
         <section className="pane pane--graph">
-          <DFAGraph dfa={dfa} visibleStates={visibleStates} visibleTransitions={seen.transitions}
-            activeEdge={activeEdge} sourceState={isMove ? step.from : null} freshState={fresh}
+          <DFAView dfa={dfa} visibleStates={visibleStates} visibleTransitions={seen.transitions} tick={count} onView={(v) => setThreeD(v === '3d')}
+            activeEdge={activeEdge} sourceState={isMove ? step.from : null} freshState={fresh} fx={replay.animate ? 'build' : null}
             tools={<button type="button" className="linkbtn" aria-pressed={wide} onClick={() => setWide((w) => !w)}>{wide ? 'Show tables' : 'Enlarge graph'}</button>} />
-          <div className="tworow" hidden={wide}>
+          <div className="tworow" hidden={wide || threeD}>
             <div className="pane-block">
               <h3 className="label">Transition table</h3>
               <DFATable alphabet={dfa.alphabet} states={seen.states} transitions={seen.transitions} start={dfa.start}
@@ -375,6 +390,7 @@ function SimStage({ model, stage }) {
   const stuck = s.failedAt != null;
   const cell = s.edge ? { from: s.edge.from, symbol: s.edge.symbol } : stuck ? { from: s.state, symbol: step.symbol } : null;
   const chars = [...simInput];
+  const [threeD, setThreeD] = useState(false);
 
   return (
     <div className="plate">
@@ -410,8 +426,8 @@ function SimStage({ model, stage }) {
           </div>
         </section>
         <section className="pane pane--graph">
-          <DFAGraph dfa={dfa} activeState={s.state} activeEdge={s.edge} stuck={stuck} />
-          <div className="tworow tworow--sim">
+          <DFAView dfa={dfa} activeState={s.state} activeEdge={s.edge} stuck={stuck} fx={replay.animate ? 'sim' : null} tick={count} onView={(v) => setThreeD(v === '3d')} />
+          <div className="tworow tworow--sim" hidden={threeD}>
             <dl className="readout">
               <div><dt>Current state</dt><dd>{state ? <><b className="mono">{state.name}</b> <span className="mono">{braces(state.positions)}</span>{state.accepting ? ' · accepting' : ''}</> : 'none'}</dd></div>
               <div><dt>Transition used</dt><dd>{s.edge

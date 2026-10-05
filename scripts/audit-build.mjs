@@ -30,7 +30,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let pass = 0, fail = 0;
 const ok = (cond, name, extra = '') => { if (cond) { pass++; console.log('  ok  ', name); } else { fail++; console.log('  FAIL', name, extra); } };
 
-const browser = await puppeteer.launch({ executablePath: chrome, headless: 'new' });
+const browser = await puppeteer.launch({ executablePath: chrome, headless: 'new', args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1366, height: 650 });
 await page.setOfflineMode(true);
@@ -51,9 +51,9 @@ const body = () => page.$eval('.plate__body', (e) => e.innerHTML);
 const shot = async (name) => { await sleep(380); await page.screenshot({ path: `${shots}/${name}.png` }); };
 const noOverflow = async (name) => ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `no page-level scroll at 1366x650: ${name}`);
 const backRestores = async (name, at) => {
-  await key('Home'); await key('ArrowRight', at);
+  await key('Home'); await key('ArrowRight', at); await sleep(900);   // let step motion finish: states are compared at rest
   const before = await body();
-  await key('ArrowRight'); const moved = await body(); await key('ArrowLeft');
+  await key('ArrowRight'); await sleep(900); const moved = await body(); await key('ArrowLeft'); await sleep(300);
   ok(before !== moved && before === await body(), `Back restores the exact previous state: ${name} @${at}`);
 };
 
@@ -107,11 +107,11 @@ ok(dup, 'duplicate discovery shows "No set change"');
 await shot('04b-sets-duplicate');
 await key('Home'); await key('ArrowRight', 9); await shot('04-sets-derivation');
 // play / pause
-await key('Home'); await page.keyboard.press(']'); await page.keyboard.press(']'); await sleep(50);
+await key('Home'); await page.keyboard.press(']'); await page.keyboard.press(']'); await page.keyboard.press(']'); await sleep(50);
 ok((await page.$eval('.speed__opt.is-on', (e) => e.textContent)) === '4×', '] raises speed to 4×');
 await page.keyboard.press(' '); await sleep(1000); const playing = await step(); await page.keyboard.press(' '); await sleep(80); const paused = await step(); await sleep(600);
 ok(playing >= 2 && await step() === paused, `Space plays and pauses (reached step ${paused})`);
-await page.keyboard.press('['); await page.keyboard.press('['); await sleep(50);
+await page.keyboard.press('['); await page.keyboard.press('['); await page.keyboard.press('['); await sleep(50);
 ok((await page.$eval('.speed__opt.is-on', (e) => e.textContent)) === '1×', '[ lowers speed back to 1×');
 await page.$eval('.timeline__range', (el) => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(el, '30'); el.dispatchEvent(new Event('input', { bubbles: true })); }); await sleep(80);
 ok(await step() === 30, 'timeline scrub jumps to a step');
@@ -213,6 +213,34 @@ await clickText('ab'); await sleep(150); await key('End'); ok((await text('.verd
 await page.focus('.field__input'); await page.keyboard.down('Control'); await page.keyboard.press('a'); await page.keyboard.up('Control'); await page.keyboard.type('abc'); await page.keyboard.press('Enter'); await sleep(150); await page.evaluate(() => document.activeElement.blur()); await key('End');
 ok((await text('.verdict__word')).join() === 'REJECT' && (await text('.tcell.is-failed')).join().startsWith('c'), 'abc → REJECT at c (no transition)');
 await noOverflow('sim');
+
+console.log('— motion —');
+await go('#/opp/table'); await key('ArrowRight', 12); await sleep(800);
+await page.keyboard.press('ArrowRight'); await sleep(170);
+ok(await page.$('.fx-beam') !== null, 'a forward step draws a temporary path from the cause to the table cell');
+await page.screenshot({ path: `${shots}/05b-table-provenance-path.png` });
+await sleep(1300); ok(await page.$('.fx-beam') === null, 'the path is removed once the value has arrived');
+await page.keyboard.press('ArrowLeft'); await sleep(80); ok(await page.$('.fx-beam') === null, 'stepping Back shows the state without motion');
+await clickText('Reduced motion'); await sleep(60); await page.keyboard.press('ArrowRight'); await sleep(80);
+ok(await page.$('.fx-beam') === null && await page.$('.pcell.is-active .rel') !== null, 'reduced motion: no path, the relation is still inserted and marked');
+await go('#/opp/parse'); await key('ArrowRight', 7); await sleep(800); await page.keyboard.press('ArrowRight'); await sleep(150);
+ok(await page.$('.fx-ghost') !== null, 'REDUCE: the handle travels into its replacement'); await sleep(900);
+ok(await page.$('.fx-ghost') === null && (await text('.decision .scell.is-fresh')).join() === '{E,F,T}', 'after the motion the stack shows the reduced symbol');
+await go('#/regex/follow'); await key('ArrowRight', 2); await sleep(800); await page.keyboard.press('ArrowRight'); await sleep(200);
+ok(await page.$('.fx-beam') !== null, 'followpos: a path runs from the tree node to the table row');
+await page.screenshot({ path: `${shots}/13c-followpos-path.png` }); await sleep(1000);
+await go('#/regex/props'); await key('ArrowRight', 4); await sleep(400);
+ok((await page.$$('.tnode.is-ghost')).length === 8 && (await page.$$('.tnode:not(.is-ghost)')).length === 4, 'syntax tree is built progressively: 4 nodes computed, 8 still outlines');
+await shot('12b-tree-under-construction');
+await go('#/regex/sim'); await sleep(800);
+const frameOf = () => page.$eval('.dfagraph__canvas', (e) => JSON.stringify(e.getBoundingClientRect()));
+const f0 = await frameOf(); await key('ArrowRight', 4); await sleep(500);
+ok(f0 === await frameOf(), 'the 2D graph frame is identical at every simulation step');
+await clickText('3D inspector'); await sleep(1500);
+ok(await page.$('.dfa3d canvas') !== null || /needs WebGL/.test((await text('.dfa3d')).join()), '3D inspector mounts (or reports that WebGL is missing)');
+await page.screenshot({ path: `${shots}/18-dfa-3d-inspector.png` });
+await clickText('2D'); await sleep(400);
+ok(await page.$('.dfagraph__canvas canvas') !== null && await page.$('.dfa3d') === null, 'switching back restores the 2D graph and unmounts the 3D canvas');
 
 console.log('— refresh / motion / network —');
 await page.goto(base + '#/regex/dfa'); await sleep(200); await page.reload(); await sleep(400);

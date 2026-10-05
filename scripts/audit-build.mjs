@@ -60,7 +60,7 @@ const backRestores = async (name, at) => {
 console.log('— shell / offline —');
 await go('#/opp/grammar');
 ok(await page.$('.app') !== null, 'app renders from file:// in nested renamed folder');
-ok(await page.evaluate(async () => { await document.fonts.ready; const loaded = new Set([...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/"/g, ''))); return ['IBM Plex Mono', 'IBM Plex Sans', 'IBM Plex Serif'].every((f) => loaded.has(f)); }), 'local IBM Plex fonts loaded');
+ok(await page.evaluate(async () => { await document.fonts.ready; const loaded = new Set([...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/"/g, ''))); return ['Inter Variable', 'JetBrains Mono Variable'].every((f) => loaded.has(f)); }), 'bundled Inter and JetBrains Mono fonts loaded');
 ok((await text('.chapter__title')).join('|').includes('Operator Precedence') && (await text('.chapter__title')).join('|').includes('LR Parsing'), 'Bottom-Up shell lists Operator Precedence and LR Parsing');
 await noOverflow('grammar'); await shot('01-shell-grammar-valid');
 await clickText('LR Parsing'); await sleep(200);

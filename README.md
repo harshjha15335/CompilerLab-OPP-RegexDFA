@@ -26,7 +26,7 @@ npm test           # algorithm, step-schema and replay tests (node:test)
 npm run build      # output: dist/
 ```
 
-`dist/` is self-contained (one HTML file, one script, bundled IBM Plex fonts; no CDN, no network).
+`dist/` is self-contained (one HTML file, one script, bundled Inter and JetBrains Mono fonts; no CDN, no network).
 Supported ways to launch it:
 
 - **Double-click `dist/index.html`** — opens from `file://` in Chrome or Edge. The folder can be
@@ -49,6 +49,18 @@ with the network disabled, and drives the real UI through 95 checks (fixtures, k
 restoring state, navigation, refresh, no outgoing requests). It also regenerates the screenshots in
 `docs/screenshots/`. Needs a local Chrome or Edge (`CHROME_PATH` overrides the location).
 
+## Interface
+
+- **Top bar:** the three workspaces (Operator Precedence, LR Parsing, Regex → DFA), a shortcuts list,
+  a reduced-motion switch and a light/dark theme switch.
+- **Stage stepper:** each workspace is a numbered pipeline; the current stage is marked.
+- **Workspace:** the figure on the left, the explanation for the current step on the right.
+- **Playback dock:** step, play, scrub, change speed, then continue to the next stage.
+
+Two signals are used everywhere. A **yellow fill** marks what the current step changed. A **blue
+outline** marks what the step read or compared. Relations, accepting states, handles and conflicts
+also carry a glyph, shape or label, so nothing depends on colour alone.
+
 ## Architecture
 
 ```
@@ -68,7 +80,7 @@ re-derives the previous view from the same steps, so it is always exact.
 | --- | --- |
 | `src/algorithms/` | Tested algorithm core (unchanged) |
 | `src/replay/` | Pipelines, selectors, replay hook |
-| `src/components/StepPlayer/` | Shared transport bar and timeline |
+| `src/components/StepPlayer/` | Shared playback dock and timeline |
 | `src/components/GrammarEditor/` | 1.1 grammar editor, validation, samples |
 | `src/components/LeadingTrailing/` | 1.2 set derivation replay |
 | `src/components/PrecedenceTable/` | 1.3 relation table, conflicts, provenance |
@@ -76,7 +88,7 @@ re-derives the previous view from the same steps, so it is always exact.
 | `src/components/SyntaxTree/` | Hand-written SVG syntax tree |
 | `src/components/FollowposTable/`, `DFATable/`, `DFAGraph/`, `SimulationTape/` | Part B views |
 | `src/pages/` | Page composition and per-part state |
-| `src/data/` | Sample library and plate index |
+| `src/data/` | Sample library and navigation |
 | `src/styles/` | Design tokens, base, layout, components |
 | `test/` | `partA`, `partB` (core), `schema` (step contract), `replay` (selectors) |
 | `scripts/` | `serve-dist.mjs`, `audit-build.mjs` |
@@ -106,6 +118,6 @@ Shortcuts are ignored while typing in a text field.
 - The DFA is partial: a missing transition means reject (no explicit dead state is drawn).
 - DFAs with up to 5 states are drawn in a row; larger ones on an ellipse where edges may cross and
   long position sets can overflow their circle. Use **Enlarge graph**; the transition table stays canonical.
-- Designed for 1366 px wide and above; below about 1020 px the page scrolls horizontally.
+- Designed for 1366 px wide and above; below about 1000 px the page scrolls horizontally.
 - LR parsing is a placeholder page only.
 - `file://` launch is verified in Chrome and Edge (Chromium); other browsers were not tested.

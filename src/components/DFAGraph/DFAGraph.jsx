@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useRef } from 'react';
 import cytoscape from 'cytoscape';
 import { edgeId, layoutDfa, visibleEdgeLabels } from './graphModel.js';
+import { useSettings } from '../../replay/useReplay.js';
 
-// Mirrors styles/tokens.css (Cytoscape draws on canvas and cannot read CSS variables).
-const C = { ink: '#171A1C', paper: '#FCFAF4', strong: '#555A57', accent: '#075E6B', handle: '#765000', inactive: '#6A6C67' };
-const MONO = '"IBM Plex Mono", "Cascadia Mono", Consolas, "Courier New", monospace';
+const MONO = '"JetBrains Mono Variable", "JetBrains Mono", "Cascadia Mono", Consolas, monospace';
 
-const STYLE = [
+// Cytoscape draws on canvas and cannot use CSS variables, so the theme tokens are read once per build.
+function palette(el) {
+  const css = getComputedStyle(el);
+  const v = (name) => css.getPropertyValue(name).trim();
+  return { ink: v('--text'), paper: v('--surface'), canvas: v('--surface-2'), strong: v('--muted'), hl: v('--hl'), hlInk: v('--hl-ink'), mark: v('--mark'), markSoft: v('--mark-soft') };
+}
+
+const styleFor = (C) => [
   { selector: 'node', style: {
     shape: 'ellipse', width: 'data(size)', height: 'data(size)', 'background-color': C.paper,
     'border-width': 2, 'border-color': C.ink, 'border-style': 'solid',
@@ -15,20 +21,20 @@ const STYLE = [
   } },
   { selector: 'node.accepting', style: { 'border-style': 'double', 'border-width': 7 } },   // true double ring
   { selector: 'node.ghost', style: { width: 1, height: 1, 'border-width': 0, 'background-opacity': 0, label: 'start', 'text-halign': 'left', 'text-margin-x': -4, 'font-size': 13, color: C.strong, 'font-family': MONO } },
-  { selector: 'node.source', style: { 'border-width': 4 } },
-  { selector: 'node.accepting.source', style: { 'border-width': 9 } },
-  { selector: 'node.active', style: { 'outline-width': 4, 'outline-color': C.accent, 'outline-offset': 6, 'outline-style': 'solid', 'border-color': C.accent, color: C.accent, 'font-weight': 600 } },
-  { selector: 'node.fresh', style: { 'outline-width': 2, 'outline-color': C.handle, 'outline-offset': 6, 'outline-style': 'dashed' } },
+  { selector: 'node.source', style: { 'border-color': C.mark, 'background-color': C.markSoft, 'border-width': 3 } },
+  { selector: 'node.accepting.source', style: { 'border-width': 8 } },
+  { selector: 'node.fresh', style: { 'background-color': C.hl, color: C.hlInk } },
+  { selector: 'node.active', style: { 'background-color': C.hl, color: C.hlInk, 'font-weight': 700, 'outline-width': 3, 'outline-color': C.ink, 'outline-offset': 5, 'outline-style': 'solid' } },
   { selector: 'node.dead', style: { 'outline-style': 'dashed' } },
   { selector: 'edge', style: {
     width: 1.6, 'line-color': C.ink, 'target-arrow-color': C.ink, 'target-arrow-shape': 'triangle', 'arrow-scale': 1.15,
     'curve-style': 'straight', label: 'data(label)', 'font-family': MONO, 'font-size': 16, 'font-weight': 500, color: C.ink,
-    'text-background-color': C.paper, 'text-background-opacity': 1, 'text-background-padding': 3, 'text-background-shape': 'rectangle',
+    'text-background-color': C.canvas, 'text-background-opacity': 1, 'text-background-padding': 3, 'text-background-shape': 'roundrectangle',
   } },
   { selector: 'edge.bent', style: { 'curve-style': 'unbundled-bezier', 'control-point-distances': 'data(bend)', 'control-point-weights': 0.5 } },
   { selector: 'edge.loop', style: { 'curve-style': 'bezier', 'loop-direction': '0deg', 'loop-sweep': '-48deg', 'control-point-step-size': 62 } },
   { selector: 'edge.start', style: { width: 1.6, 'line-color': C.strong, 'target-arrow-color': C.strong, label: '' } },
-  { selector: 'edge.active', style: { width: 4.5, 'line-color': C.accent, 'target-arrow-color': C.accent, 'arrow-scale': 1.5, color: C.accent, 'font-weight': 600, 'font-size': 19, 'z-index': 10 } },
+  { selector: 'edge.active', style: { width: 4.5, 'arrow-scale': 1.5, color: C.hlInk, 'font-weight': 700, 'font-size': 18, 'text-background-color': C.hl, 'text-background-padding': 4, 'z-index': 10 } },
   // hidden, not removed: undiscovered parts still occupy their place, so the frame never changes
   { selector: '.hidden', style: { visibility: 'hidden' } },
 ];
@@ -38,6 +44,7 @@ const STYLE = [
 export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck, tools }) {
   const box = useRef(null);
   const cyRef = useRef(null);
+  const { theme } = useSettings();
   const model = useMemo(() => layoutDfa(dfa), [dfa]);
 
   useEffect(() => {
@@ -59,7 +66,7 @@ export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, 
         })),
       ],
       layout: { name: 'preset' },
-      style: STYLE,
+      style: styleFor(palette(box.current)),
       userZoomingEnabled: false, userPanningEnabled: false, boxSelectionEnabled: false,
       autoungrabify: true, autounselectify: true, minZoom: 0.3, maxZoom: 1.6,
     });
@@ -71,7 +78,7 @@ export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, 
     ro.observe(box.current);
     document.fonts?.ready.then(() => { if (!cy.destroyed()) { cy.style().update(); fit(); } });
     return () => { ro.disconnect(); cy.destroy(); cyRef.current = null; };
-  }, [dfa, model]);
+  }, [dfa, model, theme]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -95,7 +102,7 @@ export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, 
         e.toggleClass('active', Boolean(activeEdge) && e.id() === edgeId(activeEdge.from, activeEdge.to));
       });
     });
-  }, [dfa, model, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck]);
+  }, [dfa, model, theme, visibleStates, visibleTransitions, activeState, activeEdge, sourceState, freshState, stuck]);
 
   const summary = `DFA with ${dfa.states.length} states. Start state ${dfa.start}. Accepting: ${dfa.accepting.join(', ') || 'none'}. `
     + dfa.transitions.map((t) => `${t.from} on ${t.symbol} goes to ${t.to}`).join('; ') + '.';
@@ -103,9 +110,9 @@ export function DFAGraph({ dfa, visibleStates, visibleTransitions, activeState, 
     <figure className="dfagraph">
       <div className="dfagraph__canvas" ref={box} role="img" aria-label={summary} />
       <figcaption className="legend legend--graph">
-        <span><i className="lg lg--start" aria-hidden="true" />start arrow</span>
-        <span><i className="lg lg--accept" aria-hidden="true" />accepting (double ring)</span>
-        <span><i className="lg lg--active" aria-hidden="true" />current state (outer ring)</span>
+        <span><i className="lg lg--start" aria-hidden="true" />start</span>
+        <span><i className="lg lg--accept" aria-hidden="true" />accepting</span>
+        <span><i className="lg lg--active" aria-hidden="true" />current state</span>
         {tools && <span className="legend__tools">{tools}</span>}
       </figcaption>
     </figure>

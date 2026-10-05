@@ -26,10 +26,15 @@ export function Rel({ r, className }) {
 
 export const relName = (r) => REL_INFO[r]?.name ?? '';
 
-/** Text from the algorithm core, with relation characters swapped for the drawn glyph. */
+/** Text from the algorithm core, with relation characters and ASCII arrows (A --a--> B) drawn properly. */
 export function Tx({ children }) {
-  const parts = String(children ?? '').split(/([⋖⋗≐])/);
-  return <>{parts.map((p, i) => (REL_INFO[p] ? <Rel key={i} r={p} /> : <Fragment key={i}>{p}</Fragment>))}</>;
+  const parts = String(children ?? '').split(/([⋖⋗≐]|--\S+-->)/);
+  return <>{parts.map((p, i) => {
+    if (REL_INFO[p]) return <Rel key={i} r={p} />;
+    const arrow = /^--(\S+)-->$/.exec(p);
+    if (arrow) return <span key={i} className="arrowlab" role="img" aria-label={`on ${arrow[1]} goes to`}><i>{arrow[1]}</i></span>;
+    return <Fragment key={i}>{p}</Fragment>;
+  })}</>;
 }
 
 /** A set typeset as mathematics: { 1, 2, 3 } */
@@ -85,8 +90,8 @@ export function StepNote({ replay, children, idle }) {
   return (
     <section className="note" aria-label="Step explanation">
       <header className="note__head">
-        <h3 className="label">Step note</h3>
-        <span className="note__count">{count === 0 ? 'START' : `STEP ${count} / ${total}`}</span>
+        <h3 className="label">This step</h3>
+        <span className="note__count">{count === 0 ? 'not started' : `${count} of ${total}`}</span>
       </header>
       <div className="note__body" aria-live="polite" key={count}>
         {count === 0 ? <p className="note__idle">{idle}</p> : children}
@@ -124,7 +129,7 @@ export function Empty({ title, children, action }) {
   );
 }
 
-/** Plate header: stage number, serif title, one-line statement of what the stage shows. */
+/** Stage header: number, title, and at most one line the user needs before starting. */
 export function PlateHead({ no, title, children, aside }) {
   return (
     <header className="plate__head">

@@ -6,7 +6,7 @@ import { stepAt } from './selectors.js';
 export const SPEEDS = [0.5, 1, 2, 4];
 const BASE_MS = 1100;
 
-export const SettingsContext = createContext({ speed: 1, setSpeed: () => {}, reduced: false, setReduced: () => {} });
+export const SettingsContext = createContext({ speed: 1, setSpeed: () => {}, reduced: false, setReduced: () => {}, theme: 'light' });
 export const useSettings = () => useContext(SettingsContext);
 
 // Remembers where each steps[] was left, so returning to a stage resumes at the same step.

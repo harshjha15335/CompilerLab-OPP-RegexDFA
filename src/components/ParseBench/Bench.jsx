@@ -46,7 +46,7 @@ export function StackRow({ stack, handle, markTop = true, freshIndex = -1, faile
   return (
     <div className="stackrow" role="img"
       aria-label={`Stack, bottom to top: ${stack.map((s) => s.symbol).join(' ')}${handle ? `. Handle: ${handle.symbols.map((s) => s.symbol).join(' ')}` : ''}`}>
-      <span className="stackrow__base" aria-hidden="true">bottom</span>
+      <span className="stackrow__base" aria-hidden="true" />
       {out}
       <span className="stackrow__open" aria-hidden="true">top</span>
     </div>

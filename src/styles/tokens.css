@@ -1,48 +1,76 @@
-/* Compiler Laboratory Plate — design tokens */
+/* Design tokens. Neutral surfaces; yellow marks what a step changed; blue marks what it is looking at. */
+:root, [data-theme="light"] {
+  --bg: #F4F4F5;
+  --surface: #FFFFFF;
+  --surface-2: #F8F8F9;
+  --line: #E4E4E7;
+  --line-strong: #C4C4CC;
+  --text: #16161A;
+  --muted: #62626E;
+  --faint: #9797A3;
+
+  --hl: #FFD938;          /* changed by this step */
+  --hl-soft: #FFF5BF;
+  --hl-ink: #16161A;
+  --mark: #1F5FFF;        /* being read or compared */
+  --mark-soft: #E7EEFF;
+
+  --rel-yields: #1F5FFF;
+  --rel-takes: #D9480F;
+  --rel-equal: #0B7A6E;
+
+  --ok: #177A3B;
+  --ok-soft: #E3F4E8;
+  --bad: #C2183F;
+  --bad-soft: #FCE4EA;
+
+  --invert: #16161A;
+  --invert-ink: #FFFFFF;
+}
+[data-theme="dark"] {
+  --bg: #0B0B0D;
+  --surface: #141417;
+  --surface-2: #1A1A1E;
+  --line: #27272C;
+  --line-strong: #3D3D45;
+  --text: #EDEDF0;
+  --muted: #A3A3AE;
+  --faint: #6E6E79;
+
+  --hl: #FACC15;
+  --hl-soft: #3B3310;
+  --hl-ink: #16161A;
+  --mark: #7DA2FF;
+  --mark-soft: #18233F;
+
+  --rel-yields: #7DA2FF;
+  --rel-takes: #FF8F5E;
+  --rel-equal: #4FD1C5;
+
+  --ok: #4ADE80;
+  --ok-soft: #12301E;
+  --bad: #FB7185;
+  --bad-soft: #3A1620;
+
+  --invert: #EDEDF0;
+  --invert-ink: #16161A;
+}
 :root {
-  --c-background: #F4F0E6;
-  --c-paper: #FCFAF4;
+  --f-sans: "Inter Variable", Inter, "Segoe UI", system-ui, Arial, sans-serif;
+  --f-mono: "JetBrains Mono Variable", "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
 
-  --c-ink: #171A1C;
-  --c-muted: #5A5F5C;
+  --fs-small: 12.5px;
+  --fs-body: 14px;
+  --fs-code: 15px;
+  --fs-symbol: 17px;
 
-  --c-rule: #A9A59B;          /* decorative separators only */
-  --c-rule-strong: #555A57;   /* boundaries that carry meaning */
-
-  --c-accent: #075E6B;
-
-  --c-rel-yields: #006A67;
-  --c-rel-takes: #A33D12;
-  --c-rel-equal: #6A5600;
-
-  --c-conflict: #8E1B2F;
-  --c-success: #216E39;
-  --c-reject: #8E1B2F;
-
-  --c-active-pair: #075E6B;
-  --c-handle: #765000;
-  --c-inactive: #6A6C67;
-
-  --c-band: #EFE9DA;          /* active row / column band on paper */
-  --c-accent-wash: #E3EDEB;
-
-  --f-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
-  --f-sans: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
-  --f-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
-  --f-math: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
-
-  --fs-label: 11.5px;
-  --fs-small: 13px;
-  --fs-body: 14.5px;
-  --fs-code: 16px;
-  --fs-symbol: 18px;
+  --r-s: 5px;
+  --r-m: 8px;
+  --cell: 44px;
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --t-reveal: 180ms;
   --t-relation: 200ms;
   --t-shift: 240ms;
   --t-reduce: 300ms;
-
-  --rail: 236px;
-  --cell: 46px;
 }

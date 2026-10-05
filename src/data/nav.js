@@ -1,4 +1,4 @@
-// Plate index: chapters and the numbered stages inside each.
+// Navigation: workspaces and the numbered stages inside each.
 export const NAV = [
   {
     group: 'Bottom-Up Parsing',

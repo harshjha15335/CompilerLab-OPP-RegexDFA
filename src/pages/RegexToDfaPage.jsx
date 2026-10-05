@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { REGEX_SAMPLES } from '../data/samples.js';
 import { useReplay } from '../replay/useReplay.js';
 import { dfaAt, followposAt, followposProvenance, nodePropsAt, phaseMarkers, simAt } from '../replay/selectors.js';
-import { cx, Empty, NoteRow, PlateHead, SetText, StepNote, Tag, Verdict } from '../components/common/common.jsx';
+import { cx, Empty, NoteRow, PlateHead, SetText, StepNote, Tag, Tx, Verdict } from '../components/common/common.jsx';
 import { StepPlayer } from '../components/StepPlayer/StepPlayer.jsx';
 import { NODE_NAME, SyntaxTree, TreeLegend } from '../components/SyntaxTree/SyntaxTree.jsx';
 import { FollowposTable } from '../components/FollowposTable/FollowposTable.jsx';
@@ -420,7 +420,7 @@ function SimStage({ model, stage }) {
               <div><dt>Remaining input</dt><dd className="mono">{chars.slice(s.index).join('') || 'ε'}</dd></div>
             </dl>
             <StepNote replay={replay} idle={`Press Next (→) to enter the start state ${dfa.start}.`}>
-              {step && !s.verdict && <p className="note__headline">{step.message}</p>}
+              {step && !s.verdict && <p className="note__headline"><Tx>{step.message}</Tx></p>}
               {step?.type === 'MOVE' && <p>Row <span className="mono">{step.from}</span>, column <span className="mono">{step.symbol}</span> gives <span className="mono">{step.to}</span>.</p>}
               {s.verdict && <Verdict result={s.verdict} reason={step.message} />}
             </StepNote>

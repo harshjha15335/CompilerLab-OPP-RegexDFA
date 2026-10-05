@@ -1,0 +1,48 @@
+/* Compiler Laboratory Plate — design tokens */
+:root {
+  --c-background: #F4F0E6;
+  --c-paper: #FCFAF4;
+
+  --c-ink: #171A1C;
+  --c-muted: #5A5F5C;
+
+  --c-rule: #A9A59B;          /* decorative separators only */
+  --c-rule-strong: #555A57;   /* boundaries that carry meaning */
+
+  --c-accent: #075E6B;
+
+  --c-rel-yields: #006A67;
+  --c-rel-takes: #A33D12;
+  --c-rel-equal: #6A5600;
+
+  --c-conflict: #8E1B2F;
+  --c-success: #216E39;
+  --c-reject: #8E1B2F;
+
+  --c-active-pair: #075E6B;
+  --c-handle: #765000;
+  --c-inactive: #6A6C67;
+
+  --c-band: #EFE9DA;          /* active row / column band on paper */
+  --c-accent-wash: #E3EDEB;
+
+  --f-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --f-sans: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+  --f-math: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+
+  --fs-label: 11.5px;
+  --fs-small: 13px;
+  --fs-body: 14.5px;
+  --fs-code: 16px;
+  --fs-symbol: 18px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-reveal: 180ms;
+  --t-relation: 200ms;
+  --t-shift: 240ms;
+  --t-reduce: 300ms;
+
+  --rail: 236px;
+  --cell: 46px;
+}

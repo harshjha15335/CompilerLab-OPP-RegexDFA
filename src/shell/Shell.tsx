@@ -1,85 +1,22 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { GRAMMAR_SAMPLES, REGEX_SAMPLES, type GrammarSample, type RegexSample } from '../data/samples.ts';
 import { hashFor, type Route } from '../data/nav.ts';
-import { useSettings } from '../replay/useReplay.ts';
 import { cx, Tag } from '../ui/kit.tsx';
 
-/** A small anchored popover: Esc or a click outside closes it and focus returns to its button. */
-function Popover({ label, icon, children, align = 'end' }: { label: string; icon: ReactNode; children: ReactNode; align?: 'start' | 'end' }) {
-  const [open, setOpen] = useState(false);
-  const wrap = useRef<HTMLDivElement>(null);
-  const btn = useRef<HTMLButtonElement>(null);
-  const id = useId();
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); btn.current?.focus(); } };
-    const onDown = (e: PointerEvent) => { if (!wrap.current?.contains(e.target as Node)) setOpen(false); };
-    window.addEventListener('keydown', onKey);
-    window.addEventListener('pointerdown', onDown);
-    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('pointerdown', onDown); };
-  }, [open]);
-  return (
-    <div className="pop" ref={wrap}>
-      <button ref={btn} type="button" className="railbtn" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
-        {icon}<span>{label}</span>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div id={id} className={cx('pop__panel', `pop__panel--${align}`)} role="dialog" aria-label={label} data-own-keys=""
-            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.14 }}>
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-const SHORTCUTS: [string, string][] = [
-  ['← →', 'Previous / next step'],
-  ['Space', 'Play or pause'],
-  ['Home  End', 'First step / all at once'],
-  ['Shift + ← →', 'Previous / next phase'],
-  ['[  ]', 'Slower / faster'],
-  ['Ctrl + Enter', 'Check the grammar (in the editor)'],
-  ['Esc', 'Close a sheet or skip the intro'],
-];
-
-export function Rail({ route, onExamples, onReplayIntro, inert }: { route: Route; onExamples: () => void; onReplayIntro: () => void; inert?: boolean }) {
-  const { reduced, setReduced, lens, setLens } = useSettings();
+export function Rail({ route, onExamples, inert }: { route: Route; onExamples: () => void; inert?: boolean }) {
   const ch = route.page === 'chapter' ? route.chapter.id : null;
   return (
     <header className="rail" inert={inert}>
       <a className="rail__brand" href={hashFor()} aria-current={route.page === 'home' ? 'page' : undefined}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" /><path d="M15 7 9 12l6 5" /><circle cx="14.6" cy="12" r="1.3" /></svg>
-        Compiler Lab
+        ParseLens
       </a>
       <nav className="rail__nav" aria-label="Chapters">
         <a href={hashFor('opp', 'grammar')} className={cx('rail__link', (ch === 'opp' || ch === 'lr') && 'is-current')} aria-current={ch === 'opp' || ch === 'lr' ? 'page' : undefined}>Bottom-Up</a>
         <a href={hashFor('regex', 'tree')} className={cx('rail__link', ch === 'regex' && 'is-current')} aria-current={ch === 'regex' ? 'page' : undefined}>Regex → DFA</a>
         <button type="button" className="rail__link" onClick={onExamples}>Examples</button>
       </nav>
-      <div className="rail__tools">
-        <Popover label="Keys" icon={<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="5" width="16" height="10" rx="2" /><path d="M5.5 8.5h1M9.5 8.5h1M13.5 8.5h1M6 11.5h8" /></svg>}>
-          <dl className="keys">{SHORTCUTS.map(([k, v]) => <div key={k}><dt><kbd>{k}</kbd></dt><dd>{v}</dd></div>)}</dl>
-        </Popover>
-        <Popover label="Settings" icon={<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3" /><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.3 4.3l2.1 2.1M13.6 13.6l2.1 2.1M4.3 15.7l2.1-2.1M13.6 6.4l2.1-2.1" /></svg>}>
-          <div className="settings">
-            <label className="switch">
-              <input type="checkbox" role="switch" checked={reduced} onChange={(e) => setReduced(e.target.checked)} />
-              <span className="switch__track" aria-hidden="true" />
-              <span>Reduced motion <span className="switch__hint">States change instantly; nothing travels.</span></span>
-            </label>
-            <fieldset className="radios">
-              <legend className="label">Table loupe</legend>
-              <label><input type="radio" name="lens" checked={lens === 'glass'} onChange={() => setLens('glass')} /> Glass (refracting rim)</label>
-              <label><input type="radio" name="lens" checked={lens === 'flat'} onChange={() => setLens('flat')} /> Flat lens</label>
-            </fieldset>
-            <button type="button" className="btn btn--quiet" onClick={onReplayIntro}>Play the intro again</button>
-          </div>
-        </Popover>
-      </div>
     </header>
   );
 }

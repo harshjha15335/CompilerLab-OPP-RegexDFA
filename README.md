@@ -1,7 +1,7 @@
-# Compiler Lab
+# ParseLens
 
 **Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)**
-Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · Compiler Design · 2026
+Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · 2026
 
 A step-by-step teaching instrument. Every screen replays the `steps[]` emitted by a tested algorithm
 core (`src/algorithms`, unchanged), one step at a time or all at once. At each step it shows what changed, why,

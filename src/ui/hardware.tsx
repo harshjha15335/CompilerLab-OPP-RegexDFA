@@ -1,6 +1,6 @@
 // Machined hardware that sits on the printed plate: keycaps, the brass speed dial and the scrub
 // timeline. Pure CSS 3D (no WebGL). Every control is a real, labelled, keyboard-operable element.
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { SPEEDS, useSettings, type KeyId, type Replay, type Speed } from '../replay/useReplay.ts';
 import { cx } from './kit.tsx';
 
@@ -92,24 +92,52 @@ export function SpeedDial() {
   );
 }
 
+type Fit = 'mid' | 'start' | 'end' | 'hidden';
+const GAP = 10;   // px of clear space required between two tick labels
+
+/** Places tick labels by their measured width: a label that would touch its neighbour or run off the track is hidden,
+ *  and labels at the ends are anchored inward instead of centred. */
+function fitLabels(track: HTMLElement): Fit[] {
+  const w = track.clientWidth;
+  const pad = 8;
+  let lastRight = -Infinity;
+  return [...track.querySelectorAll<HTMLElement>('.timeline__ticklabel')].map((lab): Fit => {
+    const x = Number(lab.dataset.at) * w;
+    const lw = lab.offsetWidth;
+    let fit: Fit = 'mid';
+    let left = x - lw / 2;
+    if (left < -pad) { fit = 'start'; left = x; }
+    else if (left + lw > w + pad) { fit = 'end'; left = x - lw; }
+    if (left < lastRight + GAP || left < -pad || left + lw > w + pad) return 'hidden';
+    lastRight = left + lw;
+    return fit;
+  });
+}
+
 /** Scrub timeline: a native range input (keyboard + a11y) under a weighted brass thumb, with phase
  *  ticks. Ticks are drawn, not buttons, so nothing interactive overlaps the slider. */
 export function Timeline<S>({ replay, label }: { replay: Replay<S>; label: string }) {
   const { count, total, markers, api } = replay;
   const frac = total ? count / total : 0;
-  let last = -1;
-  const ticks = markers.map((m) => {
-    const at = total ? m.at / total : 0;
-    const show = at - last >= 0.12 && at <= 0.94;
-    if (show) last = at;
-    return { ...m, at, show };
-  });
+  const track = useRef<HTMLDivElement>(null);
+  const [fits, setFits] = useState<Fit[]>([]);
+  const sig = `${total}|${markers.map((m) => `${m.at}:${m.label}`).join('|')}`;
+  useLayoutEffect(() => {
+    const el = track.current;
+    if (!el) return undefined;
+    const run = () => { const next = fitLabels(el); setFits((f) => (f.join() === next.join() ? f : next)); };
+    run();
+    const ro = new ResizeObserver(run);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [sig]);
+  const ticks = markers.map((m) => ({ ...m, at: total ? m.at / total : 0 }));
   return (
     <div className="timeline" style={{ '--frac': frac } as CSSProperties}>
-      <div className="timeline__ticks" aria-hidden="true">
-        {ticks.map((t) => (
+      <div className="timeline__ticks" aria-hidden="true" ref={track}>
+        {ticks.map((t, i) => (
           <span key={t.at} className={cx('timeline__tick', count >= Math.round(t.at * total) && 'is-passed')} style={{ '--at': t.at } as CSSProperties}>
-            {t.show && <span className="timeline__ticklabel">{t.label}</span>}
+            <span className={cx('timeline__ticklabel', `is-${fits[i] ?? 'hidden'}`)} data-at={t.at}>{t.label}</span>
           </span>
         ))}
       </div>

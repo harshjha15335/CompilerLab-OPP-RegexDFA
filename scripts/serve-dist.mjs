@@ -19,4 +19,4 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' }).end('Not found');
   }
-}).listen(port, '127.0.0.1', () => console.log(`Compiler Lab build served at http://127.0.0.1:${port}/`));
+}).listen(port, '127.0.0.1', () => console.log(`ParseLens build served at http://127.0.0.1:${port}/`));

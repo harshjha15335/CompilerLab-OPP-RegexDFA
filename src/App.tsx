@@ -61,17 +61,16 @@ export default function App() {
   const opp = useOppModel();
   const regex = useRegexModel();
   const [examples, setExamples] = useState(false);
-  const [introKey, setIntroKey] = useState(0);
   const closeExamples = useCallback(() => setExamples(false), []);
 
   useEffect(() => {
-    const title = route.page === 'home' ? 'Compiler Lab' : `${route.stage?.title ?? route.chapter.title} · ${route.chapter.title} · Compiler Lab`;
+    const title = route.page === 'home' ? 'ParseLens' : `${route.stage?.title ?? route.chapter.title} · ${route.chapter.title} · ParseLens`;
     document.title = title;
   }, [route]);
 
   const page = (() => {
     if (route.page === 'home')
-      return <Home key={introKey} onUse={() => { opp.loadSample(EXPR_SAMPLE); window.location.hash = hashFor('opp', 'grammar'); }} onExamples={() => setExamples(true)} />;
+      return <Home onUse={() => { opp.loadSample(EXPR_SAMPLE); window.location.hash = hashFor('opp', 'grammar'); }} onExamples={() => setExamples(true)} />;
     const { chapter, stage } = route;
     if (chapter.id === 'lr' || !stage) return <LrStage chapter={chapter} />;
     if (chapter.id === 'opp') {
@@ -104,8 +103,7 @@ export default function App() {
       <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
         <div className="app" data-page={route.page === 'home' ? 'home' : route.chapter.id}>
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-          <Rail inert={examples} route={route} onExamples={() => setExamples(true)}
-            onReplayIntro={() => { write(KEYS.intro, '0'); setIntroKey((k) => k + 1); if (route.page !== 'home') window.location.hash = hashFor(); }} />
+          <Rail inert={examples} route={route} onExamples={() => setExamples(true)} />
           <motion.main id="main" className="main" tabIndex={-1} key={routeKey} inert={examples}
             initial={supportsVT || reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}>
             {page}

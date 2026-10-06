@@ -3,9 +3,9 @@
 Generated from `artifacts/report.json` by `scripts/report-md.mjs`.
 Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a renamed, nested copy of `dist/`, opened from file:// with the network off).
 
-**763 passed, 0 failed.**
+**733 passed, 0 failed.**
 
-## layout (715/715)
+## layout (685/685)
 
 | Result | Check |
 | --- | --- |
@@ -124,36 +124,6 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | stage-drawer @ 1920x1080: no text overlapping other text or a control |
 | pass | stage-drawer @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | stage-drawer @ 1920x1080: no horizontal page scroll |
-| pass | settings @ 1366x768: no clipped text |
-| pass | settings @ 1366x768: no overlapping interactive elements |
-| pass | settings @ 1366x768: no text overlapping other text or a control |
-| pass | settings @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | settings @ 1366x768: no horizontal page scroll |
-| pass | settings @ 1280x720: no clipped text |
-| pass | settings @ 1280x720: no overlapping interactive elements |
-| pass | settings @ 1280x720: no text overlapping other text or a control |
-| pass | settings @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | settings @ 1280x720: no horizontal page scroll |
-| pass | settings @ 1920x1080: no clipped text |
-| pass | settings @ 1920x1080: no overlapping interactive elements |
-| pass | settings @ 1920x1080: no text overlapping other text or a control |
-| pass | settings @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | settings @ 1920x1080: no horizontal page scroll |
-| pass | keys @ 1366x768: no clipped text |
-| pass | keys @ 1366x768: no overlapping interactive elements |
-| pass | keys @ 1366x768: no text overlapping other text or a control |
-| pass | keys @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | keys @ 1366x768: no horizontal page scroll |
-| pass | keys @ 1280x720: no clipped text |
-| pass | keys @ 1280x720: no overlapping interactive elements |
-| pass | keys @ 1280x720: no text overlapping other text or a control |
-| pass | keys @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | keys @ 1280x720: no horizontal page scroll |
-| pass | keys @ 1920x1080: no clipped text |
-| pass | keys @ 1920x1080: no overlapping interactive elements |
-| pass | keys @ 1920x1080: no text overlapping other text or a control |
-| pass | keys @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | keys @ 1920x1080: no horizontal page scroll |
 | pass | opp-grammar @ 1366x768: no clipped text |
 | pass | opp-grammar @ 1366x768: no overlapping interactive elements |
 | pass | opp-grammar @ 1366x768: no text overlapping other text or a control |
@@ -736,7 +706,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | 4. zero network requests so far |
 | pass | 5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png) |
 | pass | specimen failure shows the fallback message and keeps the doors |
-| pass | first-visit note says "Use ← → to step through anything in this tool." and is remembered once dismissed |
+| pass | project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note |
 
 ## keyboard (4/4)
 
@@ -767,7 +737,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | prefers-reduced-motion: no intro, static specimen with a Replay keycap (40 of 40, "Replay the specimen") |
 | pass | stepping forward runs no animations and draws no overlays |
 | pass | every step is still explained without motion (corner brackets + note) |
-| pass | the in-app Reduced motion switch also stops all motion |
+| pass | a stored reduced-motion preference (cl.reduced) also stops all motion |
 
 ## grayscale (3/3)
 
@@ -781,19 +751,19 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 1/235, 1/234, 4/227); 5 step commits, worst 17 ms |
-| pass | precedence table playing at 2× with motion: median 59.9 fps; animation frames over 25 ms: 3/230 (runs: 2/231, 3/230, 4/229); 6 step commits, worst 17 ms |
-| pass | parse bench playing at 1× with motion: median 59.9 fps; animation frames over 25 ms: 3/234 (runs: 2/235, 3/234, 4/232); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/236, 2/235, 2/233); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 0/236, 1/235, 3/231); 5 step commits, worst 17 ms |
+| pass | precedence table playing at 2× with motion: median 59.9 fps; animation frames over 25 ms: 2/228 (runs: 1/229, 2/228, 3/231); 6 step commits, worst 17 ms |
+| pass | parse bench playing at 1× with motion: median 59.9 fps; animation frames over 25 ms: 2/233 (runs: 0/238, 2/233, 3/235); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 1/236 (runs: 1/236, 1/236, 1/235); 3 step commits, worst 17 ms |
 
 ## intro (6/6)
 
 | Result | Check |
 | --- | --- |
-| pass | first visit with WebGL plays the 3D intro (3d) and hands off in under 4 s (1.40 s from load) |
+| pass | first visit with WebGL plays the 3D intro (3d) and hands off in under 4 s (1.29 s from load; slow-frame jump: slow-frames) |
 | pass | after the hand-off the real DOM table is visible and the intro is remembered |
 | pass | a return visit skips straight to the specimen |
-| pass | Esc skips the intro (590 ms) |
+| pass | Esc skips the intro (643 ms) |
 | pass | the CSS hand-off runs and finishes |
 | pass | without WebGL (disabled): CSS hand-off, then a static specimen with Replay (40 of 40) |
 
@@ -814,7 +784,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-CTid50eQ.js 560 KB, intro.js 541 KB |
+| pass | bundle sizes: index-DeVfiyK6.js 557 KB, intro.js 541 KB |
 
 ## offline (2/2)
 

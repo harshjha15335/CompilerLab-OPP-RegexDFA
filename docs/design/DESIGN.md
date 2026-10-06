@@ -1,4 +1,4 @@
-# Compiler Lab: design and build plan
+# ParseLens: design and build plan
 
 Deliverables 2–5 of the brief. Deliverable 1 is [EFFECT-CATALOG.md](EFFECT-CATALOG.md). Deliverable 6 is the code. Deliverable 7 is
 [../VERIFICATION.md](../VERIFICATION.md). Deliverable 8 is [../AUDIT-LOG.md](../AUDIT-LOG.md).
@@ -7,7 +7,7 @@ Deliverables 2–5 of the brief. Deliverable 1 is [EFFECT-CATALOG.md](EFFECT-CAT
 
 - The algorithm core in `src/algorithms` is byte-identical to the attached `compiler-lab-core.zip`. I checked this with `diff -r`. It is treated as frozen.
 - The lab machines run Chrome or Edge, so Chromium is the verified target. Other browsers are expected to work but were not tested.
-- "Course" in the homepage title block is shown as *Compiler Design*. I did not invent a course code.
+- The product is named **ParseLens** (after the table loupe). At the team's request the title block has no course row, and the rail has no Keys or Settings menus. Shortcuts are still shown on each keycap's tooltip. Reduced motion follows the OS setting (`prefers-reduced-motion`).
 - At the team's request, the project details sit in a title block in the homepage's first view (not a footer), and the first-visit navigation note was removed.
 - Light theme only. A dark "blueprint" plate is on the scope-cut ladder.
 
@@ -58,7 +58,7 @@ All sizes were measured on this machine by building each library alone as an IIF
 | Native View Transitions for chapter/page changes, with a Motion fallback; evaluate ssgoi | **Native VT kept**, with a 150 ms Motion opacity fallback. **ssgoi rejected.** | ssgoi re-inserts the detached outgoing DOM node to animate it out (`create-ssgoi-transition-context.ts`). That conflicts with "rendered DOM is only React's render of `steps[count]`". VT is already in Chromium. |
 | CSS 3D transforms for tactile controls | **Kept.** | Keycaps (`perspective` + `translateZ` + `rotateX` press), dial, thumb. No WebGL in controls. |
 | ONE lazy R3F canvas (Drei only as needed) for the intro | **Changed: plain three.js, no R3F, no Drei**, built as a *separate classic script* (`dist/assets/intro.js`) injected only on a first visit with WebGL and motion allowed. | `file://` forbids module scripts and Rollup cannot code-split an IIFE build. So a lazy chunk is impossible in the main bundle, and R3F needs React in the same realm. Measured: R3F + three is **893 KB min / 235 KB gz**; the plain-three intro is **555 KB / 138 KB gz** and the app bundle never contains it. Drei's `Text3D` needs a font JSON download, so glyphs are procedural `Shape` + `ExtrudeGeometry` instead. |
-| Liquid-glass refraction only as a loupe, behind a flag, with a flat fallback | **Kept**, rewritten (about 40 lines plus a build-time map), flag in Settings ("Table loupe: Glass / Flat"). | The technique is from `@samasante/liquid-glass` (MIT): `filter:url()` on a copy of the content, not `backdrop-filter`. The map is generated at build time (`scripts/gen-lens-map.mjs`) because generating it on a canvas cost about 0.5 s on the first table step. |
+| Liquid-glass refraction only as a loupe, behind a flag, with a flat fallback | **Kept**, rewritten (about 40 lines plus a build-time map), flag stored as `cl.lens` (Glass by default, `flat` for the flat lens); the Settings menu was later removed. | The technique is from `@samasante/liquid-glass` (MIT): `filter:url()` on a copy of the content, not `backdrop-filter`. The map is generated at build time (`scripts/gen-lens-map.mjs`) because generating it on a canvas cost about 0.5 s on the first table step. |
 | No Lenis in the workspace (intro only), no Theatre, no postprocessing | **Lenis rejected entirely** (the intro does not scroll). Theatre rejected (studio is AGPL-3.0). Postprocessing rejected. | — |
 | Cytoscape primary behind a neutral DFA model, with a hand-written SVG fallback | **Changed: hand-written SVG is primary, Cytoscape removed.** | Cytoscape is **425 KB min / 134 KB gz**, about twice React + ReactDOM (212/65). It draws on canvas, so edges cannot be stroke-drawn with the same motion as the tree, and labels are invisible to the DOM checks. Our DFAs have ≤ 8 states. The neutral model `src/screens/regex/dfaLayout.ts` is pure and tested: `test/replay.test.js` asserts zero label/label and label/node overlaps for 12 automata, in row and ring layouts. Plan B below covers larger graphs. |
 | Syntax tree: hand-written SVG | **Kept.** | — |
@@ -165,7 +165,7 @@ There is no permanent sidebar. A 52 px rail holds the chapters. The stage drawer
 
 ```
 ┌─ rail 52px ───────────────────────────────────────────────────────────────────────────────────┐
-│ ◧ Compiler Lab    Bottom-Up   Regex → DFA   Examples                       ⌨ Keys   ⚙ Settings │
+│ ◧ ParseLens       Bottom-Up   Regex → DFA   Examples                                          │
 ├─ plate ───────────────────────────────────────────────────────────────────────────────────────┤
 │ Plate I.3 · Operator precedence                                                                │
 │ Precedence table     Insert one relation at a time…        [Conflict-free]   ‹ [Stage 3 of 5 ▾] › │
@@ -207,7 +207,7 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-│ ◧ Compiler Lab   Bottom-Up   Regex → DFA   Examples                          ⌨ Keys  ⚙ Settings│
+│ ◧ ParseLens      Bottom-Up   Regex → DFA   Examples                                           │
 ├──────────────────────────────────────┬────────────────────────────────────────────────────────┤
 │ Plate I · Operator precedence        │ Live specimen                Running the real algorithm│
 │                                      │ ┆E → E + T | T┆  (active production, dashed brass)     │
@@ -220,8 +220,7 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 │                                      │ id ⋗ +   rule R4               (paused: full sentence) │
 │ Operator precedence →  Regex → DFA → │ Parse [id][+][id][*][id][$]   ⋖ … → ✓ ACCEPT           │
 │ ┌─────────┬────────────────────────┐ │ [ ❚❚ Pause ][◀][▶]  12 of 40           [Use this grammar]│
-│ │Project  │Interactive GUI for OPP │ │                                                        │
-│ │Course   │Compiler Design         │ │   title block: the project details, in the first view │
+│ │Project  │ParseLens: OPP, RE → DFA│ │                                                        │
 │ │Team     │Team Compilers          │ │                                                        │
 │ │Members  │Harsh Jha 24BCE0568     │ │                                                        │
 │ │         │Anuj Deshpande 24BCE0794│ │                                                        │
@@ -240,7 +239,7 @@ On door hover or focus, the underline under the pipeline moves from the first st
 
 ```
 ┌──────────────────────────┐
-│ ◧ Compiler Lab  …        │
+│ ◧ ParseLens  …           │
 │ Plate I                  │
 │ How a compiler decides   │
 │ what to do next.         │

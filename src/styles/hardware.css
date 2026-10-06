@@ -62,6 +62,10 @@
 .timeline__ticklabel {
   position: absolute; bottom: 9px; left: 0; transform: translateX(-50%); white-space: nowrap; font: var(--t-caption); color: var(--ink-3);
 }
+/* measured in Timeline: end labels anchor inward, colliding labels hide (still laid out so they can be measured) */
+.timeline__ticklabel.is-start { transform: none; }
+.timeline__ticklabel.is-end { transform: translateX(-100%); }
+.timeline__ticklabel.is-hidden { visibility: hidden; }
 .timeline__rail {
   position: absolute; left: var(--pad); right: var(--pad); top: 27px; height: 6px; border-radius: 3px;
   background: var(--plate); border: 1px solid var(--line); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08) inset;

@@ -92,7 +92,8 @@ function layoutProbe() {
     const r = el.getBoundingClientRect();
     return r.width > 0 && r.height > 0;
   };
-  const decorative = (el) => el.closest('[aria-hidden="true"], .sr-only, svg, #fx-layer, .intro, [inert]');
+  // timeline tick labels sit in an aria-hidden track but are visible text, so they are checked like any other text
+  const decorative = (el) => !el.closest('.timeline__ticklabel') && el.closest('[aria-hidden="true"], .sr-only, svg, #fx-layer, .intro, [inert]');
   for (const el of document.querySelectorAll('body *')) {
     if (decorative(el) || !shown(el)) continue;
     const cs = getComputedStyle(el);
@@ -191,8 +192,6 @@ const SCREENS = [
   { id: 'home-narrow-390', hash: '#/', viewports: [[390, 844]], pageScrollOk: true },
   { id: 'examples', hash: '#/opp/grammar', act: async (p) => { await clickText(p, 'Examples'); await sleep(300); } },
   { id: 'stage-drawer', hash: '#/opp/table', act: async (p) => { await p.click('.stages__toggle'); await sleep(250); } },
-  { id: 'settings', hash: '#/opp/table', act: async (p) => { await clickText(p, 'Settings'); await sleep(250); } },
-  { id: 'keys', hash: '#/opp/table', act: async (p) => { await clickText(p, 'Keys'); await sleep(250); } },
   { id: 'opp-grammar', hash: '#/opp/grammar' },
   { id: 'opp-grammar-adjacent', hash: '#/opp/grammar', act: (p) => clickText(p, 'Adjacent non-terminals', '.sample') },
   { id: 'opp-grammar-epsilon', hash: '#/opp/grammar', act: (p) => clickText(p, 'An ε-production', '.sample') },
@@ -323,8 +322,8 @@ if (want('home')) {
     const r = el.getBoundingClientRect();
     return { text: el.textContent, inView: r.top >= 0 && r.bottom <= innerHeight, note: Boolean(document.querySelector('.firstnote')) };
   });
-  check('home', 'project title block (course, project, team, members, year) is fully visible in the first view; no navigation note',
-    Boolean(tb) && tb.inView && !tb.note && ['Compiler Design', 'Interactive GUI for Operator Precedence Parsing', 'Team Compilers', 'Harsh Jha', '24BCE0568', 'Anuj Deshpande', '24BCE0794', '2026'].every((t) => tb.text.includes(t)),
+  check('home', 'project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note',
+    Boolean(tb) && tb.inView && !tb.note && !tb.text.includes('Course') && ['ParseLens', 'Interactive GUI for Operator Precedence Parsing', 'Team Compilers', 'Harsh Jha', '24BCE0568', 'Anuj Deshpande', '24BCE0794', '2026'].every((t) => tb.text.includes(t)),
     JSON.stringify(tb));
   await ctx.close();
 }
@@ -462,14 +461,13 @@ if (want('reduced')) {
   const still = await page.evaluate(() => ({ cell: Boolean(document.querySelector('.pcell.is-changed .corners')), note: document.querySelector('.note__headline')?.textContent }));
   check('reduced', 'every step is still explained without motion (corner brackets + note)', still.cell && Boolean(still.note), JSON.stringify(still));
   await ctx.close();
-  const { ctx: c2, page: p2 } = await open(browser);
-  await go(p2, '#/opp/table');
-  await p2.evaluate(() => { localStorage.setItem('cl.reduced', '1'); });
+  // seeded before the app boots (writing it mid-session and reloading races the storage backend under load)
+  const { ctx: c2, page: p2 } = await open(browser, { storage: { 'cl.reduced': '1' } });
   await go(p2, '#/opp/table');
   for (let i = 0; i < 6; i++) await p2.keyboard.press('ArrowRight');
   const n2 = await p2.evaluate(() => [...document.getAnimations().map((a) => `${a.constructor.name} ${a.animationName ?? a.transitionProperty ?? ''} on ${a.effect?.target?.tagName}.${a.effect?.target?.getAttribute?.('class')}`),
     ...[...(document.getElementById('fx-layer')?.children ?? [])].map((c) => `overlay ${c.className}`)]);
-  check('reduced', 'the in-app Reduced motion switch also stops all motion', n2.length === 0, n2.join('\n'));
+  check('reduced', 'a stored reduced-motion preference (cl.reduced) also stops all motion', n2.length === 0, n2.join('\n'));
   await c2.close();
 }
 

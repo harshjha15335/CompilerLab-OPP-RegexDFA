@@ -25,7 +25,7 @@ The whole UI layer was rebuilt in strict TypeScript.
 | `src/components/DFAGraph/DFA3D.jsx` (3D DFA inspector) | Removed: the brief excludes 3D from diagrams |
 | Cytoscape DFA renderer | `src/screens/regex/DfaGraph.tsx` + pure layout `dfaLayout.ts` (SVG) |
 | `src/styles/*.css` (Inter / JetBrains Mono) | New token system and styles; IBM Plex Sans/Serif/Mono + IBM Plex Math |
-| `scripts/audit-build.mjs` (puppeteer, 106 checks) | `scripts/verify.mjs` (Playwright core, 763 checks in the final run) + `scripts/lib/browser.mjs` |
+| `scripts/audit-build.mjs` (puppeteer, 106 checks) | `scripts/verify.mjs` (Playwright core, 733 checks in the final run) + `scripts/lib/browser.mjs` |
 | `vite.config.js` | `vite.config.ts` (portable IIFE) + `vite.intro.config.ts` (separate 3D intro script) |
 
 New tests: `test/specimen.test.ts` (homepage specimen equals `buildPrecedenceTable`) and a DFA-layout overlap test in
@@ -110,6 +110,8 @@ Every item below was a FAIL in `scripts/verify.mjs` or in a screenshot review be
 | 18 | Comparison benches 56 px taller than their figure at the divergence step, with the overflow silently cut | `contain: paint` clips like `overflow: hidden`, and the clipped-text check did not know that | **The check now treats paint containment as clipping.** Compact benches drop the two long sentences (they are in the inspector) and tighten gaps |
 | 19 | 8-state DFA figure 6 px too tall at 768 px | Transition table rows | Tighter rows in the DFA figure |
 | 20 | Trailing "Back restores exact DOM: followpos @3" flake from the old UI | Old effects committed inline styles (Motion) and drew overlays inside the compared container | WAAPI with no lasting fill plus overlays outside the app root; checked now at **every** step of eight stages, three timings each |
+| 21 | Parse dock: tick labels "reduce 1 … reduce 5" overlapped (reported by the team) | Labels were spaced by fraction of the track (12%), not by their measured width; the text-overlap check skipped them because the track is `aria-hidden` | Labels are measured and fitted: a label that would touch its neighbour hides, and end labels anchor inward. The overlap check now includes tick labels. **New verifier rule.** Shown failing on 7 screens with fitting off |
+| 22 | "Stored reduced-motion preference stops all motion" failed once in a full run | The test wrote `cl.reduced` and reloaded immediately, racing the storage backend under load | The preference is seeded before the app boots |
 
 ## 5. Known limitations (not hidden)
 

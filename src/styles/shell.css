@@ -1,19 +1,18 @@
 /* Shell: slim rail, the plate frame, stage drawer, figure / inspector split, sheets.
    Desktop rule: the page never scrolls; at most ONE region (the inspector) may scroll per screen. */
-.app { height: 100dvh; display: grid; grid-template-rows: var(--rail-h) minmax(0, 1fr); overflow: hidden; }
-.main { min-height: 0; padding: 6px 14px 12px; outline: none; display: grid; }
+.app { height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--rail-h) minmax(0, 1fr); overflow: hidden; }
+.main { min-height: 0; padding: 6px var(--gutter) 12px; outline: none; display: grid; grid-template-columns: minmax(0, 1fr); }
 
 /* ── Rail ────────────────────────────────────────────── */
-.rail { display: flex; align-items: center; gap: var(--s5); padding: 0 16px; min-width: 0; }
+.rail { display: flex; align-items: center; gap: var(--s5); padding: 0 var(--gutter); min-width: 0; }
 .rail__brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; white-space: nowrap; margin-right: 8px; }
-.logo { width: 46px; height: 46px; flex: none; filter: drop-shadow(0 1.5px 1.5px rgba(60, 40, 10, 0.3)); transition: transform 200ms var(--ease); }
-.rail__brand:hover .logo { transform: rotate(-8deg); }
+.logo { width: 46px; height: 46px; flex: none; filter: drop-shadow(0 1.5px 1.5px rgba(60, 40, 10, 0.3)); }
 /* the wordmark: heavy Plex Sans "Parse" with a brass "Lens" */
 .wordmark { font: 750 1.875rem/1 var(--font-sans); letter-spacing: -0.035em; color: var(--ink); }
 .wordmark__lens { color: var(--brass-lo); font-weight: 600; }
 .rail__nav { display: flex; gap: 4px; align-items: center; }
 .rail__link {
-  font: 500 0.9375rem/1 var(--font-sans); text-decoration: none; padding: 8px 10px; border-radius: 4px; border: 0;
+  font: 500 0.9375rem/1 var(--font-sans); text-decoration: none; padding: 8px 10px; border-radius: var(--radius); border: 0;
   background: none; cursor: pointer; position: relative; white-space: nowrap;
 }
 .rail__link:hover { background: rgba(28, 30, 33, 0.06); }
@@ -38,9 +37,8 @@
 
 /* ── The plate ───────────────────────────────────────── */
 .plate {
-  min-height: 0; display: flex; flex-direction: column; position: relative;
-  background: var(--plate); border: 1px solid var(--rule); border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 2px 0 rgba(60, 50, 30, 0.06), 0 10px 24px -12px rgba(60, 50, 30, 0.35);
+  min-height: 0; min-width: 0; display: flex; flex-direction: column; position: relative;
+  background: var(--plate); border: 1px solid var(--rule); border-radius: var(--r-mark); box-shadow: var(--shadow-paper);
 }
 /* registration marks: the plate is a printed sheet */
 .plate::before, .plate::after {
@@ -52,7 +50,7 @@
 .plate::after { top: -7px; right: -7px; }
 .plate__head {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: end; gap: 6px 22px;
-  padding: 12px 20px 10px; border-bottom: 1px solid var(--rule);
+  padding: 12px 20px 10px; border-bottom: 1px solid var(--rule); position: relative;
 }
 .plate__no { font: var(--t-label); color: var(--ink-3); }
 .plate__title { font: var(--t-title); view-transition-name: plate-title; }
@@ -64,21 +62,21 @@
 
 /* stage switcher + drawer */
 .stages { position: relative; display: flex; align-items: center; gap: 2px; padding-bottom: 1px; }
-.stages__step { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 4px; border: 1px solid transparent; }
+.stages__step { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius); border: 1px solid transparent; }
 .stages__step:hover { border-color: var(--line); }
 .stages__step svg { width: 14px; height: 14px; fill: none; stroke: var(--ink); stroke-width: 1.8; }
 .stages__step.is-off { opacity: 0.3; pointer-events: none; }
 .stages__toggle {
-  display: inline-flex; gap: 6px; align-items: center; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px;
+  display: inline-flex; gap: 6px; align-items: center; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--plate); cursor: pointer; font: 500 0.875rem/1 var(--font-sans); white-space: nowrap;
 }
 .stages__toggle svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; }
 .drawer {
   position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: min(560px, 80vw); padding: 8px;
-  background: var(--plate); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(40, 32, 16, 0.2);
+  background: var(--plate); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-float);
 }
 .drawer__item {
-  display: grid; grid-template-columns: 28px 1fr; gap: 0 10px; padding: 8px 10px; text-decoration: none; border-radius: 4px; border: 1px solid transparent;
+  display: grid; grid-template-columns: 28px 1fr; gap: 0 10px; padding: 8px 10px; text-decoration: none; border-radius: var(--r-mark); border: 1px solid transparent;
 }
 .drawer__item:hover { background: var(--plate-2); }
 .drawer__item.is-current { border-color: var(--ink); }
@@ -93,7 +91,7 @@
 .pane { min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .pane--scroll { overflow-y: auto; padding-right: 6px; }
 .figure {
-  min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 3px;
+  min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: var(--r-mark);
   background-color: var(--plate);
   background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 24px 24px; background-position: -1px -1px; border: 1px solid var(--grid);
@@ -128,8 +126,9 @@
 /* sheets (provenance) */
 .sheet {
   display: grid; gap: 10px; padding: 12px 14px; background: var(--plate); border: 1px solid var(--line); border-radius: var(--radius);
-  box-shadow: 0 6px 18px -8px rgba(40, 32, 16, 0.35);
 }
+/* an inline sheet lies flat in the inspector; only the homepage's floating provenance sheet casts a shadow */
+.specimen__prov .sheet { box-shadow: var(--shadow-float); }
 .sheet--prov { border-color: var(--ink); }
 .sheet__head { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .provlist { display: grid; gap: 10px; }
@@ -142,6 +141,7 @@
 /* tabs */
 .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); }
 .tabs__tab { border: 0; background: none; padding: 8px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs__tab:hover { color: var(--ink); }
 .tabs__tab.is-on { color: var(--ink); border-bottom-color: var(--ink); }
 .tabs__panel { min-height: 0; flex: 1; display: flex; flex-direction: column; }
 .scroll { min-height: 0; flex: 1; overflow-y: auto; }
@@ -153,14 +153,15 @@
 .controls__grammar { display: grid; gap: 4px; }
 .inline-prods { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: 0.95rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.chip { font: 0.875rem/1 var(--font-mono); padding: 7px 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--plate); cursor: pointer; }
+.chip { font: 0.875rem/1 var(--font-mono); padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--r-mark); background: var(--plate); cursor: pointer; }
+.chip:hover { background: var(--plate-2); }
 .chip.is-on { background: var(--ink); color: var(--plate); border-color: var(--ink); }
 .modes { display: grid; gap: 4px; }
 .modes__row { display: flex; border: 1px solid var(--line); border-radius: var(--radius); padding: 2px; background: var(--plate); }
-.modes__opt { position: relative; border: 0; background: none; padding: 7px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); border-radius: 4px; }
+.modes__opt { position: relative; border: 0; background: none; padding: 7px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); border-radius: calc(var(--radius) - 2px); }
 .modes__opt span { position: relative; }
 .modes__opt.is-on { color: var(--plate); }
-.modes__rule { position: absolute; inset: 0; background: var(--ink); border-radius: 4px; }
+.modes__rule { position: absolute; inset: 0; background: var(--ink); border-radius: calc(var(--radius) - 2px); }
 
 /* grammar stage */
 .editor { display: grid; grid-template-columns: 34px minmax(0, 1fr); border: 1px solid var(--line); border-radius: var(--radius); background: var(--plate); }
@@ -200,12 +201,41 @@
 .lr__plan { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 10px; }
 .lr__plan li { display: flex; gap: 12px; align-items: center; color: var(--ink-2); }
 
-/* narrower screens: stack figure over inspector and let the page scroll (the desktop rule is for ≥ 1000px) */
+/* ── Narrower screens ─────────────────────────────────
+   Below 1000 px the desktop rule (no page scroll, one inner scroller) gives way to its phone equivalent:
+   the page is the ONE scroller, so every inner region lets its content run at full height. */
 @media (max-width: 999px) {
   .app { height: auto; min-height: 100dvh; overflow: visible; grid-template-rows: auto minmax(0, 1fr); }
-  .split--figure, .split--grammar { grid-template-columns: 1fr; }
-  .inspector { border-left: 0; padding-left: 0; overflow: visible; }
-  .plate__head { grid-template-columns: 1fr auto; }
+  .rail { flex-wrap: wrap; height: auto; padding: 8px var(--gutter); gap: 4px 16px; }
+  .split--figure, .split--grammar { grid-template-columns: minmax(0, 1fr); }
+  .inspector { border-left: 0; border-top: 1px solid var(--rule); padding: 14px 0 0; }
+  .inspector, .inspector--tabs, .pane--scroll, .scroll, .lookup { overflow: visible; }
+  .tabs__panel, .scroll { flex: none; }
+  .plate__head { grid-template-columns: minmax(0, 1fr) auto; }
   .plate__does { grid-column: 1 / -1; }
-  .rail { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 8px; }
+  /* figures keep their formal shape; a grammar wider than the screen scrolls inside its figure, never the page */
+  .figure { overflow-x: auto; }
+  /* the stage drawer opens in the flow (a disclosure that pushes the plate down) instead of covering the figure */
+  .stages { flex-wrap: wrap; grid-column: 1 / -1; justify-self: start; }   /* its own row: an open drawer never squeezes the title */
+  .drawer { position: static; flex-basis: 100%; width: auto; margin-top: 6px; box-shadow: none; }
+}
+
+/* ── Phones ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :root { --gutter: 12px; }
+  .rail__brand { margin-right: 0; }
+  .rail__nav { width: 100%; margin-left: -10px; }
+  .main { padding: 4px var(--gutter) 16px; }
+  .plate__head { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 6px; }
+  .plate__aside:empty { display: none; }
+  .stages { justify-self: stretch; }
+  .stages__toggle { flex: 1; justify-content: space-between; }
+  .plate__controls, .plate__body { padding: 12px; }
+  .controls { gap: 10px; }
+  .field, .field--wide { min-width: 0; flex: 1 1 100%; }
+  .split { gap: 14px; }
+  .figure { padding: 10px; }
+  .note__row { grid-template-columns: 76px minmax(0, 1fr); }
+  .facts div { grid-template-columns: 96px minmax(0, 1fr); }
+  .provlist li { grid-template-columns: 56px minmax(0, 1fr); }
 }

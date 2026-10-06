@@ -30,15 +30,16 @@ function SpecimenSource({ render }: { render: (s: Spec) => ReactNode }) {
   return <>{render(spec)}</>;
 }
 
-function Door({ id, numeral, title, pipeline, href, progress }: { id: string; numeral: string; title: string; pipeline: string[]; href: string; progress?: boolean }) {
+/** A chapter entry. A planned chapter is set quieter than a working one: hierarchy follows what exists. */
+function Door({ id, numeral, title, pipeline, href, planned }: { id: string; numeral: string; title: string; pipeline: string[]; href: string; planned?: boolean }) {
   const [on, setOn] = useState(false);
   const at = on ? 1 : 0;
   return (
-    <li className="door">
+    <li className={cx('door', planned && 'door--planned')}>
       <a href={href} className="door__link" onMouseEnter={() => setOn(true)} onMouseLeave={() => setOn(false)} onFocus={() => setOn(true)} onBlur={() => setOn(false)}
         aria-describedby={`door-${id}-pipe`}>
         <span className="door__numeral" aria-hidden="true">{numeral}</span>
-        <span className="door__title">{title}{progress && <> <Tag kind="progress">In progress</Tag></>}</span>
+        <span className="door__title">{title}{planned && <> <Tag kind="progress">Planned</Tag></>}</span>
         <span className="door__pipe" id={`door-${id}-pipe`}>
           {pipeline.map((w, i) => (
             <span key={w} className={cx('door__stage', i === at && 'is-at')}>
@@ -56,10 +57,12 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
   const { reduced } = useSettings();
   const webgl = useMemo(() => hasWebGL(), []);
   const forced = hashFlag('intro');                                  // verification hook: ?intro=3d|css|off
+  // on narrow screens the specimen (the intro's landing target) is below the fold, so the flight would land off-screen
+  const narrow = useMemo(() => window.matchMedia?.('(max-width: 899px)').matches ?? false, []);
   const [introSeen, setIntroSeen] = useState(() => read(KEYS.intro) === '1');
   const intro: '3d' | 'css' | null = forced === 'off' ? null
     : forced === '3d' || forced === 'css' ? forced
-    : reduced || introSeen ? null : webgl ? '3d' : 'css';
+    : reduced || introSeen || narrow ? null : webgl ? '3d' : 'css';
   const [introDone, setIntroDone] = useState(intro === null);
   const staticSpecimen = reduced || !webgl || hashFlag('specimen') === 'static';
   const mode = !introDone ? 'hidden' : staticSpecimen ? 'static' : 'live';
@@ -67,13 +70,8 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
   return (
     <div className="home">
       <section className="home__lead" aria-labelledby="home-title">
-        <p className="label">Plate I · Operator precedence</p>
         <h1 className="home__title" id="home-title">How a compiler decides what to do next.</h1>
         <p className="home__sub">Build the precedence table for a grammar, one relation at a time. Then watch a parser use it.</p>
-        <p className="home__links">
-          <a className="textlink" href={hashFor('opp', 'grammar')}>Operator precedence <span aria-hidden="true">→</span></a>
-          <a className="textlink" href={hashFor('regex', 'tree')}>Regex → DFA <span aria-hidden="true">→</span></a>
-        </p>
         <dl className="titleblock" aria-label="Project">
           <div><dt>Project</dt><dd><b className="titleblock__name wordmark">Parse<span className="wordmark__lens">Lens</span></b><span>Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)</span></dd></div>
           <div><dt>Team</dt><dd>Team Compilers</dd></div>
@@ -86,7 +84,7 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
         <ol>
           {CHAPTERS.map((c) => (
             <Door key={c.id} id={c.id} numeral={c.numeral} title={c.title} pipeline={c.pipeline}
-              href={hashFor(c.id, c.stages[0]?.id)} progress={c.id === 'lr'} />
+              href={hashFor(c.id, c.stages[0]?.id)} planned={c.stages.length === 0} />
           ))}
         </ol>
       </nav>

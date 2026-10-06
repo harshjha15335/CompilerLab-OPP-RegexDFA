@@ -192,7 +192,7 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 | I.3 Precedence table | — | Table + loupe, legend, conflict sentence | Provenance sheet (grows out of the clicked cell), This step / Next |
 | I.4 Parse a string | Input, Parse, mode switch, example chips | Bench: stack, relation box, tape, decision with "After" stack | Tabs: Trace (scrolls) / Table lookup (cell outlined) |
 | I.5 Classic vs Safeguarded | Grammar S → A + B, string `id/id+id*id`, Compare | Two benches side by side | Why they disagree, where Safeguarded stops, example strings table |
-| II LR parsing | — | Honest placeholder: "Nothing on it runs yet", the planned stages each tagged "Not built" | — |
+| II LR parsing | — | Honest placeholder: "Nothing on it runs yet", the planned stages listed under one "Planned stages, none built yet" caption | — |
 | III.1 Syntax tree | Expression, Build tree | Augmented expression, SVG tree, legend; or the malformed message with a caret | Positions table, examples |
 | III.2 nullable / firstpos / lastpos | — | Tree built bottom-up (ghost outlines for nodes not yet computed) | This step: the three values, rule, children read |
 | III.3 followpos | — | Tree with this step's followpos arrows | followpos table (rows clickable), provenance, This step |
@@ -209,7 +209,7 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 │ ◧ ParseLens      Bottom-Up   Regex → DFA   Examples                                           │
 ├──────────────────────────────────────┬────────────────────────────────────────────────────────┤
-│ Plate I · Operator precedence        │ Live specimen                Running the real algorithm│
+│                                      │ Live specimen                Running the real algorithm│
 │                                      │ ┆E → E + T | T┆  (active production, dashed brass)     │
 │ How a compiler decides               │  T → T * F | F                                         │
 │ what to do next.          (40px serif)│  F → ( E ) | id                                       │
@@ -218,7 +218,7 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 │ grammar, one relation at a time.     │ │+ │⋗ │⋖ │… │  │  │  │     ~700 ms, with a beam from   │
 │ Then watch a parser use it.          │ └──┴──┴──┴──┴──┴──┴──┘     their production            │
 │                                      │ id ⋗ +   rule R4               (paused: full sentence) │
-│ Operator precedence →  Regex → DFA → │ Parse [id][+][id][*][id][$]   ⋖ … → ✓ ACCEPT           │
+│                                      │ Parse [id][+][id][*][id][$]   ⋖ … → ✓ ACCEPT           │
 │ ┌─────────┬────────────────────────┐ │ [ ❚❚ Pause ][◀][▶]  12 of 40           [Use this grammar]│
 │ │Project  │ParseLens: OPP, RE → DFA│ │                                                        │
 │ │Team     │Team Compilers          │ │                                                        │
@@ -227,12 +227,12 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 │ │Year     │2026                    │ │                                                        │
 │ └─────────┴────────────────────────┘ │                                                        │
 ├──────────────────────────────────────┴────────────────────────────────────────────────────────┤
-│ I  Operator precedence         │ II LR parsing [In progress]    │ III Regex → DFA                │
-│    grammar → table → parse      │    items → table → parse        │     tree → followpos → DFA     │
+│ I  Operator precedence             │ II LR parsing [Planned] │ III Regex → DFA                    │
+│    grammar → table → parse          │    (muted)              │     tree → followpos → DFA         │
 └───────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-DOM order, which is also the Tab order, is **headline block → doors strip → specimen**. CSS grid areas place the specimen top right.
+DOM order, which is also the Tab order, is **headline block → doors strip → specimen**. The headline block has no links of its own: after the UI/UX audit (`audit/UI_UX_DE_VIBE_AUDIT.md`, P1-1, P1-2) the doors are the single entry to each chapter, and the planned LR chapter is set quieter and narrower than the two working ones. CSS grid areas place the specimen top right.
 On door hover or focus, the underline under the pipeline moves from the first stage word to the second (Motion `layoutId`, 160 ms, no bounce).
 
 ### Narrow (< 900 px)

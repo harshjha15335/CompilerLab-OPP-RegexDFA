@@ -1,6 +1,6 @@
 // Machined hardware that sits on the printed plate: keycaps, the brass speed dial and the scrub
 // timeline. Pure CSS 3D (no WebGL). Every control is a real, labelled, keyboard-operable element.
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { SPEEDS, useSettings, type KeyId, type Replay, type Speed } from '../replay/useReplay.ts';
 import { cx } from './kit.tsx';
 
@@ -136,9 +136,11 @@ export function Timeline<S>({ replay, label }: { replay: Replay<S>; label: strin
     <div className="timeline" style={{ '--frac': frac } as CSSProperties}>
       <div className="timeline__ticks" aria-hidden="true" ref={track}>
         {ticks.map((t, i) => (
-          <span key={t.at} className={cx('timeline__tick', count >= Math.round(t.at * total) && 'is-passed')} style={{ '--at': t.at } as CSSProperties}>
-            <span className={cx('timeline__ticklabel', `is-${fits[i] ?? 'hidden'}`)} data-at={t.at}>{t.label}</span>
-          </span>
+          <Fragment key={t.at}>
+            <span className={cx('timeline__tick', count >= Math.round(t.at * total) && 'is-passed')} style={{ '--at': t.at } as CSSProperties} />
+            {/* a sibling of the 1 px tick, not its child, so the label's real background is the dock it is painted on */}
+            <span className={cx('timeline__ticklabel', `is-${fits[i] ?? 'hidden'}`)} style={{ '--at': t.at } as CSSProperties} data-at={t.at}>{t.label}</span>
+          </Fragment>
         ))}
       </div>
       <div className="timeline__rail" aria-hidden="true"><span className="timeline__fill" /></div>

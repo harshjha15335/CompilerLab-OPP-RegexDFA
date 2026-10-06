@@ -28,7 +28,7 @@ function SetBlock({ kind, sets, nts, step, selected, onPick, waiting }: {
   const sourceNt = act && (act.rule === 'L2' || act.rule === 'T2') ? act.sourceSymbols[0] : null;
   return (
     <section className={cx('setblock', waiting && 'is-waiting')} aria-label={`${kind} sets`}>
-      <h3 className="section-title">{kind}{waiting && <span className="setblock__wait"> starts after LEADING</span>}</h3>
+      <h2 className="section-title">{kind}{waiting && <span className="setblock__wait"> starts after LEADING</span>}</h2>
       {nts.map((n) => (
         <div key={n} className={cx('setline', act?.nonTerminal === n && 'is-target', sourceNt === n && 'is-source')}
           data-cause={sourceNt === n ? '' : undefined}>
@@ -97,7 +97,7 @@ export function SetsStage({ chapter, stage, a }: { chapter: Chapter; stage: Stag
           <div className="figure__col">
             <ProductionList productions={grammar.productions} activeId={prod?.id} marks={marks} />
             <section className="block">
-              <h3 className="label">Rules</h3>
+              <h2 className="label">Rules</h2>
               <ul className="rules">
                 {Object.entries(SET_RULES).map(([id, text]) => (
                   <li key={id} className={cx(add?.rule === id && 'is-active')}><b>{id}</b><span>{text}</span></li>

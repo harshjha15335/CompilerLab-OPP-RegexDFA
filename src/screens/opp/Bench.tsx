@@ -102,7 +102,7 @@ export function Bench({ step, tokens, mode, title, compact, finished, fx }: {
   useLayoutEffect(() => (fx && step && root.current ? playStep(root.current, step, fx === 'rich') : undefined), [step, fx]);
   return (
     <div className={cx('bench', compact && 'bench--compact')} ref={root}>
-      {title && <h3 className="bench__title">{title}</h3>}
+      {title && <h2 className="bench__title">{title}</h2>}
       <div className="bench__zone">
         <span className="label">Stack</span>
         <StackRow stack={v.stack} handle={handle} failed={type === 'REJECT'} label="Stack" />

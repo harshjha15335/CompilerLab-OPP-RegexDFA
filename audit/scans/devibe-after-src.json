@@ -1,0 +1,38 @@
+{
+  "path": "src",
+  "files_scanned": 51,
+  "counts": {
+    "medium": 3
+  },
+  "vibe_score": 6,
+  "verdict": "Some AI defaults present",
+  "findings": [
+    {
+      "rule": "fade-in-animations",
+      "label": "Boilerplate fade-in / hover-grow / scroll animation",
+      "sev": "medium",
+      "fix": "Motion only when it communicates something; gate behind prefers-reduced-motion. Minor tell, noisier signal.",
+      "file": "src/ui/plate.tsx",
+      "line": 57,
+      "snippet": "initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>"
+    },
+    {
+      "rule": "fade-in-animations",
+      "label": "Boilerplate fade-in / hover-grow / scroll animation",
+      "sev": "medium",
+      "fix": "Motion only when it communicates something; gate behind prefers-reduced-motion. Minor tell, noisier signal.",
+      "file": "src/shell/Shell.tsx",
+      "line": 79,
+      "snippet": "<motion.div className=\"sheetwrap\" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }}"
+    },
+    {
+      "rule": "neon-glow",
+      "label": "Unprompted neon glow shadow",
+      "sev": "medium",
+      "fix": "Remove glow you did not deliberately design. Dark mode should rely on contrast, not glow.",
+      "file": "src/styles/home.css",
+      "line": 91,
+      "snippet": "text-shadow: 1px 1px 0 rgba(40, 30, 10, 0.55), 2px 2px 0 rgba(40, 30, 10, 0.45), 3px 3px 0 rgba(40, 30, 10, 0.35), 4px 4px 2px rgba(40, 30, 10, 0.2);"
+    }
+  ]
+}

@@ -56,6 +56,7 @@ export function Examples({ open, onClose, onGrammar, onRegex }: { open: boolean;
   useEffect(() => {
     if (!open) return undefined;
     const back = document.activeElement as HTMLElement | null;
+    document.documentElement.classList.add('is-locked');
     const t = requestAnimationFrame(() => panel.current?.querySelector<HTMLElement>('button')?.focus());
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { e.preventDefault(); onClose(); }
@@ -67,7 +68,10 @@ export function Examples({ open, onClose, onGrammar, onRegex }: { open: boolean;
       }
     };
     window.addEventListener('keydown', onKey, true);
-    return () => { cancelAnimationFrame(t); window.removeEventListener('keydown', onKey, true); back?.focus?.(); };
+    return () => {
+      cancelAnimationFrame(t); window.removeEventListener('keydown', onKey, true);
+      document.documentElement.classList.remove('is-locked'); back?.focus?.();
+    };
   }, [open, onClose]);
   return (
     <AnimatePresence>

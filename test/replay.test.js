@@ -121,6 +121,23 @@ test('DFA drawing: no label overlaps a label or a node, for every sample and som
   }
 });
 
+test('DFA drawing, phone column layout: same graph top-to-bottom, still no overlaps', () => {
+  const sources = ['(a|b)*abb', 'a(b|c)*d', '(ab|a)+b?', 'a*b*c?', 'ab+', 'ab?c', 'a\\*b', '(a|b)*a(a|b)', 'abcde', 'a(ba)*b'];
+  for (const src of sources) {
+    const { dfa } = analyzeRegex(src);
+    const row = layoutDfa(dfa), col = layoutDfa(dfa, undefined, 'column');
+    if (row.layout !== 'row') continue;
+    assert.equal(col.layout, 'column', src);
+    assert.deepEqual(overlaps(col), [], `${src} (column, ${col.nodes.length} states)`);
+    assert.ok(col.box.h > col.box.w, `${src}: a column is taller than wide`);
+    // a reflection: every node keeps its distance to every other node
+    for (const a of row.nodes) for (const b of row.nodes) {
+      const ca = col.nodes.find((n) => n.id === a.id), cb = col.nodes.find((n) => n.id === b.id);
+      assert.ok(Math.abs(Math.hypot(a.x - b.x, a.y - b.y) - Math.hypot(ca.x - cb.x, ca.y - cb.y)) < 0.01);
+    }
+  }
+});
+
 test('simulation replay', () => {
   const { dfa } = analyzeRegex('(a|b)*abb');
   const run = runSimulation(dfa, 'abb');

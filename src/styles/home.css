@@ -1,16 +1,15 @@
 /* Homepage: "The Specimen Plate". One live specimen, the project title block, three typographic doors.
    DOM order (= Tab order): headline → doors → specimen. Grid areas put the specimen top-right. */
 .home {
-  min-height: 0; height: 100%; display: grid; gap: 14px 40px; padding: 8px 18px 0;
+  min-height: 0; height: 100%; display: grid; gap: 14px 40px; padding: 8px 0 0;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   grid-template-rows: minmax(0, 1fr) auto;
   grid-template-areas: 'lead spec' 'doors doors';
   padding-bottom: 14px;
 }
-.home__lead { grid-area: lead; display: flex; flex-direction: column; gap: 18px; justify-content: center; padding: 0 0 0 12px; max-width: 34rem; }
+.home__lead { grid-area: lead; display: flex; flex-direction: column; gap: 18px; justify-content: center; max-width: 34rem; }
 .home__title { font: var(--t-display); letter-spacing: -0.01em; view-transition-name: plate-title; }
 .home__sub { font: 400 1.0625rem/1.55 var(--font-sans); color: var(--ink-2); max-width: 30rem; }
-.home__links { display: flex; gap: 28px; flex-wrap: wrap; }
 /* drafting-plate title block: who made this, set as part of the plate */
 .titleblock { display: grid; border: 1.5px solid var(--ink); background: var(--plate); max-width: 34rem; }
 .titleblock div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); border-top: 1px solid var(--line); }
@@ -20,11 +19,13 @@
 .titleblock__name { flex-basis: 100%; font-size: 1.5rem; line-height: 1.25; }
 .titleblock__id { font: 500 0.875rem/1.4 var(--font-mono); color: var(--ink-2); margin-left: 4px; }
 
-.home__specimen { grid-area: spec; min-height: 0; display: grid; }
+/* the specimen hugs its content and centres against the lead, instead of stretching into empty grid */
+.home__specimen { grid-area: spec; min-height: 0; display: grid; align-content: center; }
 
 /* the three doors: typographic entries in a ruled strip, not cards */
 .doors { grid-area: doors; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.doors ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* working chapters get the width; the planned one keeps its place in the course order but not its weight */
+.doors ol { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr); }
 .door + .door { border-left: 1px solid var(--rule); }
 .door__link { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; padding: 12px 16px; text-decoration: none; height: 100%; align-content: start; }
 .door__link:hover { background: rgba(250, 248, 242, 0.6); }
@@ -37,6 +38,10 @@
 .door__word { position: relative; }
 .door__stage.is-at .door__word { color: var(--ink); }
 .door__mark { position: absolute; left: -2px; right: -2px; bottom: -3px; height: 2px; background: var(--ink); }
+.door--planned .door__title { font-weight: 500; color: var(--ink-2); }
+.door--planned .door__pipe, .door--planned .door__stage.is-at .door__word { color: var(--ink-3); }
+.door--planned .door__mark { background: var(--ink-3); }
+.door--planned .door__link:hover { background: none; }
 
 
 /* ── The specimen (a small plate) ─────────────────────── */
@@ -45,7 +50,7 @@
   background-color: var(--plate);
   background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 24px 24px; background-position: -1px -1px;
-  border: 1px solid var(--rule); border-radius: 3px; box-shadow: 0 10px 24px -14px rgba(60, 50, 30, 0.4);
+  border: 1px solid var(--rule); border-radius: var(--r-mark); box-shadow: var(--shadow-paper);
 }
 /* during the intro the empty grid stays as the landing target; glyphs and the live readouts wait for the hand-off */
 .specimen.is-intro .ptable .rel, .specimen.is-intro .pcell__slash { opacity: 0; }
@@ -55,10 +60,10 @@
 .specimen__head { display: flex; justify-content: space-between; align-items: baseline; }
 .specimen__state { font: var(--t-caption); color: var(--ink-3); }
 .specimen__grammar { display: grid; gap: 1px; font: var(--t-formal); }
-.specimen__grammar li { padding: 1px 6px; border: 1px solid transparent; border-radius: 3px; display: flex; flex-wrap: wrap; gap: 0 8px; align-items: baseline; }
+.specimen__grammar li { padding: 1px 6px; border: 1px solid transparent; border-radius: var(--r-mark); display: flex; flex-wrap: wrap; gap: 0 8px; align-items: baseline; }
 .specimen__grammar li.is-active { border: 1px dashed var(--read); background: var(--plate); }
 .specimen__grammar .prod.is-active .prod__sym, .specimen__alt.is-active { background: var(--changed); }
-.specimen__alt { padding: 0 2px; border-radius: 2px; }
+.specimen__alt { padding: 0 2px; border-radius: var(--r-mark); }
 .specimen__alt span { color: var(--ink-3); margin-right: 6px; }
 .specimen__table { position: relative; display: flex; gap: 14px; align-items: flex-start; }
 .specimen__table .ptable-wrap { --cell: clamp(28px, calc((100dvh - 480px) / 8.4), 40px); }
@@ -68,10 +73,10 @@
 .specimen__rule { font: var(--t-caption); color: var(--ink-3); margin-left: 8px; font-family: var(--font-sans); }
 .specimen__parse { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; min-height: 40px; }
 .specimen__tape { display: inline-flex; gap: 3px; }
-.stok { font: 500 0.95rem/1 var(--font-mono); padding: 6px 7px; border: 1px solid var(--line); border-radius: 3px; background: var(--plate); }
+.stok { font: 500 0.95rem/1 var(--font-mono); padding: 6px 7px; border: 1px solid var(--line); border-radius: var(--r-mark); background: var(--plate); }
 .stok.is-used { color: var(--ink-3); border-style: dashed; background: var(--plate-2); }
 .stok.is-look { box-shadow: 0 0 0 2px var(--ink); }
-.specimen__rel { font: 500 1.0625rem/1 var(--font-mono); padding: 5px 10px; border: 2px dashed var(--read); border-radius: 4px; background: var(--plate); }
+.specimen__rel { font: 500 1.0625rem/1 var(--font-mono); padding: 5px 10px; border: 2px dashed var(--read); border-radius: var(--r-mark); background: var(--plate); }
 .specimen__wait { font: var(--t-caption); color: var(--ink-3); }
 .specimen__controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 4px; }
 .specimen__count { font: var(--t-caption); color: var(--ink-3); margin-right: auto; padding-left: 6px; }
@@ -85,17 +90,19 @@
   position: absolute; left: 0; top: 0; font-family: var(--font-math); line-height: 1; transform-style: preserve-3d; will-change: transform;
   text-shadow: 1px 1px 0 rgba(40, 30, 10, 0.55), 2px 2px 0 rgba(40, 30, 10, 0.45), 3px 3px 0 rgba(40, 30, 10, 0.35), 4px 4px 2px rgba(40, 30, 10, 0.2);
 }
-.intro__caption { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); font: var(--t-body); color: var(--ink-2); background: var(--plate); padding: 6px 12px; border: 1px solid var(--rule); border-radius: 4px; white-space: nowrap; }
+.intro__caption { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); font: var(--t-body); color: var(--ink-2); background: var(--plate); padding: 6px 12px; border: 1px solid var(--rule); border-radius: var(--r-mark); width: max-content; max-width: calc(100vw - 2 * var(--gutter)); text-align: center; }
 .intro__caption b { font-family: var(--font-math); font-weight: 400; font-size: 1.2em; }
 .intro__skip { position: absolute; right: 24px; bottom: 24px; pointer-events: auto; }
 
 /* ── Narrow: the specimen stacks under the headline, doors become a vertical ruled list ── */
 @media (max-width: 899px) {
   .app[data-page='home'] { height: auto; min-height: 100dvh; overflow: visible; }
-  .home { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'lead' 'doors' 'spec'; gap: 18px; padding: 8px 16px 16px; }
+  .home { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'lead' 'doors' 'spec'; gap: 18px; padding: 8px 0 16px; }
   .home__lead { padding: 8px 0 0; }
+  .titleblock div { grid-template-columns: 5.5rem minmax(0, 1fr); }
   .home__title { font-size: 2rem; }
   .doors ol { grid-template-columns: minmax(0, 1fr); }
+  .door__link { padding: 12px 4px; }
   .door + .door { border-left: 0; border-top: 1px solid var(--rule); }
   .specimen__table { flex-direction: column; }
   .specimen__prov { position: static; width: 100%; }

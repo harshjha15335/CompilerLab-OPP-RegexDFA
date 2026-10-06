@@ -1,9 +1,18 @@
 // Shared, purely presentational pieces: relation glyphs, tags, verdict stamps, productions, sets.
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, useSyncExternalStore, type ReactNode } from 'react';
 import type { Production as Prod, Relation } from '../core/index.ts';
 import { useGlyphMode } from './glyphs.ts';
 
 export const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
+
+/** True while a CSS media query matches (re-renders when it changes). */
+export function useMedia(query: string) {
+  return useSyncExternalStore(
+    (on) => { const mq = window.matchMedia?.(query); mq?.addEventListener?.('change', on); return () => mq?.removeEventListener?.('change', on); },
+    () => window.matchMedia?.(query).matches ?? false,
+    () => false,
+  );
+}
 
 export const REL_INFO: Record<Relation, { kind: 'yields' | 'takes' | 'equal'; name: string; action: string }> = {
   '⋖': { kind: 'yields', name: 'yields precedence to', action: 'shift' },
@@ -87,7 +96,7 @@ export function ProductionList({ productions, activeId, marks, caption = 'Produc
   { productions: Prod[]; activeId?: number | null; marks?: Set<number>; caption?: string; dataCause?: boolean }) {
   return (
     <section className="block">
-      <h3 className="label">{caption}</h3>
+      <h2 className="label">{caption}</h2>
       <ol className="prodlist">
         {productions.map((p) => (
           <li key={p.id} className={cx(p.id === activeId && 'is-active')} aria-current={p.id === activeId ? 'true' : undefined}

@@ -112,6 +112,7 @@ Every item below was a FAIL in `scripts/verify.mjs` or in a screenshot review be
 | 20 | Trailing "Back restores exact DOM: followpos @3" flake from the old UI | Old effects committed inline styles (Motion) and drew overlays inside the compared container | WAAPI with no lasting fill plus overlays outside the app root; checked now at **every** step of eight stages, three timings each |
 | 21 | Parse dock: tick labels "reduce 1 … reduce 5" overlapped (reported by the team) | Labels were spaced by fraction of the track (12%), not by their measured width; the text-overlap check skipped them because the track is `aria-hidden` | Labels are measured and fitted: a label that would touch its neighbour hides, and end labels anchor inward. The overlap check now includes tick labels. **New verifier rule.** Shown failing on 7 screens with fitting off |
 | 22 | "Stored reduced-motion preference stops all motion" failed once in a full run | The test wrote `cl.reduced` and reloaded immediately, racing the storage backend under load | The preference is seeded before the app boots |
+| 23 | UI/UX de-vibe audit: chapter pages overflowed sideways at 768/390/360 px (91 views), two scrollers on narrow screens, homepage hero template, planned chapter with equal weight, and more | The product was verified only at desktop sizes | See [`audit/UI_UX_FINAL_REPORT.md`](../audit/UI_UX_FINAL_REPORT.md). **New verifier rules:** at most one scroller below 1000 px, a modal-locked page is not a scroller, no unexpected homepage tab stops |
 
 ## 5. Known limitations (not hidden)
 

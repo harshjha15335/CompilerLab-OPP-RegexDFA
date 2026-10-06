@@ -109,7 +109,8 @@ function layoutProbe() {
       out.clipped.push(`${desc(el)} [scrolls sideways: content ${el.scrollWidth} wide in ${el.clientWidth}]`);
   }
   const se = document.scrollingElement;
-  if (se.scrollHeight > innerHeight + 1) out.scrollers.push('the page itself');
+  const pageLocked = getComputedStyle(document.documentElement).overflowY === 'hidden';   // a modal sheet locks the page
+  if (se.scrollHeight > innerHeight + 1 && !pageLocked) out.scrollers.push('the page itself');
   if (se.scrollWidth > innerWidth + 1) out.hscroll = true;
   const sel = 'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="slider"], [role="radio"], [role="tab"], [role="switch"]';
   const visRect = (el) => {
@@ -249,12 +250,14 @@ if (want('screens')) for (const s of SCREENS) {
       await page.screenshot({ path: file });
       screenshots.push({ id: s.id, vp: tag, file });
       const L = await page.evaluate(layoutProbe);
-      const scrollers = s.pageScrollOk ? L.scrollers : L.scrollers;
+      const scrollers = L.scrollers;
+      // the desktop rule (no page scroll) applies at >= 1000 px; below that the page is the one allowed scroller
+      const pageOk = s.pageScrollOk || vp[0] < 1000;
       check('layout', `${s.id} @ ${tag}: no clipped text`, L.clipped.length === 0, L.clipped.join('\n'));
       check('layout', `${s.id} @ ${tag}: no overlapping interactive elements`, L.overlaps.length === 0, L.overlaps.join('\n'));
       check('layout', `${s.id} @ ${tag}: no text overlapping other text or a control`, L.textOverlaps.length === 0, L.textOverlaps.slice(0, 12).join('\n'));
-      check('layout', `${s.id} @ ${tag}: at most one vertical scrollbar${s.pageScrollOk ? '' : ', no page scroll'}`,
-        scrollers.length <= 1 && (s.pageScrollOk || !scrollers.includes('the page itself')), scrollers.join(' | '));
+      check('layout', `${s.id} @ ${tag}: at most one vertical scrollbar${pageOk ? '' : ', no page scroll'}`,
+        scrollers.length <= 1 && (pageOk || !scrollers.includes('the page itself')), scrollers.join(' | '));
       check('layout', `${s.id} @ ${tag}: no horizontal page scroll`, !L.hscroll);
     } catch (e) {
       check('layout', `${s.id} @ ${vp.join('x')}: screen could be driven`, false, e.message);
@@ -278,7 +281,8 @@ if (want('home')) {
   const dom = await page.$$eval('.specimen .ptable td', (tds) => tds.map((td) => [td.dataset.cell, [...td.querySelectorAll('.rel')].map((r) => r.dataset.rel).join('')]));
   const mism = dom.filter(([k, v]) => { const [a, b] = k.split(' '); return (expected.get(cellKey(a, b))?.relations.join('') ?? '') !== v; });
   check('home', `2. specimen table equals buildPrecedenceTable (${dom.length} cells compared)`, dom.length === spec.a.table.axes.length ** 2 && mism.length === 0, JSON.stringify(mism));
-  // 3. tab order: headline → doors → specimen controls; doors operable by keyboard
+  // 3. tab order: headline → doors → specimen controls; doors operable by keyboard.
+  //    The headline block has no links of its own (the doors are the single entry), so it may have no tab stops.
   await go(page, '#/');
   const order = [];
   for (let i = 0; i < 40; i++) {
@@ -286,12 +290,12 @@ if (want('home')) {
     const where = await page.evaluate(() => {
       const a = document.activeElement;
       if (!a || a === document.body) return null;
-      return a.closest('.rail') ? 'rail' : a.closest('.home__lead') ? 'headline' : a.closest('.doors') ? 'door' : a.closest('.specimen') ? 'specimen' : a.closest('.home__foot') ? 'footer' : 'other';
+      return a.closest('.skip') ? 'skip' : a.closest('.rail') ? 'rail' : a.closest('.home__lead') ? 'headline' : a.closest('.doors') ? 'door' : a.closest('.specimen') ? 'specimen' : a.closest('.home__foot') ? 'footer' : 'other';
     });
     if (where) order.push(where);
   }
   const firstOf = (k) => order.indexOf(k), lastOf = (k) => order.lastIndexOf(k);
-  const okOrder = firstOf('headline') >= 0 && firstOf('door') > lastOf('headline') && firstOf('specimen') > lastOf('door') && order.filter((x) => x === 'door').length === 3;
+  const okOrder = !order.includes('other') && firstOf('door') >= 0 && firstOf('door') > lastOf('headline') && firstOf('specimen') > lastOf('door') && order.filter((x) => x === 'door').length === 3;
   check('home', `3a. Tab order is headline → doors (3) → specimen controls`, okOrder, order.join(' → '));
   const doors = [];
   for (const [idx, want] of [[0, '#/opp/grammar'], [1, '#/lr'], [2, '#/regex/tree']]) {

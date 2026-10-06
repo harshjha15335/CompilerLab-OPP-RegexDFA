@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import type { Dfa } from '../../core/index.ts';
 import { all, drawOver, ring, travel } from '../../motion/fx.ts';
-import { cx } from '../../ui/kit.tsx';
+import { cx, useMedia } from '../../ui/kit.tsx';
 import { edgeId, layoutDfa, setText, visibleEdgeLabels } from './dfaLayout.ts';
 
 /** Hand-written SVG DFA over a fixed layout. Undiscovered parts keep their place (hidden), so the
@@ -12,7 +12,9 @@ export function DfaGraph({ dfa, visibleStates, visibleTransitions, activeState, 
   activeState?: string | null; activeEdge?: { from: string; to: string; symbol: string } | null; sourceState?: string | null;
   freshState?: string | null; stuck?: boolean; fx?: 'build' | 'sim' | null;
 }) {
-  const geo = useMemo(() => layoutDfa(dfa), [dfa]);
+  // phones read the automaton top to bottom at close to full size instead of a long row shrunk to fit
+  const column = useMedia('(max-width: 640px)');
+  const geo = useMemo(() => layoutDfa(dfa, undefined, column ? 'column' : 'row'), [dfa, column]);
   const states = useMemo(() => new Set(visibleStates ?? dfa.states.map((s) => s.name)), [visibleStates, dfa]);
   const labels = useMemo(() => visibleEdgeLabels(visibleTransitions ?? dfa.transitions), [visibleTransitions, dfa]);
   const svg = useRef<SVGSVGElement>(null);

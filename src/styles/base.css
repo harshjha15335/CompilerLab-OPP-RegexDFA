@@ -10,26 +10,28 @@ body {
   font-variant-numeric: tabular-nums;
 }
 #root { height: 100%; }
+/* a modal sheet is open: the page behind it does not scroll */
+html.is-locked { overflow: hidden; }
 h1, h2, h3, h4, p, ol, ul, dl, dd, figure { margin: 0; }
 ol, ul { padding: 0; list-style: none; }
 button, input, textarea, select { font: inherit; color: inherit; }
 a { color: inherit; }
 code, kbd, .mono { font-family: var(--font-mono); }
-code { font-size: 0.92em; background: var(--plate-2); padding: 0 4px; border-radius: 3px; }
+code { font-size: 0.92em; background: var(--plate-2); padding: 0 4px; border-radius: var(--r-mark); }
 kbd {
   font: 500 0.8125rem/1 var(--font-mono);
-  display: inline-block; padding: 3px 6px; border-radius: 4px; min-width: 1.6em; text-align: center;
+  display: inline-block; padding: 3px 6px; border-radius: var(--r-mark); min-width: 1.6em; text-align: center;
   background: var(--cap-top); border: 1px solid var(--cap-edge); box-shadow: 0 2px 0 var(--cap-side);
 }
 b, strong { font-weight: 600; }
 
 /* Focus: always visible, 2px ring with an offset, never removed. */
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-mark); }
 .sr-only {
   position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
   overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
 }
-.skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--plate); padding: 8px 12px; border-radius: 4px; }
+.skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--plate); padding: 8px 12px; border-radius: var(--radius); }
 .skip:focus { top: 8px; }
 
 /* ── Type roles ──────────────────────────────────────── */
@@ -40,6 +42,11 @@ b, strong { font-weight: 600; }
 .label--gap { margin-top: var(--s4); }
 
 /* ── Buttons and links ───────────────────────────────── */
+/* one shared state transition for every flat control: colour only, 120 ms, never size or position
+   (under reduced motion motion.css zeroes every transition) */
+.btn, .chip, .rail__link, .stages__step, .stages__toggle, .drawer__item, .sample, .example, .door__link, .trace__jump, .member, .tabs__tab, .dock__next {
+  transition: background-color var(--press) var(--ease), border-color var(--press) var(--ease), color var(--press) var(--ease);
+}
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 34px; padding: 6px 14px; border-radius: var(--radius);
@@ -54,9 +61,8 @@ b, strong { font-weight: 600; }
 .linkbtn {
   border: 0; background: none; padding: 0; cursor: pointer; color: var(--rel-yields);
   text-decoration: underline; text-underline-offset: 3px; font: inherit;
+  min-height: 24px;                 /* a standalone link-button still gets the 24 px target (WCAG 2.2 AA 2.5.8) */
 }
-.textlink { font: 500 1rem/1.3 var(--font-sans); text-decoration: none; border-bottom: 1.5px solid var(--ink); padding-bottom: 2px; }
-.textlink:hover { border-bottom-width: 3px; }
 
 /* ── Fields ──────────────────────────────────────────── */
 .field { display: grid; gap: 4px; min-width: 180px; }
@@ -70,7 +76,7 @@ b, strong { font-weight: 600; }
 /* ── Tags (label style 2): bordered, sentence case, with a glyph ── */
 .tag {
   font: var(--t-tag); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
-  padding: 3px 7px; border: 1px solid currentColor; border-radius: 3px; vertical-align: 1px; color: var(--ink-2); background: var(--plate);
+  padding: 3px 7px; border: 1px solid currentColor; border-radius: var(--r-mark); vertical-align: 1px; color: var(--ink-2); background: var(--plate);
 }
 .tag svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .tag--new { color: var(--ink); background: var(--changed); border-color: var(--changed-edge); }
@@ -81,7 +87,7 @@ b, strong { font-weight: 600; }
 .tag--progress { color: var(--read); border-style: dotted; }
 
 /* ── Verdict stamps: word + glyph + border style ─────── */
-.verdict { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 4px; max-width: 100%; }
+.verdict { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--r-mark); max-width: 100%; }
 .verdict__glyph { width: 26px; height: 26px; flex: none; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
 .verdict__text { display: grid; gap: 2px; min-width: 0; }
 .verdict__word { font: 600 1.25rem/1 var(--font-mono); letter-spacing: 0.06em; }
@@ -104,10 +110,10 @@ b, strong { font-weight: 600; }
 .prod { font: var(--t-formal); display: inline-flex; flex-wrap: wrap; gap: 0 0.45em; align-items: baseline; }
 .prod__lhs { font-weight: 500; }
 .prod__arrow { color: var(--ink-3); font-family: var(--font-math); }
-.prod__sym.is-marked { background: var(--changed); box-shadow: 0 0 0 2px var(--changed); border-radius: 2px; }
+.prod__sym.is-marked { background: var(--changed); box-shadow: 0 0 0 2px var(--changed); border-radius: var(--r-mark); }
 .mset { font-family: var(--font-mono); white-space: nowrap; }
 .prodlist { display: grid; gap: 2px; }
-.prodlist li { display: flex; gap: 10px; align-items: baseline; padding: 3px 8px; border-radius: 4px; border: 1px solid transparent; }
+.prodlist li { display: flex; gap: 10px; align-items: baseline; padding: 3px 8px; border-radius: var(--r-mark); border: 1px solid transparent; }
 .prodlist li.is-active { border-color: var(--read); border-style: dashed; background: var(--plate); }
 .prodlist__no { font: var(--t-caption); color: var(--ink-3); min-width: 1.4em; text-align: right; }
 

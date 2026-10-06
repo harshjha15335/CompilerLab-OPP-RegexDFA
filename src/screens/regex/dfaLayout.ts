@@ -15,7 +15,7 @@ export interface Box { x: number; y: number; w: number; h: number }
 export interface DfaGeometry {
   nodes: NodeGeo[]; edges: EdgeGeo[];
   start: { x1: number; y1: number; x2: number; y2: number; lx: number; ly: number };
-  box: Box; layout: 'row' | 'ring';
+  box: Box; layout: 'row' | 'column' | 'ring';
 }
 
 export const setText = (p: number[]) => `{${p.join(',')}}`;
@@ -30,7 +30,14 @@ const len = (a: P) => Math.hypot(a.x, a.y) || 1;
 const unit = (a: P) => { const l = len(a); return { x: a.x / l, y: a.y / l }; };
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
-export function layoutDfa(dfa: Dfa, labels?: Map<string, string>): DfaGeometry {
+/** `orient: 'column'` (phones) draws the row layout top-to-bottom: the row geometry reflected across the
+ *  diagonal, which keeps every distance, then labels re-seated beside their (now vertical) edges. */
+export function layoutDfa(dfa: Dfa, labels?: Map<string, string>, orient: 'row' | 'column' = 'row'): DfaGeometry {
+  const g = layoutRowOrRing(dfa, labels);
+  return orient === 'column' && g.layout === 'row' ? toColumn(g, dfa.start, labels) : g;
+}
+
+function layoutRowOrRing(dfa: Dfa, labels?: Map<string, string>): DfaGeometry {
   const n = dfa.states.length;
   const radius = (pos: number[]) => Math.max(27, Math.ceil((setText(pos).length * SET_CH) / 2 + 12));
   const row = n <= 7;
@@ -104,20 +111,45 @@ export function layoutDfa(dfa: Dfa, labels?: Map<string, string>): DfaGeometry {
   const s0 = at.get(dfa.start)!.nd;
   const start = { x1: s0.x - s0.r - 52, y1: s0.y, x2: s0.x - s0.r - 3, y2: s0.y, lx: s0.x - s0.r - 30, ly: s0.y - 14 };
 
-  // bounding box of everything that is drawn
+  const layout = row ? 'row' : 'ring';
+  return { nodes, edges, start, layout, box: frame(nodes, edges, start, layout, labels) };
+}
+
+/** Bounding box of everything that is drawn (self-loops sit above a node in a row, left of it in a column). */
+function frame(nodes: NodeGeo[], edges: EdgeGeo[], start: DfaGeometry['start'], layout: DfaGeometry['layout'], labels?: Map<string, string>): Box {
+  const byId = new Map(nodes.map((nd) => [nd.id, nd]));
   const pts: Box[] = [
     ...nodes.map((nd) => ({ x: nd.x - nd.r, y: nd.y - nd.r, w: nd.r * 2, h: nd.r * 2 })),
     ...edges.map((e) => labelBox(labels?.get(e.id) ?? e.symbols.join(','), e.lx, e.ly)),
-    ...edges.filter((e) => e.loop).map((e) => { const A = at.get(e.from)!.nd; return { x: A.x - A.r, y: A.y - A.r - 50, w: A.r * 2, h: 50 }; }),
-    labelBox('start', start.lx, start.ly), { x: start.x1, y: start.y1 - 2, w: 4, h: 4 },
+    ...edges.filter((e) => e.loop).map((e) => {
+      const A = byId.get(e.from)!;
+      return layout === 'column' ? { x: A.x - A.r - 50, y: A.y - A.r, w: 50, h: A.r * 2 } : { x: A.x - A.r, y: A.y - A.r - 50, w: A.r * 2, h: 50 };
+    }),
+    labelBox('start', start.lx, start.ly), { x: start.x1 - 2, y: start.y1 - 2, w: 4, h: 4 },
   ];
   const minX = Math.min(...pts.map((b) => b.x)), minY = Math.min(...pts.map((b) => b.y));
   const maxX = Math.max(...pts.map((b) => b.x + b.w)), maxY = Math.max(...pts.map((b) => b.y + b.h));
   const pad = 14;
-  return {
-    nodes, edges, start, layout: row ? 'row' : 'ring',
-    box: { x: r1(minX - pad), y: r1(minY - pad), w: r1(maxX - minX + pad * 2), h: r1(maxY - minY + pad * 2) },
-  };
+  return { x: r1(minX - pad), y: r1(minY - pad), w: r1(maxX - minX + pad * 2), h: r1(maxY - minY + pad * 2) };
+}
+
+const swapPath = (d: string) => d.replace(/(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g, '$2 $1');
+
+function toColumn(g: DfaGeometry, startId: string, labels?: Map<string, string>): DfaGeometry {
+  const nodes = g.nodes.map((nd) => ({ ...nd, x: nd.y, y: nd.x }));
+  const edges = g.edges.map((e) => {
+    const lx = e.ly, ly = e.lx;
+    if (e.loop) return { ...e, d: swapPath(e.d), lx: r1(lx), ly: r1(ly) };
+    // a row label sat 15 px above or below its edge; beside a vertical edge it needs half its own width
+    const w = labelBox(e.symbols.join(','), 0, 0).w;
+    const side = lx < 0 ? -1 : 1;                 // every node sits on x = 0; the label keeps its side of the column
+    const curveX = lx - side * 15;
+    return { ...e, d: swapPath(e.d), lx: r1(curveX + side * (w / 2 + 5)), ly: r1(ly) };
+  });
+  // the start arrow comes in from above; its label sits to the right (self-loops are on the left)
+  const st = nodes.find((nd) => nd.id === startId)!;
+  const start = { x1: st.x, y1: st.y - st.r - 52, x2: st.x, y2: st.y - st.r - 3, lx: st.x + 36, ly: st.y - st.r - 30 };
+  return { nodes, edges, start, layout: 'column', box: frame(nodes, edges, start, 'column', labels) };
 }
 
 /** Label for each drawn edge given only the transitions visible so far ("a,b" when grouped). */

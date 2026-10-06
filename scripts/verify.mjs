@@ -315,18 +315,17 @@ if (want('home')) {
   await go(page, '#/?fault=specimen');
   const err = await page.$eval('.specimen--failed', (e) => e.textContent).catch(() => '');
   check('home', 'specimen failure shows the fallback message and keeps the doors', err.includes("The specimen couldn't run. Open Examples to load a grammar.") && (await page.$$('.doors a')).length === 3, err);
-  // the first-visit note: shown once, remembered when dismissed
-  const fresh = await open(browser, { init: () => { try { localStorage.setItem('cl.intro.seen.v2', '1'); } catch {} } });
-  await go(fresh.page, '#/');
-  const noteText = await fresh.page.$eval('.firstnote', (e) => e.textContent).catch(() => '');
-  await fresh.page.click('.firstnote button');
-  const dismissed = await fresh.page.waitForSelector('.firstnote', { state: 'detached', timeout: 2000 }).then(() => true, () => false);
-  const stored = await fresh.page.evaluate(() => localStorage.getItem('cl.note.keys.v1'));
-  await go(fresh.page, '#/');
-  check('home', 'first-visit note says "Use ← → to step through anything in this tool." and is remembered once dismissed',
-    noteText.includes('Use ← → to step through anything in this tool.') && dismissed && stored === '1' && !(await fresh.page.$('.firstnote')),
-    JSON.stringify({ noteText, dismissed, stored }));
-  await fresh.ctx.close();
+  // the project title block is part of the first view, and there is no navigation-instructions note
+  await go(page, '#/');
+  const tb = await page.evaluate(() => {
+    const el = document.querySelector('.home__lead .titleblock');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { text: el.textContent, inView: r.top >= 0 && r.bottom <= innerHeight, note: Boolean(document.querySelector('.firstnote')) };
+  });
+  check('home', 'project title block (course, project, team, members, year) is fully visible in the first view; no navigation note',
+    Boolean(tb) && tb.inView && !tb.note && ['Compiler Design', 'Interactive GUI for Operator Precedence Parsing', 'Team Compilers', 'Harsh Jha', '24BCE0568', 'Anuj Deshpande', '24BCE0794', '2026'].every((t) => tb.text.includes(t)),
+    JSON.stringify(tb));
   await ctx.close();
 }
 

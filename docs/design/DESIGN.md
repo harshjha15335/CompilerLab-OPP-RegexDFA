@@ -7,7 +7,8 @@ Deliverables 2–5 of the brief. Deliverable 1 is [EFFECT-CATALOG.md](EFFECT-CAT
 
 - The algorithm core in `src/algorithms` is byte-identical to the attached `compiler-lab-core.zip`. I checked this with `diff -r`. It is treated as frozen.
 - The lab machines run Chrome or Edge, so Chromium is the verified target. Other browsers are expected to work but were not tested.
-- "Course" in the footer is shown as *Compiler Design*. I did not invent a course code.
+- "Course" in the homepage title block is shown as *Compiler Design*. I did not invent a course code.
+- At the team's request, the project details sit in a title block in the homepage's first view (not a footer), and the first-visit navigation note was removed.
 - Light theme only. A dark "blueprint" plate is on the scope-cut ladder.
 
 ---
@@ -101,7 +102,7 @@ The tokens live in [`src/styles/tokens.css`](../../src/styles/tokens.css). Contr
 | `--ink-2` #4A4D52 | `--plate-2` #F1EDE3 | secondary text in wells | 7.26:1 | 4.5:1 | pass |
 | `--ink-3` #5F6166 | `--plate` #FAF8F2 | captions | 5.84:1 | 4.5:1 | pass |
 | `--ink-3` #5F6166 | `--plate-2` #F1EDE3 | captions in wells | 5.30:1 | 4.5:1 | pass |
-| `--ink-3` #5F6166 | `--desk` #E2DDD0 | footer metadata on the desk | 4.57:1 | 4.5:1 | pass |
+| `--ink-3` #5F6166 | `--desk` #E2DDD0 | captions on the desk | 4.57:1 | 4.5:1 | pass |
 | `--line` #77705F | `--plate` #FAF8F2 | cell, tape and stack borders | 4.63:1 | 3:1 | pass |
 | `--line` #77705F | `--plate-2` #F1EDE3 | borders inside wells | 4.21:1 | 3:1 | pass |
 | `--rel-yields` #1D4C91 | `--plate` #FAF8F2 | ⋖ glyph | 7.93:1 | 4.5:1 | pass |
@@ -218,13 +219,17 @@ Per-screen arrangement (all at 1366×768, inspector 400 px, dock 76 px):
 │ Then watch a parser use it.          │ └──┴──┴──┴──┴──┴──┴──┘     their production            │
 │                                      │ id ⋗ +   rule R4               (paused: full sentence) │
 │ Operator precedence →  Regex → DFA → │ Parse [id][+][id][*][id][$]   ⋖ … → ✓ ACCEPT           │
-│ [← → Use ← → to step …   Got it]     │ [ ❚❚ Pause ][◀][▶]  12 of 40           [Use this grammar]│
+│ ┌─────────┬────────────────────────┐ │ [ ❚❚ Pause ][◀][▶]  12 of 40           [Use this grammar]│
+│ │Project  │Interactive GUI for OPP │ │                                                        │
+│ │Course   │Compiler Design         │ │   title block: the project details, in the first view │
+│ │Team     │Team Compilers          │ │                                                        │
+│ │Members  │Harsh Jha 24BCE0568     │ │                                                        │
+│ │         │Anuj Deshpande 24BCE0794│ │                                                        │
+│ │Year     │2026                    │ │                                                        │
+│ └─────────┴────────────────────────┘ │                                                        │
 ├──────────────────────────────────────┴────────────────────────────────────────────────────────┤
 │ I  Operator precedence         │ II LR parsing [In progress]    │ III Regex → DFA                │
 │    grammar → table → parse      │    items → table → parse        │     tree → followpos → DFA     │
-├───────────────────────────────────────────────────────────────────────────────────────────────┤
-│ Compiler Design · Interactive GUI for … · Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande │
-│ (24BCE0794) · 2026                                                                              │
 └───────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -239,7 +244,7 @@ On door hover or focus, the underline under the pipeline moves from the first st
 │ Plate I                  │
 │ How a compiler decides   │
 │ what to do next.         │
-│ sub · links · note       │
+│ sub · links · title block│
 ├──────────────────────────┤
 │ I  Operator precedence   │   doors: a vertical ruled list
 │    grammar → table → …   │
@@ -250,8 +255,6 @@ On door hover or focus, the underline under the pipeline moves from the first st
 ├──────────────────────────┤
 │ Live specimen            │   specimen under the headline block
 │ grammar · table · parse  │   (provenance sheet stacks under the table)
-├──────────────────────────┤
-│ footer, one item a line  │
 └──────────────────────────┘
 ```
 

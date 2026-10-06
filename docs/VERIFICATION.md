@@ -55,9 +55,9 @@ measured. The fixes that brought the app itself under 2% are in the [audit log](
 | 2. A test asserts the specimen's table equals `buildPrecedenceTable` | **Pass.** `test/specimen.test.ts` compares every cell of the data; `verify.mjs` compares all 36 rendered cells with the core |
 | 3. All three doors reachable and operable by keyboard; Tab order headline → doors → specimen controls | **Pass.** The recorded Tab sequence is rail → headline → door ×3 → specimen; Enter on each door opens `#/opp/grammar`, `#/lr`, `#/regex/tree` |
 | 4. Zero network requests; works from the built `dist/` offline | **Pass** |
-| 5. A screenshot with the logo removed still reads as a compiler tool, not a SaaS landing page | **Needs a human.** The screenshot is [screenshots/home-without-logo.png](screenshots/home-without-logo.png). My reading: a grammar, a precedence table filling in with relation glyphs, parse tokens, plate numbering, a ruled strip of three tool entries and a one-line course footer; no hero image, feature grid, stats or gradient call-to-action. The script only produces the image; it does not judge it. |
+| 5. A screenshot with the logo removed still reads as a compiler tool, not a SaaS landing page | **Needs a human.** The screenshot is [screenshots/home-without-logo.png](screenshots/home-without-logo.png). My reading: a grammar, a precedence table filling in with relation glyphs, parse tokens, plate numbering, a drafting-style title block with the project, course and team, and a ruled strip of three tool entries; no hero image, feature grid, stats or gradient call-to-action. The script only produces the image; it does not judge it. |
 | Specimen failure (`#/?fault=specimen`) | **Pass.** "The specimen couldn't run. Open Examples to load a grammar." is shown and the three doors still work |
-| First-visit note | **Pass.** It shows "Use ← → to step through anything in this tool." and stays dismissed after reload |
+| Project title block | **Pass.** Course, project, team, both members with registration numbers, and year are fully visible in the first view. The navigation-instructions note was removed at the team's request. |
 
 ### Intro
 

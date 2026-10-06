@@ -61,7 +61,6 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
     : forced === '3d' || forced === 'css' ? forced
     : reduced || introSeen ? null : webgl ? '3d' : 'css';
   const [introDone, setIntroDone] = useState(intro === null);
-  const [note, setNote] = useState(() => read(KEYS.note) !== '1');
   const staticSpecimen = reduced || !webgl || hashFlag('specimen') === 'static';
   const mode = !introDone ? 'hidden' : staticSpecimen ? 'static' : 'live';
 
@@ -75,12 +74,13 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
           <a className="textlink" href={hashFor('opp', 'grammar')}>Operator precedence <span aria-hidden="true">→</span></a>
           <a className="textlink" href={hashFor('regex', 'tree')}>Regex → DFA <span aria-hidden="true">→</span></a>
         </p>
-        {note && (
-          <p className="firstnote" role="note">
-            <span><kbd>←</kbd> <kbd>→</kbd> Use ← → to step through anything in this tool.</span>
-            <button type="button" className="btn btn--quiet" onClick={() => { write(KEYS.note, '1'); setNote(false); }}>Got it</button>
-          </p>
-        )}
+        <dl className="titleblock" aria-label="Project">
+          <div><dt>Project</dt><dd>Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)</dd></div>
+          <div><dt>Course</dt><dd>Compiler Design</dd></div>
+          <div><dt>Team</dt><dd>Team Compilers</dd></div>
+          <div><dt>Members</dt><dd><span>Harsh Jha <span className="titleblock__id">24BCE0568</span></span><span>Anuj Deshpande <span className="titleblock__id">24BCE0794</span></span></dd></div>
+          <div><dt>Year</dt><dd>2026</dd></div>
+        </dl>
       </section>
 
       <nav className="doors" aria-label="Tools">
@@ -98,12 +98,6 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
         </SpecimenBoundary>
       </div>
 
-      <footer className="home__foot">
-        <span>Compiler Design</span>
-        <span>Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)</span>
-        <span>Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794)</span>
-        <span>2026</span>
-      </footer>
 
       {intro && !introDone && (
         <Intro kind={intro} onDone={() => { write(KEYS.intro, '1'); setIntroSeen(true); setIntroDone(true); }} />

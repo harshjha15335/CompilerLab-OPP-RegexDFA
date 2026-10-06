@@ -1,17 +1,23 @@
-/* Homepage: "The Specimen Plate". One live specimen, three typographic doors, a quiet footer.
+/* Homepage: "The Specimen Plate". One live specimen, the project title block, three typographic doors.
    DOM order (= Tab order): headline → doors → specimen. Grid areas put the specimen top-right. */
 .home {
   min-height: 0; height: 100%; display: grid; gap: 14px 40px; padding: 8px 18px 0;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  grid-template-rows: minmax(0, 1fr) auto auto;
-  grid-template-areas: 'lead spec' 'doors doors' 'foot foot';
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'lead spec' 'doors doors';
+  padding-bottom: 14px;
 }
 .home__lead { grid-area: lead; display: flex; flex-direction: column; gap: 18px; justify-content: center; padding: 0 0 0 12px; max-width: 34rem; }
 .home__title { font: var(--t-display); letter-spacing: -0.01em; view-transition-name: plate-title; }
 .home__sub { font: 400 1.0625rem/1.55 var(--font-sans); color: var(--ink-2); max-width: 30rem; }
 .home__links { display: flex; gap: 28px; flex-wrap: wrap; }
-.firstnote { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 4px; color: var(--ink-2); background: var(--plate); max-width: 30rem; }
-.firstnote kbd { margin-right: 2px; }
+/* drafting-plate title block: who made this, set as part of the plate */
+.titleblock { display: grid; border: 1.5px solid var(--ink); background: var(--plate); max-width: 34rem; }
+.titleblock div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); border-top: 1px solid var(--line); }
+.titleblock div:first-child { border-top: 0; }
+.titleblock dt { font: var(--t-label); color: var(--ink-2); padding: 6px 10px; border-right: 1px solid var(--line); background: var(--plate-2); }
+.titleblock dd { font: 500 0.9375rem/1.4 var(--font-sans); color: var(--ink); padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 2px 18px; }
+.titleblock__id { font: 500 0.875rem/1.4 var(--font-mono); color: var(--ink-2); margin-left: 4px; }
 
 .home__specimen { grid-area: spec; min-height: 0; display: grid; }
 
@@ -31,10 +37,6 @@
 .door__stage.is-at .door__word { color: var(--ink); }
 .door__mark { position: absolute; left: -2px; right: -2px; bottom: -3px; height: 2px; background: var(--ink); }
 
-.home__foot {
-  grid-area: foot; display: flex; flex-wrap: wrap; gap: 4px 0; padding: 2px 0 12px; font: var(--t-caption); color: var(--ink-3);
-}
-.home__foot span + span::before { content: '·'; margin: 0 10px; }
 
 /* ── The specimen (a small plate) ─────────────────────── */
 .specimen {
@@ -89,7 +91,7 @@
 /* ── Narrow: the specimen stacks under the headline, doors become a vertical ruled list ── */
 @media (max-width: 899px) {
   .app[data-page='home'] { height: auto; min-height: 100dvh; overflow: visible; }
-  .home { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'lead' 'doors' 'spec' 'foot'; gap: 18px; padding: 8px 16px 0; }
+  .home { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'lead' 'doors' 'spec'; gap: 18px; padding: 8px 16px 16px; }
   .home__lead { padding: 8px 0 0; }
   .home__title { font-size: 2rem; }
   .doors ol { grid-template-columns: minmax(0, 1fr); }
@@ -97,6 +99,4 @@
   .specimen__table { flex-direction: column; }
   .specimen__prov { position: static; width: 100%; }
   .specimen__table .ptable-wrap { --cell: clamp(30px, 9vw, 40px); }
-  .home__foot { flex-direction: column; }
-  .home__foot span + span::before { content: none; }
 }

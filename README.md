@@ -45,7 +45,7 @@ npm run audit:offline
 ```
 
 Copies `dist/` into a renamed, nested temp folder, opens it from `file://` in headless Chrome/Edge
-with the network disabled, and drives the real UI through 95 checks (fixtures, keyboard, Back
+with the network disabled, and drives the real UI through 106 checks (fixtures, keyboard, Back
 restoring state, navigation, refresh, no outgoing requests). It also regenerates the screenshots in
 `docs/screenshots/`. Needs a local Chrome or Edge (`CHROME_PATH` overrides the location).
 
@@ -60,6 +60,28 @@ restoring state, navigation, refresh, no outgoing requests). It also regenerates
 Two signals are used everywhere. A **yellow fill** marks what the current step changed. A **blue
 outline** marks what the step read or compared. Relations, accepting states, handles and conflicts
 also carry a glyph, shape or label, so nothing depends on colour alone.
+
+## Motion and the 3D inspector
+
+Motion is an overlay on the replay, never part of it. Effects in `src/motion/effects.js` run after
+React has rendered a step, and only when the replay moved forward by exactly one step. Jumping,
+scrubbing and stepping Back show the state at once. With **Reduced motion** on, nothing travels and
+every highlight, bracket and label is still there. At 2× speed and above the long paths are skipped.
+
+| Event | What moves |
+| --- | --- |
+| New set member | drops in from a short distance; a duplicate is only emphasised |
+| New relation | a path runs from the source set or production to the cell, then the glyph appears |
+| Conflict | second glyph joins the first, fracture marks draw, provenance opens |
+| SHIFT | the lookahead token travels from the input tape onto the stack |
+| REDUCE | bracket draws, the handle pulls together and collapses into its replacement |
+| Tree node computed | edges draw up to the node, then nullable, firstpos, lastpos appear in turn |
+| followpos update | a marker rides a path from the tree node to the table row |
+| DFA transition | construction: edge then state fade in; simulation: a marker rides the edge |
+
+The DFA stages have a **2D / 3D inspector** switch. 3D (three.js via React Three Fiber) draws the
+same automaton and layout with a small depth offset per state. It renders only when something
+changes and is unmounted while 2D is selected. 2D and the transition table remain the reference.
 
 ## Architecture
 
@@ -80,6 +102,7 @@ re-derives the previous view from the same steps, so it is always exact.
 | --- | --- |
 | `src/algorithms/` | Tested algorithm core (unchanged) |
 | `src/replay/` | Pipelines, selectors, replay hook |
+| `src/motion/` | Step effects (paths, flights), diagram board |
 | `src/components/StepPlayer/` | Shared playback dock and timeline |
 | `src/components/GrammarEditor/` | 1.1 grammar editor, validation, samples |
 | `src/components/LeadingTrailing/` | 1.2 set derivation replay |
@@ -120,4 +143,6 @@ Shortcuts are ignored while typing in a text field.
   long position sets can overflow their circle. Use **Enlarge graph**; the transition table stays canonical.
 - Designed for 1366 px wide and above; below about 1000 px the page scrolls horizontally.
 - LR parsing is a placeholder page only.
+- The 3D inspector needs WebGL; without it a message points back to the 2D graph. The 3D libraries
+  make the bundle about 1.9 MB.
 - `file://` launch is verified in Chrome and Edge (Chromium); other browsers were not tested.

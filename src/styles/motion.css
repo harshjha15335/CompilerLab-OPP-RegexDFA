@@ -36,7 +36,8 @@
   linear-gradient(135deg, transparent calc(50% - 0.8px), var(--bad) calc(50% - 0.8px), var(--bad) calc(50% + 0.8px), transparent calc(50% + 0.8px)) left top / 11px 11px no-repeat,
   linear-gradient(135deg, transparent calc(50% - 0.8px), var(--bad) calc(50% - 0.8px), var(--bad) calc(50% + 0.8px), transparent calc(50% + 0.8px)) right bottom / 11px 11px no-repeat; }
 .pcell.is-conflict .pcell__count { right: 9px; bottom: 19px; }
-.inspect { overflow: hidden; }
+.inspect { overflow: hidden; flex: none; }
+.split { flex: none; }
 
 /* ── Parse trace: one marker that moves between rows ── */
 .trace td:first-child { position: relative; padding-left: 12px; }

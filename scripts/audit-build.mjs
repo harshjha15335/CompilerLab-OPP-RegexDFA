@@ -51,9 +51,9 @@ const body = () => page.$eval('.plate__body', (e) => e.innerHTML);
 const shot = async (name) => { await sleep(380); await page.screenshot({ path: `${shots}/${name}.png` }); };
 const noOverflow = async (name) => ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), `no page-level scroll at 1366x650: ${name}`);
 const backRestores = async (name, at) => {
-  await key('Home'); await key('ArrowRight', at); await sleep(900);   // let step motion finish: states are compared at rest
+  await key('Home'); await key('ArrowRight', at); await sleep(1400);   // let step motion finish: states are compared at rest
   const before = await body();
-  await key('ArrowRight'); await sleep(900); const moved = await body(); await key('ArrowLeft'); await sleep(300);
+  await key('ArrowRight'); await sleep(1400); const moved = await body(); await key('ArrowLeft'); await sleep(300);
   ok(before !== moved && before === await body(), `Back restores the exact previous state: ${name} @${at}`);
 };
 

@@ -1,10 +1,10 @@
 // Replay-layer tests: the selectors must rebuild, from steps[] alone, exactly what the core computed.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analyzeGrammar, analyzeRegex, runSimulation, runCompare } from '../src/replay/pipelines.js';
+import { analyzeGrammar, analyzeRegex, runSimulation, runCompare } from '../src/replay/pipelines.ts';
 import { setsAt, tableAt, conflictsOf, cellKey, nodePropsAt, followposAt, dfaAt, simAt, phaseMarkers,
-  setProvenance, followposProvenance, safeguardedRejection, stepAt } from '../src/replay/selectors.js';
-import { layoutDfa, visibleEdgeLabels } from '../src/components/DFAGraph/graphModel.js';
+  setProvenance, followposProvenance, safeguardedRejection, stepAt } from '../src/replay/selectors.ts';
+import { layoutDfa, visibleEdgeLabels, overlaps } from '../src/screens/regex/dfaLayout.ts';
 
 const EXPR = 'E -> E + T | T\nT -> T * F | F\nF -> ( E ) | id';
 const sorted = (a) => [...a].sort();
@@ -107,6 +107,18 @@ test('graph model: A loops on b only; layout is deterministic', () => {
   assert.ok(big.nodes.length > 5);
   assert.equal(new Set(big.nodes.map((n) => `${Math.round(n.x)},${Math.round(n.y)}`)).size, big.nodes.length);
   assert.equal(visibleEdgeLabels([{ from: 'A', to: 'B', symbol: 'a' }, { from: 'A', to: 'B', symbol: 'c' }]).get('A->B'), 'a,c');
+});
+
+test('DFA drawing: no label overlaps a label or a node, for every sample and some larger automata', () => {
+  const sources = ['(a|b)*abb', 'a(b|c)*d', '(ab|a)+b?', 'a*b*c?', 'ab+', 'ab?c', 'a\\*b',
+    '(a|b)*a(a|b)', '(a|b)*a(a|b)(a|b)', 'abcde', '(a|b|c)*abc', 'a(ba)*b'];
+  for (const src of sources) {
+    const r = analyzeRegex(src);
+    assert.equal(r.status, 'ok', src);
+    const g = layoutDfa(r.dfa);
+    assert.deepEqual(overlaps(g), [], `${src} (${g.layout}, ${g.nodes.length} states)`);
+    assert.ok(g.box.w > 0 && g.box.h > 0);
+  }
 });
 
 test('simulation replay', () => {

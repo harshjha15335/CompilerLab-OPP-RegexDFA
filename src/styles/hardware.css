@@ -1,0 +1,109 @@
+/* Hardware on the plate: keycaps, the brass speed dial, the scrub timeline. CSS 3D only. */
+
+/* ── Keycaps ─────────────────────────────────────────── */
+.keycap {
+  position: relative; width: 42px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
+  perspective: 260px; flex: none; border-radius: 8px;
+}
+.keycap--wide { width: auto; min-width: 92px; padding: 0 2px; }
+.keycap__skirt {
+  position: absolute; inset: 0; border-radius: 8px;
+  background: linear-gradient(180deg, var(--cap-side), #c2b9a4);
+  border: 1px solid var(--cap-edge);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 3px 5px var(--cap-shadow), 0 1px 1px rgba(0, 0, 0, 0.12);
+  transition: box-shadow var(--press) var(--ease);
+}
+.keycap__face {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; height: 31px; margin: 2px 4px 0;
+  padding: 0 10px; border-radius: 6px; color: var(--ink);
+  background: linear-gradient(180deg, #ffffff 0%, var(--cap-top) 55%, #efeadd 100%);
+  border: 1px solid #ddd6c5; box-shadow: 0 1px 0 #fff inset;
+  transform: translateZ(6px) rotateX(9deg); transform-origin: 50% 100%;
+  transition: transform var(--press) var(--ease), margin var(--press) var(--ease);
+}
+.keycap__icon { width: 12px; height: 12px; fill: currentColor; stroke: currentColor; stroke-width: 0; }
+.keycap__icon path[fill='none'] { stroke-width: 1.5; }
+.keycap__text { font: 600 0.875rem/1 var(--font-sans); }
+/* press travel: about 3px down, 120 ms, from a click OR the matching keyboard shortcut */
+.keycap:active:not(:disabled) .keycap__face, .keycap[data-down] .keycap__face {
+  transform: translateZ(1px) rotateX(0deg); margin-top: 5px;
+}
+.keycap:active:not(:disabled) .keycap__skirt, .keycap[data-down] .keycap__skirt { box-shadow: 0 1px 1px var(--cap-shadow); }
+.keycap[aria-pressed='true'] .keycap__face { background: linear-gradient(180deg, #f4efe2, #ebe4d4); margin-top: 4px; transform: translateZ(2px) rotateX(3deg); }
+.keycap:disabled { cursor: default; }
+.keycap:disabled .keycap__face { color: var(--ink-3); opacity: 0.55; }
+.keycap:disabled .keycap__skirt { opacity: 0.6; }
+.keycap:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+[data-motion='reduced'] .keycap__face, [data-motion='reduced'] .keycap__skirt { transition: none; }
+
+/* ── Dock (transport tray) ───────────────────────────── */
+.dock {
+  display: flex; align-items: center; gap: 18px; padding: 6px 18px; min-height: var(--dock-h);
+  background: linear-gradient(180deg, var(--plate-2), #ebe6d9); border-top: 1px solid var(--rule);
+  box-shadow: 0 1px 2px rgba(60, 50, 30, 0.08) inset; border-radius: 0 0 3px 3px;
+}
+.dock__keys { display: flex; gap: 6px; align-items: center; }
+.dock__readout { font: var(--t-body); white-space: nowrap; min-width: 98px; }
+.dock__readout b { font: 600 1.0625rem/1 var(--font-mono); }
+.dock__word, .dock__of { color: var(--ink-2); }
+.dock__next {
+  margin-left: auto; text-decoration: none; white-space: nowrap; font: 500 0.875rem/1.2 var(--font-sans); color: var(--ink-2);
+  padding: 8px 10px; border: 1px solid transparent; border-radius: 4px;
+}
+.dock__nextlabel { color: var(--ink-3); }
+.dock__next:hover { border-color: var(--line); }
+.dock__next.is-ready { color: var(--ink); border-color: var(--ink); background: var(--plate); }
+
+/* ── Timeline ────────────────────────────────────────── */
+.timeline { position: relative; flex: 1 1 auto; min-width: 180px; height: 52px; --pad: 8px; }
+.timeline__ticks { position: absolute; left: var(--pad); right: var(--pad); top: 0; height: 22px; }
+.timeline__tick { position: absolute; left: calc(var(--at) * 100%); bottom: 0; width: 1px; height: 7px; background: var(--brass-lo); }
+.timeline__tick.is-passed { background: var(--ink); }
+.timeline__ticklabel {
+  position: absolute; bottom: 9px; left: 0; transform: translateX(-50%); white-space: nowrap; font: var(--t-caption); color: var(--ink-3);
+}
+.timeline__rail {
+  position: absolute; left: var(--pad); right: var(--pad); top: 27px; height: 6px; border-radius: 3px;
+  background: var(--plate); border: 1px solid var(--line); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08) inset;
+}
+.timeline__fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--frac) * 100%); background: var(--ink); border-radius: 3px; }
+.timeline__range {
+  position: absolute; left: 0; right: 0; top: 18px; width: 100%; height: 26px; margin: 0; opacity: 0; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+}
+.timeline__range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 26px; }
+.timeline__range::-moz-range-thumb { width: 16px; height: 26px; border: 0; }
+/* the weighted thumb: a machined brass slider block */
+.timeline__thumb {
+  position: absolute; top: 19px; left: calc(var(--pad) + var(--frac) * (100% - 2 * var(--pad))); width: 16px; height: 22px;
+  transform: translateX(-50%); border-radius: 3px; pointer-events: none;
+  background: linear-gradient(180deg, var(--brass-hi), var(--brass) 45%, var(--brass-lo));
+  border: 1px solid var(--brass-lo);
+  box-shadow: 0 2px 3px rgba(40, 30, 10, 0.35), 0 1px 0 rgba(255, 255, 255, 0.55) inset;
+}
+.timeline__thumb::after { content: ''; position: absolute; left: 50%; top: 5px; bottom: 5px; width: 2px; transform: translateX(-50%); background: rgba(60, 40, 10, 0.45); border-radius: 1px; }
+.timeline__range:focus-visible ~ .timeline__thumb { outline: 2px solid var(--focus); outline-offset: 2px; }
+.timeline__range:active ~ .timeline__thumb { transform: translateX(-50%) translateY(1px) scaleY(0.94); }
+
+/* ── Speed dial ──────────────────────────────────────── */
+.dial { position: relative; width: 76px; height: 64px; flex: none; display: grid; place-items: center; }
+.dial__scale { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; transform: translate(-50%, -44%); pointer-events: none; overflow: visible; }
+.dial__tick line { stroke: var(--brass-lo); stroke-width: 1.4; }
+.dial__tick text { font: 500 10.5px/1 var(--font-mono); fill: var(--ink-2); text-anchor: middle; }
+.dial__tick.is-on line { stroke: var(--ink); stroke-width: 2.4; }
+.dial__tick.is-on text { fill: var(--ink); font-weight: 600; }
+.dial__knob {
+  position: relative; width: 36px; height: 36px; margin-top: 8px; border-radius: 50%; cursor: grab; touch-action: none;
+  transform: rotate(var(--angle)); transition: transform 160ms var(--ease);
+  background: repeating-conic-gradient(var(--brass-lo) 0 5deg, var(--brass) 5deg 10deg);
+  box-shadow: 0 2px 3px rgba(40, 30, 10, 0.4), 0 0 0 1px var(--brass-lo);
+}
+.dial__knob.is-turning { cursor: grabbing; }
+.dial__cap {
+  position: absolute; inset: 4px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, var(--brass-hi), var(--brass) 60%, var(--brass-lo));
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) inset, 0 -1px 2px rgba(0, 0, 0, 0.25) inset;
+}
+.dial__notch { position: absolute; left: 50%; top: 2px; width: 3px; height: 10px; transform: translateX(-50%); background: var(--ink); border-radius: 2px; }
+.dial__knob:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 50%; }
+[data-motion='reduced'] .dial__knob { transition: none; }

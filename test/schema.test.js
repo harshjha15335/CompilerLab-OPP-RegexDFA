@@ -2,7 +2,7 @@
 // drops one, these tests fail before the UI silently breaks.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analyzeGrammar, runParse, runCompare, analyzeRegex, runSimulation } from '../src/replay/pipelines.js';
+import { analyzeGrammar, runParse, runCompare, analyzeRegex, runSimulation } from '../src/replay/pipelines.ts';
 import { MODES } from '../src/algorithms/parser.js';
 import { REL } from '../src/algorithms/precedence.js';
 

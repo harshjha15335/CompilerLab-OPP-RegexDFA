@@ -1,125 +1,24 @@
-/* Motion and depth. Static information stays calm; only algorithmic change moves.
-   Everything here is cosmetic: with these rules removed the interface is still correct. */
+/* Overlay layer for one-shot step effects (src/motion/fx.ts). It sits outside the app root, so
+   app DOM is never touched by an effect. */
+/* 0×0 so the layer itself never becomes a screen-sized raster; every piece below is position: fixed
+   and gets its own small compositing layer. */
+#fx-layer { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: visible; z-index: 70; pointer-events: none; }
+.fx-ghost { position: fixed; margin: 0; z-index: 71; box-shadow: 0 3px 0 rgba(40, 30, 10, 0.18); will-change: transform; }
+.fx-svg { position: fixed; overflow: visible; will-change: transform; }
+.fx-svg path { fill: none; stroke-linecap: round; }
+.fx-beam path { stroke: var(--read); stroke-width: 2; }
+.fx-draw path { stroke: var(--changed-edge); stroke-width: 4; }
+.fx-dot { position: fixed; left: 0; top: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--read); offset-rotate: 0deg; will-change: offset-distance; }
+.fx-ring { position: fixed; box-sizing: border-box; border: 3px solid var(--ink); border-radius: 50%; will-change: transform, opacity; }
+.fx-marker { position: fixed; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 3px var(--changed); will-change: transform; }
 
-/* ── One-shot overlays created by src/motion/effects.js ── */
-.plate__body { position: relative; }
-.fx-beam { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; overflow: visible; }
-.fx-beam path { fill: none; stroke: var(--text); stroke-width: 1.75; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
-.fx-beam circle { fill: var(--hl); stroke: var(--text); stroke-width: 1.5; offset-rotate: 0deg; }
-.fx-ghost { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16); }
-.fx-ghost .tcell__mark, .fx-ghost .scell__mark { display: none; }
-.fx-ghost.tcell { border-radius: var(--r-m); margin: 0; }
-.fx-ghost.handle__cells { box-shadow: none; }
-.fx-ghost.handle__cells .scell { background: var(--hl); border-color: var(--text); color: var(--hl-ink); }
-.fx-marker { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--hl); border: 2px solid var(--text); pointer-events: none; z-index: 5; }
-.dfagraph__canvas { position: relative; overflow: hidden; }
+/* View Transitions for chapter and stage changes: a short cross-fade with the plate title and the
+   rail marker morphing in place. Back/seek inside a plate never uses this (it is instant). */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+::view-transition-group(plate-title), ::view-transition-group(rail-mark) { animation-duration: 240ms; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
 
-/* ── Workspace entrance: staged, about half a second in total ── */
-@keyframes enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes rule-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.stepper ol { animation: enter 260ms var(--ease) both; }
-.plate__head { animation: enter 280ms 60ms var(--ease) both; position: relative; }
-.plate__head::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 2px; height: 1px; background: var(--line-strong); transform-origin: left; animation: rule-draw 380ms 40ms var(--ease) both; }
-.plate__body > .pane:nth-child(1), .plate__body--single > * { animation: enter 300ms 130ms var(--ease) both; }
-.plate__body > .pane:nth-child(2) { animation: enter 300ms 190ms var(--ease) both; }
-.plate__body > .pane:nth-child(3) { animation: enter 300ms 250ms var(--ease) both; }
-.transport { animation: enter 280ms 240ms var(--ease) both; }
-
-/* ── Precedence table: bracket markers on the active row and column ── */
-.ptable th.is-active, .ptable th.is-lookup { background: var(--surface-2); color: var(--text); }
-.ptable tbody th.is-active::before, .ptable tbody th.is-lookup::before { content: ""; position: absolute; left: 5px; top: 9px; bottom: 9px; width: 6px; border: 2px solid var(--text); border-right: 0; }
-.ptable thead th.is-active::after, .ptable thead th.is-lookup::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 6px; border-top: 2px solid var(--text); }
-.pcell { transition: background 160ms var(--ease), box-shadow 200ms var(--ease); }
-/* conflict: the border doubles and two fracture marks draw in opposite corners */
-@keyframes fracture { from { clip-path: inset(0 100% 100% 0); } to { clip-path: inset(0); } }
-.pcell__fracture { display: block; position: absolute; inset: 6px; pointer-events: none; animation: fracture 240ms 120ms var(--ease) both; background:
-  linear-gradient(135deg, transparent calc(50% - 0.8px), var(--bad) calc(50% - 0.8px), var(--bad) calc(50% + 0.8px), transparent calc(50% + 0.8px)) left top / 11px 11px no-repeat,
-  linear-gradient(135deg, transparent calc(50% - 0.8px), var(--bad) calc(50% - 0.8px), var(--bad) calc(50% + 0.8px), transparent calc(50% + 0.8px)) right bottom / 11px 11px no-repeat; }
-.pcell.is-conflict .pcell__count { right: 9px; bottom: 19px; }
-.inspect { overflow: hidden; flex: none; }
-.split { flex: none; }
-
-/* ── Parse trace: one marker that moves between rows ── */
-.trace td:first-child { position: relative; padding-left: 12px; }
-.trace__marker { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--text); }
-
-/* ── Reduction model switch: a sliding rule ── */
-.modes__opt { position: relative; background: none; }
-.modes__opt.is-on { background: none; box-shadow: none; }
-.modes__opt .modes__rule { display: block; position: absolute; inset: 0; border-radius: 7px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
-.modes__opt span { position: relative; }
-.split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line-strong); border-radius: var(--r-m); overflow: hidden; }
-.split > div { padding: 9px 12px; display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
-.split > div + div { border-left: 1px solid var(--line-strong); }
-.split.is-differ > div + div { border-left: 3px double var(--bad); }
-.split .btn { grid-column: 1 / -1; border: 0; border-top: 1px solid var(--line-strong); border-radius: 0; text-align: left; }
-
-/* ── Syntax tree: construction, staged properties, inspectable depth ── */
-@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
-@keyframes node-in { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: none; } }
-.tree__edges line { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.tree__edges line.is-ghost { stroke-dasharray: 0.035 0.035; opacity: 0.45; }
-.tree__edges line.is-drawing { animation: draw 220ms var(--ease) both; }
-.tnode__shape, .tnode__glyph { transform-box: fill-box; transform-origin: center; transition: transform 140ms var(--ease); }
-.tnode:hover .tnode__shape { transform: translateY(-1px) scale(1.04); }
-.tree--build .tnode.is-ghost { opacity: 0.3; }
-.tree--build .tnode.is-ghost .tnode__shape { stroke-dasharray: 3 3; }
-.tree--build .tnode--op.is-active .tnode__shape, .tree--build .tnode--op.is-active .tnode__glyph { animation: node-in 200ms 180ms var(--ease) both; }
-.tree--build .tnode--leaf.is-active .tnode__shape { animation: node-in 200ms var(--ease) both; }
-.tnode.is-active .tnode__sets { animation: none; }
-.tnode.is-active .tnode__first { animation: reveal 180ms 320ms var(--ease) both; }
-.tnode.is-active .tnode__last { animation: reveal 180ms 440ms var(--ease) both; }
-.tnode.is-active .tnode__nullable { animation: reveal 180ms 220ms var(--ease) both; }
-.propgrid div { animation: reveal 180ms var(--ease) both; }
-.propgrid div:nth-child(2) { animation-delay: 130ms; }
-.propgrid div:nth-child(3) { animation-delay: 260ms; }
-
-/* ── Diagram boards: drafting grid, cursor spotlight, slight tilt ── */
-.board { position: relative; perspective: 1200px; }
-.board__plane { flex: 1; min-height: 0; display: flex; border-radius: var(--r-m); transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 220ms var(--ease);
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--text) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--text) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--text) 1.5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--text) 1.5%, transparent) 1px, transparent 1px);
-  background-size: 32px 32px, 32px 32px, 8px 8px, 8px 8px; }
-.board::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: var(--r-m); opacity: 0; transition: opacity 200ms;
-  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--text) 4%, transparent), transparent 70%); }
-.board[data-lit]::after { opacity: 1; }
-.dfagraph__canvas { background-image:
-    linear-gradient(color-mix(in srgb, var(--text) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--text) 3%, transparent) 1px, transparent 1px);
-  background-size: 32px 32px; }
-
-/* ── Playback dock: the step marker glides along the timeline ── */
-.timeline__track { position: absolute; left: 7px; right: 7px; bottom: 8px; height: 4px; border-radius: 2px; background: var(--line-strong); overflow: hidden; pointer-events: none; }
-.timeline__fill { display: block; height: 100%; background: var(--text); transform-origin: left; transform: scaleX(var(--frac)); transition: transform 180ms var(--ease); }
-.timeline__thumb { position: absolute; bottom: 3px; left: calc(var(--frac) * (100% - 14px)); width: 14px; height: 14px; border-radius: 50%; background: var(--hl); border: 2px solid var(--text); transition: left 180ms var(--ease); pointer-events: none; }
-.timeline__range::-webkit-slider-runnable-track { background: transparent; }
-.timeline__range::-moz-range-track, .timeline__range::-moz-range-progress { background: transparent; }
-.timeline__range::-webkit-slider-thumb { opacity: 0; }
-.timeline__range::-moz-range-thumb { opacity: 0; }
-.timeline__range:focus-visible ~ .timeline__thumb { outline: 2px solid var(--mark); outline-offset: 2px; }
-.timeline__mark { z-index: 2; }
-.timeline__tip { display: none; position: absolute; bottom: calc(100% + 8px); left: -6px; width: max-content; max-width: 300px; padding: 7px 10px; border-radius: var(--r-m); background: var(--invert); color: var(--invert-ink); font: 400 12px/1.4 var(--f-sans); text-align: left; white-space: normal; z-index: 40; }
-.timeline__tip b { display: block; font: 600 11px/1.4 var(--f-mono); opacity: 0.75; }
-.timeline__tip .rel { color: inherit; }
-.timeline__mark:hover .timeline__tip { display: block; }
-.timeline__mark.is-flipped .timeline__tip { left: auto; right: -6px; }
-.tbtn { transition: background 120ms, transform 120ms var(--ease); }
-.tbtn:active:not(:disabled) { transform: scale(0.94); }
-
-/* 3D inspector */
-.view-toggle { display: inline-flex; padding: 2px; background: var(--bg); border-radius: 7px; margin-left: auto; }
-.view-toggle button { border: 0; background: none; padding: 4px 9px; font: 500 12px/1.2 var(--f-sans); color: var(--muted); border-radius: 5px; }
-.view-toggle button[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 0 0 1px var(--line); }
-.dfa3d { flex: 1; min-height: 150px; border-radius: var(--r-m); background: var(--surface-2); border: 1px solid var(--line); position: relative; overflow: hidden; }
-.dfa3d canvas { display: block; }
-.dfa3d__labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.dfa3d__label { font: 700 16px/1.2 var(--f-mono); color: var(--text); text-align: center; white-space: nowrap; pointer-events: none; user-select: none; }
-.dfa3d__label small { display: block; font-weight: 500; font-size: 12.5px; color: var(--muted); }
-.dfa3d__label.is-active { color: var(--hl-ink); }
-.dfa3d__label.is-active small { color: var(--hl-ink); }
-.dfa3d__sym { font: 600 13px/1 var(--f-mono); background: var(--surface-2); padding: 2px 5px; border-radius: 4px; color: var(--text); pointer-events: none; }
-.dfa3d__sym.is-active { background: var(--hl); color: var(--hl-ink); }
-.dfa3d__note { position: absolute; left: 10px; bottom: 8px; font-size: 11.5px; color: var(--faint); pointer-events: none; }
+[data-motion='reduced'] *, [data-motion='reduced'] *::before, [data-motion='reduced'] *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+[data-motion='reduced'] #fx-layer { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

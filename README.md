@@ -1,148 +1,119 @@
 # Compiler Lab
 
-**Interactive GUI for Operator Precedence Parsing and Conversion of Regular Expression to DFA using the Direct Method**
+**Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)**
+Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · Compiler Design · 2026
 
-A step-by-step teaching instrument for two Compiler Design topics:
+A step-by-step teaching instrument. Every screen replays the `steps[]` emitted by a tested algorithm
+core (`src/algorithms`, unchanged), one step at a time or all at once. At each step it shows what changed, why,
+which rule caused it, and what happens next.
 
-1. **Operator precedence parsing** — grammar validation, LEADING / TRAILING, the precedence relation
-   table, shift/reduce parsing with visible handles, and Classic N vs Safeguarded reduction.
-2. **Regular expression → DFA (direct method)** — syntax tree, nullable / firstpos / lastpos,
-   followpos, DFA construction, and test-string simulation.
+| Chapter | Plates |
+| --- | --- |
+| I Operator precedence | Grammar check · LEADING and TRAILING · precedence table (with provenance and conflicts) · shift/reduce parse · Classic N vs Safeguarded |
+| II LR parsing | Placeholder, honestly labelled *in progress* (nothing on it runs) |
+| III Regex → DFA | Syntax tree · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
 
-Every stage is a replay of the `steps[]` emitted by a tested algorithm core. At each step the
-screen answers: what changed, why, which rule caused it, and what happens next.
+The homepage is a live specimen: the real algorithm builds the precedence table for `E → E + T | T …` and then
+parses `id + id * id`, in a loop. Click any cell to see where its relation came from.
 
 ## Run
 
 ```bash
-npm install
-npm run dev        # development server (prints the local URL)
-npm test           # algorithm, step-schema and replay tests (node:test)
+npm ci --ignore-scripts   # exact versions from package-lock.json; no install scripts run
+npm run dev               # development server
+npm test                  # 31 tests: algorithm core, step schema, replay selectors, DFA layout, specimen
+npm run typecheck         # TypeScript, strict
+npm run check:contrast    # WCAG contrast of every meaning-bearing colour pair
+npm run audit:deps        # npm audit, fails on high severity
 ```
 
-## Build the submission
+## Build and open offline
 
 ```bash
-npm run build      # output: dist/
+npm run build             # dist/: index.html + assets/ (app script, fonts, and the separate 3D intro script)
 ```
 
-`dist/` is self-contained (one HTML file, one script, bundled Inter and JetBrains Mono fonts; no CDN, no network).
-Supported ways to launch it:
+- **Double-click `dist/index.html`**: it opens from `file://` in Chrome or Edge with no server and no network. The folder
+  can be renamed, nested or copied to a USB drive; keep `index.html` and `assets/` together.
+- If a machine blocks scripts on `file://` pages, run `npm run serve` (zero-dependency Node server) and open
+  `http://127.0.0.1:4173/`.
 
-- **Double-click `dist/index.html`** — opens from `file://` in Chrome or Edge. The folder can be
-  renamed, nested or copied to a USB drive; keep `index.html` and `assets/` together.
-- `npm run serve` — serves `dist/` at `http://127.0.0.1:4173/` with a zero-dependency Node script.
-- `npm run preview` — Vite's preview server.
+Navigation uses the URL hash (`#/opp/table`, `#/regex/dfa`, …), so refresh and Back/Forward work everywhere.
 
-Navigation uses the URL hash (`#/opp/table`, `#/regex/dfa`, …), so refresh and browser
-Back/Forward work in all three cases.
-
-### Offline audit (optional)
+## Verify
 
 ```bash
-npm run build
-npm run audit:offline
+npm run build && node scripts/verify.mjs            # full loop, about 12 minutes
+node scripts/verify.mjs --quick                     # one viewport
+node scripts/verify.mjs --only=replay,keyboard      # some groups only
+node scripts/verify.mjs --publish                   # also refresh docs/screenshots/
 ```
 
-Copies `dist/` into a renamed, nested temp folder, opens it from `file://` in headless Chrome/Edge
-with the network disabled, and drives the real UI through 106 checks (fixtures, keyboard, Back
-restoring state, navigation, refresh, no outgoing requests). It also regenerates the screenshots in
-`docs/screenshots/`. Needs a local Chrome or Edge (`CHROME_PATH` overrides the location).
+The script copies `dist/` into a renamed nested folder and opens it from `file://` with the network off. It
+screenshots every screen and mode at 1366×768, 1280×720 and 1920×1080, and fails on:
 
-## Interface
+- clipped text, overlapping interactive elements, more than one vertical scrollbar, or any horizontal scroll;
+- either keyboard-only demo not completing;
+- the DOM differing after forward-then-Back, at any step of any stage (including mid-animation);
+- motion running under reduced motion;
+- a grayscale contrast problem;
+- frame drops at 4× CPU throttling;
+- a failed homepage acceptance check;
+- intro or WebGL-fallback problems;
+- network requests, console errors, or `fetch`/`eval`/camera code in the bundle.
 
-- **Top bar:** the three workspaces (Operator Precedence, LR Parsing, Regex → DFA), a shortcuts list,
-  a reduced-motion switch and a light/dark theme switch.
-- **Stage stepper:** each workspace is a numbered pipeline; the current stage is marked.
-- **Workspace:** the figure on the left, the explanation for the current step on the right.
-- **Playback dock:** step, play, scrub, change speed, then continue to the next stage.
-
-Two signals are used everywhere. A **yellow fill** marks what the current step changed. A **blue
-outline** marks what the step read or compared. Relations, accepting states, handles and conflicts
-also carry a glyph, shape or label, so nothing depends on colour alone.
-
-## Motion and the 3D inspector
-
-Motion is an overlay on the replay, never part of it. Effects in `src/motion/effects.js` run after
-React has rendered a step, and only when the replay moved forward by exactly one step. Jumping,
-scrubbing and stepping Back show the state at once. With **Reduced motion** on, nothing travels and
-every highlight, bracket and label is still there. At 2× speed and above the long paths are skipped.
-
-| Event | What moves |
-| --- | --- |
-| New set member | drops in from a short distance; a duplicate is only emphasised |
-| New relation | a path runs from the source set or production to the cell, then the glyph appears |
-| Conflict | second glyph joins the first, fracture marks draw, provenance opens |
-| SHIFT | the lookahead token travels from the input tape onto the stack |
-| REDUCE | bracket draws, the handle pulls together and collapses into its replacement |
-| Tree node computed | edges draw up to the node, then nullable, firstpos, lastpos appear in turn |
-| followpos update | a marker rides a path from the tree node to the table row |
-| DFA transition | construction: edge then state fade in; simulation: a marker rides the edge |
-
-The DFA stages have a **2D / 3D inspector** switch. 3D (three.js via React Three Fiber) draws the
-same automaton and layout with a small depth offset per state. It renders only when something
-changes and is unmounted while 2D is selected. 2D and the transition table remain the reference.
-
-## Architecture
-
-```
-src/algorithms/*.js      plain JavaScript, no UI: result + steps[]
-        ↓
-src/replay/pipelines.js  runs each algorithm once per input
-src/replay/selectors.js  pure folds: state visible after N steps
-src/replay/useReplay.js  { steps, count, playing, speed } + keyboard
-        ↓
-src/components/*         render only (React, hand-written SVG, Cytoscape)
-```
-
-React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA states. Moving Back
-re-derives the previous view from the same steps, so it is always exact.
-
-| Path | Purpose |
-| --- | --- |
-| `src/algorithms/` | Tested algorithm core (unchanged) |
-| `src/replay/` | Pipelines, selectors, replay hook |
-| `src/motion/` | Step effects (paths, flights), diagram board |
-| `src/components/StepPlayer/` | Shared playback dock and timeline |
-| `src/components/GrammarEditor/` | 1.1 grammar editor, validation, samples |
-| `src/components/LeadingTrailing/` | 1.2 set derivation replay |
-| `src/components/PrecedenceTable/` | 1.3 relation table, conflicts, provenance |
-| `src/components/ParseBench/` | 1.4 stack bench / tape / trace, 1.5 mode comparison |
-| `src/components/SyntaxTree/` | Hand-written SVG syntax tree |
-| `src/components/FollowposTable/`, `DFATable/`, `DFAGraph/`, `SimulationTape/` | Part B views |
-| `src/pages/` | Page composition and per-part state |
-| `src/data/` | Sample library and navigation |
-| `src/styles/` | Design tokens, base, layout, components |
-| `test/` | `partA`, `partB` (core), `schema` (step contract), `replay` (selectors) |
-| `scripts/` | `serve-dist.mjs`, `audit-build.mjs` |
+The results are in [docs/VERIFICATION.md](docs/VERIFICATION.md). It needs a local Chromium, Chrome or Edge (`CHROME_PATH` overrides).
 
 ## Keyboard
 
 | Key | Action |
 | --- | --- |
-| `←` / `→` | previous / next step |
+| `←` `→` | previous / next step (the on-screen keycap presses too) |
 | `Space` | play / pause |
-| `Home` / `End` | first / final step |
-| `[` / `]` | slower / faster |
-| `Shift` + `←` / `→` | previous / next phase marker |
-| `Ctrl` + `Enter` | validate grammar (in the editor) |
+| `Home` `End` | first step / all at once |
+| `Shift` + `←` `→` | previous / next phase marker |
+| `[` `]` | slower / faster (the brass dial turns) |
+| `Ctrl` + `Enter` | check the grammar (in the editor) |
+| `Esc` | close a sheet, skip the intro |
 
-Shortcuts are ignored while typing in a text field.
+Shortcuts are ignored while you type in a text field. The speed dial and timeline also take arrow keys when focused.
 
-## Input conventions and known limitations
+## Design and decisions
 
-- Grammar symbols are **separated by spaces** (`F -> ( E ) | id`); `id` is one terminal.
-- `|` separates alternatives and `->`/`→` separates the two sides, so neither can be a grammar terminal.
-  `$` is reserved as the parser's end marker.
-- ε-productions and adjacent non-terminals are rejected: the grammar must be an operator grammar.
-- Parsing is only offered for a conflict-free table.
-- Regex syntax: `|`, concatenation, `*`, `+`, `?`, `( )`, `\` escapes. No ε, character classes or
-  ranges. Unescaped `#` is reserved for augmentation (the app adds it); `$` is an ordinary character there.
-- The DFA is partial: a missing transition means reject (no explicit dead state is drawn).
-- DFAs with up to 5 states are drawn in a row; larger ones on an ellipse where edges may cross and
-  long position sets can overflow their circle. Use **Enlarge graph**; the transition table stays canonical.
-- Designed for 1366 px wide and above; below about 1000 px the page scrolls horizontally.
-- LR parsing is a placeholder page only.
-- The 3D inspector needs WebGL; without it a message points back to the 2D graph. The 3D libraries
-  make the bundle about 1.9 MB.
-- `file://` launch is verified in Chrome and Edge (Chromium); other browsers were not tested.
+- [docs/design/EFFECT-CATALOG.md](docs/design/EFFECT-CATALOG.md): research. 47 effects from the named repositories with a
+  verdict each, licenses, and step-state patterns from Python Tutor, VisuAlgo and JFLAP.
+- [docs/design/DESIGN.md](docs/design/DESIGN.md): direction, stack decision with measured evidence, tokens with computed
+  contrast, wireframes, motion map, risks with Plan B/C, scope ladder.
+- [docs/VERIFICATION.md](docs/VERIFICATION.md): verification report with screenshots.
+- [docs/AUDIT-LOG.md](docs/AUDIT-LOG.md): what changed and why, including supply-chain notes.
+
+## Architecture
+
+```
+src/algorithms/*.js     tested core (plain JS, unchanged): result + steps[]
+src/core/               typed facade + step schema types over the core
+src/replay/             pipelines (run each algorithm once), selectors (pure folds of steps[]), useReplay
+src/motion/fx.ts        one-shot WAAPI effects for a single forward step; cancelled on any other move
+src/ui/                 kit (glyphs, tags, verdicts), hardware (keycaps, dial, timeline), plate, loupe
+src/screens/            home (specimen, intro), opp (5 plates), regex (5 plates), lr (placeholder)
+src/intro/three-intro.ts  the 3D intro, built separately into dist/assets/intro.js
+src/styles/             tokens, base, shell, hardware, figures, home, motion
+scripts/                verify.mjs, check-contrast.ts, gen-lens-map.mjs, serve-dist.mjs
+test/                   partA, partB (core), schema, replay, specimen
+```
+
+React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA states: every view is a pure function of
+`steps[count]`. Motion only plays for one step forward and leaves no inline styles, so Back is exact.
+
+## Input conventions and limits
+
+- Grammar symbols are separated by spaces (`F -> ( E ) | id`): `id` is one terminal. `|` and `->`/`→` cannot be terminals;
+  `$` is reserved. ε-productions and adjacent non-terminals are rejected. Parsing needs a conflict-free table.
+- Input strings may omit spaces (`id/id+id*id`); the core splits them by longest match.
+- Regex syntax: `|`, concatenation, `*`, `+`, `?`, `( )`, `\` escapes. No ε, classes or ranges. An unescaped `#` is reserved
+  (the app adds the end marker). The DFA is partial: a missing transition means reject.
+- DFAs with up to 7 states are drawn in a row and larger ones on a ring. The layout test covers automata up to 8 states;
+  the transition table is the canonical view.
+- Designed for 1280 px wide and up. Below 1000 px the plates stack and the page scrolls. The homepage has a dedicated
+  narrow layout (verified at 820 and 390 px).
+- Verified in Chromium. Other browsers were not tested.

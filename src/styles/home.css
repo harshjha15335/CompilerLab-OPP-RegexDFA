@@ -1,0 +1,102 @@
+/* Homepage: "The Specimen Plate". One live specimen, three typographic doors, a quiet footer.
+   DOM order (= Tab order): headline → doors → specimen. Grid areas put the specimen top-right. */
+.home {
+  min-height: 0; height: 100%; display: grid; gap: 14px 40px; padding: 8px 18px 0;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-areas: 'lead spec' 'doors doors' 'foot foot';
+}
+.home__lead { grid-area: lead; display: flex; flex-direction: column; gap: 18px; justify-content: center; padding: 0 0 0 12px; max-width: 34rem; }
+.home__title { font: var(--t-display); letter-spacing: -0.01em; view-transition-name: plate-title; }
+.home__sub { font: 400 1.0625rem/1.55 var(--font-sans); color: var(--ink-2); max-width: 30rem; }
+.home__links { display: flex; gap: 28px; flex-wrap: wrap; }
+.firstnote { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 4px; color: var(--ink-2); background: var(--plate); max-width: 30rem; }
+.firstnote kbd { margin-right: 2px; }
+
+.home__specimen { grid-area: spec; min-height: 0; display: grid; }
+
+/* the three doors: typographic entries in a ruled strip, not cards */
+.doors { grid-area: doors; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.doors ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.door + .door { border-left: 1px solid var(--rule); }
+.door__link { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; padding: 12px 16px; text-decoration: none; height: 100%; align-content: start; }
+.door__link:hover { background: rgba(250, 248, 242, 0.6); }
+.door__link:focus-visible { outline-offset: -3px; }
+.door__numeral { grid-row: span 2; font: 500 1.75rem/1 var(--font-serif); color: var(--ink-3); padding-top: 2px; }
+.door__title { font: var(--t-section); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.door__pipe { display: flex; flex-wrap: wrap; gap: 0; color: var(--ink-2); font: 400 0.9375rem/1.4 var(--font-mono); }
+.door__stage { display: inline-flex; align-items: baseline; }
+.door__arrow { margin: 0 8px; color: var(--ink-3); font-family: var(--font-math); }
+.door__word { position: relative; }
+.door__stage.is-at .door__word { color: var(--ink); }
+.door__mark { position: absolute; left: -2px; right: -2px; bottom: -3px; height: 2px; background: var(--ink); }
+
+.home__foot {
+  grid-area: foot; display: flex; flex-wrap: wrap; gap: 4px 0; padding: 2px 0 12px; font: var(--t-caption); color: var(--ink-3);
+}
+.home__foot span + span::before { content: '·'; margin: 0 10px; }
+
+/* ── The specimen (a small plate) ─────────────────────── */
+.specimen {
+  min-height: 0; display: grid; align-content: start; gap: 10px; padding: 14px 18px 12px; position: relative;
+  background-color: var(--plate);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px; background-position: -1px -1px;
+  border: 1px solid var(--rule); border-radius: 3px; box-shadow: 0 10px 24px -14px rgba(60, 50, 30, 0.4);
+}
+/* during the intro the empty grid stays as the landing target; glyphs and the live readouts wait for the hand-off */
+.specimen.is-intro .ptable .rel, .specimen.is-intro .pcell__slash { opacity: 0; }
+.specimen.is-intro .specimen__caption, .specimen.is-intro .specimen__parse, .specimen.is-intro .specimen__controls,
+.specimen.is-intro .specimen__state { visibility: hidden; }
+.specimen--failed { align-content: center; justify-items: start; gap: 12px; }
+.specimen__head { display: flex; justify-content: space-between; align-items: baseline; }
+.specimen__state { font: var(--t-caption); color: var(--ink-3); }
+.specimen__grammar { display: grid; gap: 1px; font: var(--t-formal); }
+.specimen__grammar li { padding: 1px 6px; border: 1px solid transparent; border-radius: 3px; display: flex; flex-wrap: wrap; gap: 0 8px; align-items: baseline; }
+.specimen__grammar li.is-active { border: 1px dashed var(--read); background: var(--plate); }
+.specimen__grammar .prod.is-active .prod__sym, .specimen__alt.is-active { background: var(--changed); }
+.specimen__alt { padding: 0 2px; border-radius: 2px; }
+.specimen__alt span { color: var(--ink-3); margin-right: 6px; }
+.specimen__table { position: relative; display: flex; gap: 14px; align-items: flex-start; }
+.specimen__table .ptable-wrap { --cell: clamp(28px, calc((100dvh - 480px) / 8.4), 40px); }
+.specimen__prov { position: absolute; left: calc(var(--cell, 34px) * 8 + 24px); top: 0; width: min(330px, 100%); z-index: 6; }
+.specimen__caption { min-height: 2.6em; color: var(--ink-2); display: flex; align-items: center; }
+.specimen__brief { color: var(--ink); }
+.specimen__rule { font: var(--t-caption); color: var(--ink-3); margin-left: 8px; font-family: var(--font-sans); }
+.specimen__parse { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; min-height: 40px; }
+.specimen__tape { display: inline-flex; gap: 3px; }
+.stok { font: 500 0.95rem/1 var(--font-mono); padding: 6px 7px; border: 1px solid var(--line); border-radius: 3px; background: var(--plate); }
+.stok.is-used { color: var(--ink-3); border-style: dashed; background: var(--plate-2); }
+.stok.is-look { box-shadow: 0 0 0 2px var(--ink); }
+.specimen__rel { font: 500 1.0625rem/1 var(--font-mono); padding: 5px 10px; border: 2px dashed var(--read); border-radius: 4px; background: var(--plate); }
+.specimen__wait { font: var(--t-caption); color: var(--ink-3); }
+.specimen__controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 4px; }
+.specimen__count { font: var(--t-caption); color: var(--ink-3); margin-right: auto; padding-left: 6px; }
+
+/* ── Intro overlay ───────────────────────────────────── */
+.intro { position: fixed; inset: 0; z-index: 80; pointer-events: none; transition: opacity 260ms var(--ease); }
+.intro.is-leaving { opacity: 0; }
+.intro__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.intro__css { position: absolute; inset: 0; perspective: 900px; }
+.intro__glyph {
+  position: absolute; left: 0; top: 0; font-family: var(--font-math); line-height: 1; transform-style: preserve-3d; will-change: transform;
+  text-shadow: 1px 1px 0 rgba(40, 30, 10, 0.55), 2px 2px 0 rgba(40, 30, 10, 0.45), 3px 3px 0 rgba(40, 30, 10, 0.35), 4px 4px 2px rgba(40, 30, 10, 0.2);
+}
+.intro__caption { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); font: var(--t-body); color: var(--ink-2); background: var(--plate); padding: 6px 12px; border: 1px solid var(--rule); border-radius: 4px; white-space: nowrap; }
+.intro__caption b { font-family: var(--font-math); font-weight: 400; font-size: 1.2em; }
+.intro__skip { position: absolute; right: 24px; bottom: 24px; pointer-events: auto; }
+
+/* ── Narrow: the specimen stacks under the headline, doors become a vertical ruled list ── */
+@media (max-width: 899px) {
+  .app[data-page='home'] { height: auto; min-height: 100dvh; overflow: visible; }
+  .home { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'lead' 'doors' 'spec' 'foot'; gap: 18px; padding: 8px 16px 0; }
+  .home__lead { padding: 8px 0 0; }
+  .home__title { font-size: 2rem; }
+  .doors ol { grid-template-columns: minmax(0, 1fr); }
+  .door + .door { border-left: 0; border-top: 1px solid var(--rule); }
+  .specimen__table { flex-direction: column; }
+  .specimen__prov { position: static; width: 100%; }
+  .specimen__table .ptable-wrap { --cell: clamp(30px, 9vw, 40px); }
+  .home__foot { flex-direction: column; }
+  .home__foot span + span::before { content: none; }
+}

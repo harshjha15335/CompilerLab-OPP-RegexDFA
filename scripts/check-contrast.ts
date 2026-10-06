@@ -28,6 +28,8 @@ const PAIRS: Pair[] = [
   ['ink-3', 'plate', 4.5, 'captions'],
   ['ink-3', 'plate-2', 4.5, 'captions in wells'],
   ['ink-3', 'desk', 4.5, 'captions on the desk'],
+  ['brass-lo', 'desk', 4.5, '"Lens" in the wordmark on the desk'],
+  ['brass-lo', 'plate', 4.5, '"Lens" in the title block'],
   ['line', 'plate', 3, 'cell, tape and stack borders'],
   ['line', 'plate-2', 3, 'borders inside wells'],
   ['rel-yields', 'plate', 4.5, '⋖ glyph in an empty-state cell'],

@@ -7,7 +7,7 @@ Deliverables 2–5 of the brief. Deliverable 1 is [EFFECT-CATALOG.md](EFFECT-CAT
 
 - The algorithm core in `src/algorithms` is byte-identical to the attached `compiler-lab-core.zip`. I checked this with `diff -r`. It is treated as frozen.
 - The lab machines run Chrome or Edge, so Chromium is the verified target. Other browsers are expected to work but were not tested.
-- The product is named **ParseLens** (after the table loupe). At the team's request the title block has no course row, and the rail has no Keys or Settings menus. Shortcuts are still shown on each keycap's tooltip. Reduced motion follows the OS setting (`prefers-reduced-motion`).
+- The product is named **ParseLens** (after the table loupe). The wordmark is heavy IBM Plex Sans ("Parse" in ink, "Lens" in brass). The mark is a brass-rimmed loupe magnifying a ⋗ relation over a table grid. At the team's request the title block has no course row, and the rail has no Keys or Settings menus. Shortcuts are still shown on each keycap's tooltip. Reduced motion follows the OS setting (`prefers-reduced-motion`).
 - At the team's request, the project details sit in a title block in the homepage's first view (not a footer), and the first-visit navigation note was removed.
 - Light theme only. A dark "blueprint" plate is on the scope-cut ladder.
 

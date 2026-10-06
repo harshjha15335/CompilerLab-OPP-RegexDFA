@@ -8,7 +8,7 @@ the real UI. The full list of checks is in [verification-results.md](verificatio
 
 - **Unit tests:** `npm test`, 31/31 pass (12 core, 8 schema, 8 replay, 3 specimen).
 - **Typecheck:** `npm run typecheck` is clean (strict).
-- **Contrast:** `npm run check:contrast`, 39/39 pairs.
+- **Contrast:** `npm run check:contrast`, 41/41 pairs.
 - **Dependency audit:** `npm audit --audit-level=high`, 0 vulnerabilities.
 
 Environment: a Linux container with no GPU, Chromium 141 (Playwright's `chromium-1194`), 4 CPU cores.

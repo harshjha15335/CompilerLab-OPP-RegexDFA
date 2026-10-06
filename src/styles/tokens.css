@@ -79,7 +79,7 @@
   /* ── Space, shape, motion ─────────────────────────────── */
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px;
   --radius: 6px;
-  --rail-h: 52px;
+  --rail-h: 60px;
   --dock-h: 76px;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --press: 120ms;

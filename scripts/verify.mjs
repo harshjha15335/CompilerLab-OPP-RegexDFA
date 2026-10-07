@@ -94,6 +94,8 @@ function layoutProbe() {
   };
   // timeline tick labels sit in an aria-hidden track but are visible text, so they are checked like any other text
   const decorative = (el) => !el.closest('.timeline__ticklabel') && el.closest('[aria-hidden="true"], .sr-only, svg, #fx-layer, .intro, [inert]');
+  // a dock pinned with position: sticky (short windows) is an opaque bar that content scrolls behind
+  const stickyDock = (el) => { const d = el?.closest?.('.dock'); return d && getComputedStyle(d).position === 'sticky' ? d : null; };
   for (const el of document.querySelectorAll('body *')) {
     if (decorative(el) || !shown(el)) continue;
     const cs = getComputedStyle(el);
@@ -134,6 +136,11 @@ function layoutProbe() {
       const a = boxes[i], b = boxes[j];
       if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
       const w = Math.min(a.r.x2, b.r.x2) - Math.max(a.r.x1, b.r.x1), h = Math.min(a.r.y2, b.r.y2) - Math.max(a.r.y1, b.r.y1);
+      // scrolled behind the sticky dock: covered, not overlapping (checked at the overlap's centre)
+      if (w > 1 && h > 1 && Boolean(stickyDock(a.el)) !== Boolean(stickyDock(b.el))) {
+        const cx = (Math.max(a.r.x1, b.r.x1) + Math.min(a.r.x2, b.r.x2)) / 2, cy = (Math.max(a.r.y1, b.r.y1) + Math.min(a.r.y2, b.r.y2)) / 2;
+        if (stickyDock(document.elementFromPoint(cx, cy))) continue;
+      }
       if (w > 1 && h > 1) out.overlaps.push(`${desc(a.el)}  ×  ${desc(b.el)}  (${Math.round(w)}×${Math.round(h)}px)`);
     }
   // text that collides with a control or with other text (tight line boxes from Range.getClientRects)
@@ -159,7 +166,7 @@ function layoutProbe() {
       if (r.right - r.left <= 2 || r.bottom - r.top <= 2) continue;
       // text hidden under an opaque floating panel (drawer, popover, sheet) is not visible text
       const top = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
-      if (top && !el.contains(top) && !top.contains(el) && top.closest('.drawer, .pop__panel, .sheetwrap, .specimen__prov')) continue;
+      if (top && !el.contains(top) && !top.contains(el) && (top.closest('.drawer, .pop__panel, .sheetwrap, .specimen__prov') || (stickyDock(top) && !stickyDock(el)))) continue;
       texts.push({ el, r, t: n.textContent.trim().slice(0, 30) });
     }
   }
@@ -169,6 +176,10 @@ function layoutProbe() {
     for (const b of boxes) {
       if (b.el.contains(tx.el) || tx.el.contains(b.el)) continue;
       if (floating(tx.el) && !floating(b.el)) continue;      // a floating panel covers the control underneath
+      if (Boolean(stickyDock(b.el)) !== Boolean(stickyDock(tx.el))) {   // one side has scrolled behind the sticky dock
+        const cx = (Math.max(tx.r.left, b.r.x1) + Math.min(tx.r.right, b.r.x2)) / 2, cy = (Math.max(tx.r.top, b.r.y1) + Math.min(tx.r.bottom, b.r.y2)) / 2;
+        if (stickyDock(document.elementFromPoint(cx, cy))) continue;
+      }
       if (b.el.closest('tbody') && tx.el.closest('thead th') && getComputedStyle(tx.el.closest('th')).position === 'sticky') continue;   // sticky header covers scrolled rows
       const r = { left: b.r.x1, right: b.r.x2, top: b.r.y1, bottom: b.r.y2 };
       if (hit(tx.r, r)) out.textOverlaps.push(`text "${tx.t}" under ${desc(b.el)}`);
@@ -251,8 +262,9 @@ if (want('screens')) for (const s of SCREENS) {
       screenshots.push({ id: s.id, vp: tag, file });
       const L = await page.evaluate(layoutProbe);
       const scrollers = L.scrollers;
-      // the desktop rule (no page scroll) applies at >= 1000 px; below that the page is the one allowed scroller
-      const pageOk = s.pageScrollOk || vp[0] < 1000;
+      // the desktop rule (no page scroll) applies at >= 1000 x 720; in narrower or shorter windows the page is
+      // the one allowed scroller (see the narrow and short-window layouts in shell.css)
+      const pageOk = s.pageScrollOk || vp[0] < 1000 || vp[1] < 720;
       check('layout', `${s.id} @ ${tag}: no clipped text`, L.clipped.length === 0, L.clipped.join('\n'));
       check('layout', `${s.id} @ ${tag}: no overlapping interactive elements`, L.overlaps.length === 0, L.overlaps.join('\n'));
       check('layout', `${s.id} @ ${tag}: no text overlapping other text or a control`, L.textOverlaps.length === 0, L.textOverlaps.slice(0, 12).join('\n'));

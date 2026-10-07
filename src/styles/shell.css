@@ -220,6 +220,17 @@
   .drawer { position: static; flex-basis: 100%; width: auto; margin-top: 6px; box-shadow: none; }
 }
 
+/* ── Short desktop windows (under 720 px tall, e.g. a laptop at 150% scaling) ──
+   The plate cannot fit one screen, so instead of clipping its figure the page scrolls and the plate grows to
+   its content. The dock stays pinned to the bottom of the window so the replay keys are always in reach. */
+@media (min-width: 1000px) and (max-height: 719px) {
+  .app { height: auto; min-height: 100dvh; overflow: visible; }
+  .plate { min-height: calc(100dvh - var(--rail-h) - 18px); }
+  .inspector, .inspector--tabs, .pane--scroll, .scroll, .lookup { overflow: visible; }
+  .tabs__panel, .scroll { flex: none; }
+  .dock { position: sticky; bottom: 0; z-index: 20; }
+}
+
 /* ── Phones ──────────────────────────────────────────── */
 @media (max-width: 640px) {
   :root { --gutter: 12px; }

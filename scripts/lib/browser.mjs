@@ -27,6 +27,8 @@ export async function launch({ webgl = true, compositing = 'gl' } = {}) {
   if (!executablePath) throw new Error('No Chromium-based browser found. Set CHROME_PATH.');
   const args = compositing === 'software' ? ['--disable-gpu-compositing'] : ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--ignore-gpu-blocklist'];
   if (typeof process.getuid === 'function' && process.getuid() === 0) args.push('--no-sandbox');
+  // the pages run offline; also keep Chromium's own background services (updates, safe browsing, etc.) off the network
+  args.push('--no-proxy-server', '--disable-background-networking', '--disable-component-update', '--disable-sync', '--no-pings', '--disable-domain-reliability');
   if (!webgl) args.push('--disable-webgl', '--disable-3d-apis');
   return chromium.launch({ executablePath, args });
 }

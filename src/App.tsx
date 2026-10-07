@@ -30,7 +30,16 @@ function useRoute(reduced: boolean) {
       const next = window.location.hash;
       cancelAllFx();
       if (supportsVT && !reduced && !document.hidden) {
-        (document as Document & { startViewTransition: (cb: () => void) => unknown }).startViewTransition(() => flushSync(() => setHash(next)));
+        // While the browser snapshots the old page the old page is still live; mark the route as in flight so
+        // replay keys are not sent to the page being left, and if the snapshot is slow (software rendering on a
+        // lab machine took 600+ ms) skip the cross-fade rather than leave the new page waiting.
+        const root = document.documentElement;
+        root.dataset.routing = '';
+        let done = false;
+        const vt = (document as Document & { startViewTransition: (cb: () => void) => { skipTransition(): void; updateCallbackDone: Promise<void> } })
+          .startViewTransition(() => { done = true; flushSync(() => setHash(next)); });
+        const slow = setTimeout(() => { if (!done) vt.skipTransition(); }, 120);
+        vt.updateCallbackDone.finally(() => { clearTimeout(slow); delete root.dataset.routing; });
       } else setHash(next);
     };
     window.addEventListener('hashchange', onChange);

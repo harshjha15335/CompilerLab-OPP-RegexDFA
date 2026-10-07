@@ -4,11 +4,16 @@
 
 /* ── Precedence table ────────────────────────────────── */
 /* the table is the hero of its plate: cells grow with the figure's width AND the viewport height (whichever is
-   tighter), for any number of terminals (--n, set by PrecTable), and the table sits centred in the figure */
-.figure--table { align-items: center; justify-content: center; container-type: inline-size; }
+   tighter), for any number of terminals (--n, set by PrecTable), and the table sits centred in the figure.
+   The figure's width is derived from the viewport and the split's known columns (--fig-w), NOT measured with a
+   container query: size containment on the figure tripled the slow frames while the table animates
+   (16/203 vs 4/227 under the 4x-throttle check). */
+.figure--table { align-items: center; justify-content: center; }
 .figure--table .ptable-wrap {
-  --cell: clamp(36px, min(calc((100dvh - 330px) / (var(--n) + 3.2)), calc((100cqi - 40px) / (var(--n) + 1.2))), 64px);
+  --fig-w: calc(100vw - clamp(320px, 29vw, 420px) - 120px);     /* page gutters, plate padding, inspector, gap */
+  --cell: clamp(36px, min(calc((100dvh - 330px) / (var(--n) + 3.2)), calc((var(--fig-w) - 40px) / (var(--n) + 1.2))), 64px);
 }
+@media (max-width: 999px) { .figure--table .ptable-wrap { --fig-w: calc(100vw - 2 * var(--gutter) - 70px); } }
 .ptable-wrap { position: relative; display: inline-block; --cell: clamp(36px, calc((100dvh - 330px) / 9.2), 54px); }
 .ptable-wrap--compact { --cell: clamp(30px, calc((100dvh - 470px) / 8.6), 40px); }
 .ptable { border-collapse: separate; border-spacing: 0; table-layout: fixed; font: var(--t-formal); border-top: 1px solid var(--line); border-left: 1px solid var(--line); background: var(--plate); }

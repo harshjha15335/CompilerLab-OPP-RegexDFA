@@ -7,7 +7,7 @@ the real UI. The full list of checks is in [verification-results.md](verificatio
 **Final full run: 733 passed, 0 failed.**
 
 - **Unit tests:** `npm test`, 32/32 pass (12 core, 8 schema, 9 replay, 3 specimen).
-- **Audit viewports** (UI/UX audit, `audit/`): every screen at 1440×900, 1280×800, 768×1024, 390×844 and 360×800, **1137 passed, 0 failed**. Below 1000 px the page scrolls and must be the only scroller.
+- **Audit viewports** (UI/UX audit, `audit/`): every screen at 1440×900, 1280×800, 768×1024, 390×844, 360×800 and 1265×590 (a 1920×1080 laptop at 150% scaling), **1362 passed, 0 failed**. Below 1000 px wide or 720 px tall the page scrolls and must be the only scroller; in short windows the dock stays pinned to the bottom.
 - **Typecheck:** `npm run typecheck` is clean (strict).
 - **Contrast:** `npm run check:contrast`, 41/41 pairs.
 - **Dependency audit:** `npm audit --audit-level=high`, 0 vulnerabilities.
@@ -37,12 +37,12 @@ Environment: a Linux container with no GPU, Chromium 141 (Playwright's `chromium
 
 | Scenario | Median fps | Animation frames over 25 ms (median run; all three runs) | Step commits, worst frame |
 | --- | --- | --- | --- |
-| Homepage specimen running | 59.9 | 1/235 (0/235, 1/235, 1/235) | 5, 17 ms |
-| Precedence table playing at 2× with motion | 59.9 | 7/225 (6/222, 7/225, 14/214) | 6, 17 ms |
-| Parse bench playing at 1× with motion | 59.9 | 1/236 (1/236, 1/236, 4/229) | 3, 17 ms |
-| DFA simulation playing | 59.9 | 2/235 (1/236, 2/235, 3/234) | 3, 17 ms |
+| Homepage specimen running | 59.9 | 2/232 (1/235, 2/232, 3/232) | 5, 17 ms |
+| Precedence table playing at 2× with motion | 59.9 | 3/228 (3/229, 3/228, 5/226) | 6, 17 ms |
+| Parse bench playing at 1× with motion | 59.9 | 3/231 (2/236, 3/231, 4/231) | 3, 17 ms |
+| DFA simulation playing | 59.9 | 2/236 (2/236, 2/236, 2/235) | 3, 17 ms |
 
-The precedence-table row rose from 2 to 7 slow frames after the UI/UX audit made its cells about 15% larger (a larger loupe filter area). It is recorded rather than hidden; see `audit/UI_UX_FINAL_REPORT.md` §12.
+After the UI/UX audit the precedence-table row briefly rose to 16 slow frames (failing the 5% budget). The cause was a CSS container query (size containment on the figure), not the larger cells; it was replaced by a viewport-derived width and the row is back at its pre-audit level.
 
 **Read this with the following caveat.** The container has no GPU. These numbers use Chrome's own software compositor
 (`--disable-gpu-compositing`), which is what a GPU-less machine uses for page compositing. With ANGLE/SwiftShader, which emulates a GPU on the
@@ -66,7 +66,7 @@ measured. The fixes that brought the app itself under 2% are in the [audit log](
 
 | Check | Result |
 | --- | --- |
-| First visit with WebGL (SwiftShader) plays the 3D intro and hands off in under 4 s | **Pass.** 2.31 s from page load with the full flight, in a re-run of the intro group after adding a "skipped" marker. In the final full run it handed off at 1.38 s: the frame-time monitor saw slow emulated-GL frames and jumped to the landing (Plan B). Both paths were observed. |
+| First visit with WebGL (SwiftShader) plays the 3D intro and hands off in under 4 s | **Pass.** 2.31 s from page load with the full flight, in a re-run of the intro group after adding a "skipped" marker. In the final full run it handed off at 2.08 s: the frame-time monitor saw slow emulated-GL frames and jumped to the landing (Plan B). Both paths were observed. |
 | After the hand-off the DOM table's glyphs are visible and the intro is remembered | **Pass** |
 | A return visit skips straight to the specimen | **Pass** |
 | Esc skips the intro | **Pass** (about 0.6 s including the 280 ms fade) |
@@ -77,7 +77,7 @@ measured. The fixes that brought the app itself under 2% are in the [audit log](
 
 - IBM Plex Math is loaded from the bundle and used for ⋖ ⋗ ≐ (`document.fonts.check` is true and the glyph mode is `font`). Plex Sans, Serif and Mono load from the bundle. The inline-SVG fallback renders (`#…?glyphs=svg`, [screenshot](screenshots/1366x768--opp-table-svg-glyphs.png)).
 - The bundle scan finds no `fetch`, `XMLHttpRequest`, `sendBeacon`, `WebSocket` or `EventSource`; no `getUserMedia` or `mediaDevices`; no `eval` or `new Function`; no `dangerouslySetInnerHTML` in `src`; no analytics hosts.
-- Sizes: app `index-*.js` **562 KB** min (180 KB gzip), the 3D intro `intro.js` **541 KB** (138 KB gzip, first visit only). The old UI's single bundle was 1.9 MB.
+- Sizes: app `index-*.js` **563 KB** min (180 KB gzip), the 3D intro `intro.js` **541 KB** (138 KB gzip, first visit only). The old UI's single bundle was 1.9 MB.
 
 ## Screenshots (1366×768 unless noted)
 

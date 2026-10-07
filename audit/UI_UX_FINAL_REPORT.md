@@ -150,7 +150,8 @@ See the paired files in `audit/screenshots/before/` and `audit/screenshots/after
 ## 10. Responsive improvements
 
 The breakpoints are now intentional, not a single "stack it" query:
-- **≥ 1000 px:** the desktop instrument. No page scroll, at most one inner scroller (unchanged).
+- **≥ 1000 px wide and ≥ 720 px tall:** the desktop instrument. No page scroll, at most one inner scroller (unchanged).
+- **≥ 1000 px wide but under 720 px tall** (e.g. a 1080p laptop at 150% scaling): the page scrolls, the plate grows to its content, the dock stays pinned to the bottom of the window. Added after the team's report.
 - **640–999 px:** figure over inspector, page is the only scroller, the dock wraps, Classic and Safeguarded stack, and the stage switch takes its own row.
 - **≤ 640 px:**
   - the top bar on two rows, with a 12 px gutter
@@ -175,7 +176,7 @@ Verified at 1440×900, 1280×800, 768×1024, 390×844 and 360×800, with every s
 
 ## 12. Remaining limitations
 
-- **The precedence-table frame rate dipped slightly.** With 15% larger cells at 2× speed, the median is still 59.9 fps, but animation frames over 25 ms rose from 2/228 to 7/225 in the median run. The cause is the larger loupe filter area under the container's software rendering. It is still within the check, but recorded rather than hidden.
+- **Resolved after the report:** a frame-rate regression on the precedence table (16/203 slow frames, failing the 5% budget on a slower host). It was caused by the container query used to size the table, not by the table's size. It was replaced with a viewport-derived width; the table is back at 3/228. See `docs/AUDIT-LOG.md` items 24–26 for this and two other follow-ups: the short-window layout (laptops at 150% scaling) and keys reaching the wrong page during a slow page transition.
 - The devibe score is unchanged (6). The three remaining hits are reviewed intentional choices, and `unslop-ignore` markers were **not** added just to lower the number.
 - Very wide grammars (more than about 9 terminals) on a phone scroll sideways inside the table figure. That is acceptable for a formal table, but not ideal.
 - Only Chromium was tested. Real GPUs and real touch devices were not.
@@ -191,8 +192,8 @@ Verified at 1440×900, 1280×800, 768×1024, 390×844 and 360×800, with every s
 | `npm run build` | pass (app 576 KB min / 180 KB gzip, intro 554 KB) |
 | `npm run check:contrast` | 41/41 |
 | `npm audit --audit-level=high` | 0 vulnerabilities |
-| `node scripts/verify.mjs` (full default run: 3 desktop sizes, keyboard demos, replay identity, reduced motion, grayscale, fps under 4× CPU throttle, intro, fonts, bundle scan, offline) | **733 passed, 0 failed** |
-| `node scripts/verify.mjs --only=screens --viewports=1440x900,1280x800,768x1024,390x844,360x800` | **1137 passed, 0 failed** (baseline 929 / 208) |
+| `node scripts/verify.mjs` (full default run: 3 desktop sizes, keyboard demos, replay identity, reduced motion, grayscale, fps under 4× CPU throttle, intro, fonts, bundle scan, offline) | **733 passed, 0 failed** (re-run after the follow-up fixes) |
+| `node scripts/verify.mjs --only=screens --viewports=1440x900,1280x800,768x1024,390x844,360x800` | **1137 passed, 0 failed** (baseline 929 / 208). With 1265×590 added after the team's report: **1362 / 0** |
 | Browser-tested interactions (driven by the verifier) | Navigation, stage drawer, Examples sheet (open, focus trap, Esc, scroll lock), grammar editor and samples, sets provenance, table provenance and conflicts, parse chips, mode switch, trace and table-lookup tabs, comparison table, regex input and errors, DFA build and simulation, dock keys, timeline scrub, speed dial, homepage specimen, intro and skip |
 
 ## 14. Final scanner results

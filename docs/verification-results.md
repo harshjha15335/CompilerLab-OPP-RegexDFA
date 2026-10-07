@@ -751,19 +751,19 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 0/235, 1/235, 1/235); 5 step commits, worst 17 ms |
-| pass | precedence table playing at 2× with motion: median 59.9 fps; animation frames over 25 ms: 7/225 (runs: 6/222, 7/225, 14/214); 6 step commits, worst 17 ms |
-| pass | parse bench playing at 1× with motion: median 59.9 fps; animation frames over 25 ms: 1/236 (runs: 1/236, 1/236, 4/229); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/236, 2/235, 3/234); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 2/232 (runs: 1/235, 2/232, 3/232); 5 step commits, worst 17 ms |
+| pass | precedence table playing at 2× with motion: median 59.9 fps; animation frames over 25 ms: 3/228 (runs: 3/229, 3/228, 5/226); 6 step commits, worst 17 ms |
+| pass | parse bench playing at 1× with motion: median 59.9 fps; animation frames over 25 ms: 3/231 (runs: 2/236, 3/231, 4/231); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/236 (runs: 2/236, 2/236, 2/235); 3 step commits, worst 17 ms |
 
 ## intro (6/6)
 
 | Result | Check |
 | --- | --- |
-| pass | first visit with WebGL plays the 3D intro (3d) and hands off in under 4 s (1.38 s from load; slow-frame jump: slow-frames) |
+| pass | first visit with WebGL plays the 3D intro (3d) and hands off in under 4 s (2.08 s from load; slow-frame jump: no) |
 | pass | after the hand-off the real DOM table is visible and the intro is remembered |
 | pass | a return visit skips straight to the specimen |
-| pass | Esc skips the intro (545 ms) |
+| pass | Esc skips the intro (737 ms) |
 | pass | the CSS hand-off runs and finishes |
 | pass | without WebGL (disabled): CSS hand-off, then a static specimen with Replay (40 of 40) |
 
@@ -784,7 +784,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-gNmPFgb5.js 562 KB, intro.js 541 KB |
+| pass | bundle sizes: index-CdzmdNKu.js 563 KB, intro.js 541 KB |
 
 ## offline (2/2)
 

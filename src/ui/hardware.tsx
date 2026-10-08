@@ -1,7 +1,7 @@
-// Machined hardware that sits on the printed plate: keycaps, the brass speed dial and the scrub
-// timeline. Pure CSS 3D (no WebGL). Every control is a real, labelled, keyboard-operable element.
+// Machined hardware that sits on the printed plate: keycaps and the scrub timeline.
+// Pure CSS 3D (no WebGL). Every control is a real, labelled, keyboard-operable element.
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { SPEEDS, useSettings, type KeyId, type Replay, type Speed } from '../replay/useReplay.ts';
+import { type KeyId, type Replay } from '../replay/useReplay.ts';
 import { cx } from './kit.tsx';
 
 /** A keycap button. It presses (120 ms travel) when clicked AND when its keyboard shortcut fires. */
@@ -41,56 +41,6 @@ export const Icons = {
   pause: <I d={<><rect x="2.4" y="1.6" width="2.6" height="8.8" /><rect x="7" y="1.6" width="2.6" height="8.8" /></>} />,
   replay: <I d={<path d="M9.8 6A3.8 3.8 0 1 1 8.4 3M8.6 0.8v2.6H6" fill="none" />} />,
 };
-
-const DETENT = (i: number) => -120 + i * 60;      // five detents from -120° to +120°
-
-/** Brass speed dial: role="slider" with five detents (0.5×, 1×, 1.5×, 2×, 4×).
- *  Drag to turn, or focus it and use ← → ↑ ↓ Home End; [ and ] work anywhere. */
-export function SpeedDial() {
-  const { speed, setSpeed } = useSettings();
-  const index = SPEEDS.indexOf(speed);
-  const knob = useRef<HTMLDivElement>(null);
-  const [drag, setDrag] = useState(false);
-  const setIndex = (i: number) => setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, i))] as Speed);
-  const fromPointer = (x: number, y: number) => {
-    const r = knob.current!.getBoundingClientRect();
-    const a = (Math.atan2(x - (r.left + r.width / 2), -(y - (r.top + r.height / 2))) * 180) / Math.PI;   // 0° = up
-    setIndex(Math.round((Math.max(-140, Math.min(140, a)) + 120) / 60));
-  };
-  return (
-    <div className="dial" data-own-keys="">
-      <div ref={knob} className={cx('dial__knob', drag && 'is-turning')} role="slider" tabIndex={0}
-        aria-label="Playback speed" aria-valuemin={0} aria-valuemax={SPEEDS.length - 1} aria-valuenow={index}
-        aria-valuetext={`${speed}× speed`} aria-keyshortcuts="[ ]"
-        style={{ '--angle': `${DETENT(index)}deg` } as CSSProperties}
-        onKeyDown={(e) => {
-          const k = e.key;
-          if (k === 'ArrowRight' || k === 'ArrowUp') setIndex(index + 1);
-          else if (k === 'ArrowLeft' || k === 'ArrowDown') setIndex(index - 1);
-          else if (k === 'Home') setIndex(0);
-          else if (k === 'End') setIndex(SPEEDS.length - 1);
-          else return;
-          e.preventDefault(); e.stopPropagation();
-        }}
-        onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); setDrag(true); fromPointer(e.clientX, e.clientY); }}
-        onPointerMove={(e) => { if (drag) fromPointer(e.clientX, e.clientY); }}
-        onPointerUp={() => setDrag(false)} onPointerCancel={() => setDrag(false)}>
-        <span className="dial__cap" aria-hidden="true"><span className="dial__notch" /></span>
-      </div>
-      <svg className="dial__scale" viewBox="-40 -40 80 80" aria-hidden="true">
-        {SPEEDS.map((s, i) => {
-          const a = ((DETENT(i) - 90) * Math.PI) / 180;
-          return (
-            <g key={s} className={cx('dial__tick', i === index && 'is-on')}>
-              <line x1={Math.cos(a) * 25} y1={Math.sin(a) * 25} x2={Math.cos(a) * 29} y2={Math.sin(a) * 29} />
-              <text x={Math.cos(a) * 35.5} y={Math.sin(a) * 35.5 + 3}>{s}</text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
 
 type Fit = 'mid' | 'start' | 'end' | 'hidden';
 const GAP = 10;   // px of clear space required between two tick labels
@@ -169,7 +119,6 @@ export function Dock<S>({ replay, label, next }: { replay: Replay<S>; label: str
         <span className="dock__word">Step</span> <b>{count}</b> <span className="dock__of">of {total}</span>
       </output>
       <Timeline replay={replay} label={label} />
-      <SpeedDial />
       {next && (
         <a className={cx('dock__next', count >= total && total > 0 && 'is-ready')} href={next.href}>
           <span className="dock__nextlabel">Next</span> {next.title}

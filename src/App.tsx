@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { useOppModel, useRegexModel } from './models.ts';
-import { SettingsContext, type Settings, type Speed } from './replay/useReplay.ts';
+import { SettingsContext, type Settings } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
 import { Rail } from './shell/Shell.tsx';
 import { Home } from './screens/home/Home.tsx';
@@ -28,13 +28,12 @@ function useRoute() {
 }
 
 export default function App() {
-  const [speed, setSpeed] = useState<Speed>(1);
   const [reduced, setReducedState] = useState(() => {
     const saved = read(KEYS.reduced);
     return saved !== null ? saved === '1' : window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   });
   const setReduced = useCallback((r: boolean) => { write(KEYS.reduced, r ? '1' : '0'); setReducedState(r); }, []);
-  const settings = useMemo<Settings>(() => ({ speed, setSpeed, reduced, setReduced }), [speed, reduced, setReduced]);
+  const settings = useMemo<Settings>(() => ({ reduced, setReduced }), [reduced, setReduced]);
   useEffect(() => { document.documentElement.dataset.motion = reduced ? 'reduced' : 'full'; if (reduced) cancelAllFx(); }, [reduced]);
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');

@@ -403,15 +403,11 @@ if (want('keyboard')) {
   log2('Simulation: End accepts abb', await page.$eval('.inspector', (e) => e.textContent.includes('ACCEPT')));
   check('keyboard', 'full RE→DFA demo with the keyboard only', st.every((s) => s.startsWith('✓')), st.join('\n'));
 
-  // speed dial and timeline by keyboard
+  // timeline by keyboard
   await go(page, '#/opp/table');
-  await page.focus('.dial__knob'); await page.keyboard.press('ArrowRight');
-  const speed = await page.$eval('.dial__knob', (e) => e.getAttribute('aria-valuetext'));
   await page.focus('.timeline__range'); await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight');
-  check('keyboard', `speed dial and timeline are operable by keyboard (${speed}, step ${await readout(page)})`, speed === '1.5× speed' && (await readout(page)) === 2);
-  await page.keyboard.press('Escape');
-  await page.keyboard.press(']'); await page.keyboard.press('[');
-  check('keyboard', '[ and ] change speed', (await page.$eval('.dial__knob', (e) => e.getAttribute('aria-valuetext'))) === '1.5× speed');
+  check('keyboard', `timeline is operable by keyboard (step ${await readout(page)})`, (await readout(page)) === 2);
+  check('keyboard', 'there is no speed dial (removed in the Review-1 audit)', (await page.$$('.dial, [aria-label="Playback speed"]')).length === 0);
   await ctx.close();
 }
 
@@ -537,8 +533,8 @@ if (want('fps')) {
     check('fps', `${label}: median ${m.fps.toFixed(1)} fps; animation frames over 25 ms: ${share(m)} (runs: ${runs.map(share).join(', ')}); ${m.commits} step commits, worst ${m.worstCommit.toFixed(0)} ms`,
       m.fps >= 55 && m.longAnim / Math.max(1, m.anim) <= 0.05 && m.worstCommit < 120, JSON.stringify(runs));
   };
-  await measure('#/opp/table', 'precedence table playing at 2× with motion', async (p) => { await p.keyboard.press(']'); await p.keyboard.press(']'); await p.keyboard.press(' '); });
-  await measure('#/opp/parse', 'parse bench playing at 1× with motion', async (p) => { await p.keyboard.press(' '); });
+  await measure('#/opp/table', 'precedence table playing with motion', async (p) => { await p.keyboard.press(' '); });
+  await measure('#/opp/parse', 'parse bench playing with motion', async (p) => { await p.keyboard.press(' '); });
   await measure('#/regex/sim', 'DFA simulation playing', async (p) => { await p.keyboard.press(' '); });
   await ctx.close();
   await swBrowser.close();

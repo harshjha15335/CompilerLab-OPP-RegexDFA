@@ -1,5 +1,5 @@
 /* ParseLens design tokens: the "Compiler Laboratory Plate".
-   A flat, printed drafting plate with machined hardware (keycaps, a brass dial) sitting on it.
+   A flat, printed drafting plate with machined hardware (keycaps, a brass timeline thumb) sitting on it.
    Every meaning-bearing colour is paired with a non-colour signal; see docs/design/DESIGN.md.
    Contrast for every pair below is computed by scripts/check-contrast.ts (npm run check:contrast). */
 
@@ -82,7 +82,7 @@
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px;
   --gutter: 16px;           /* the one left/right page edge: rail, plates and homepage content all start on it */
   /* radius by role, two steps only: printed marks are near-square, controls and panels are softened.
-     Circles (states, dial) and the rounded non-terminal slot are shapes with meaning, not radius. */
+     Circles (DFA states) and the rounded non-terminal slot are shapes with meaning, not radius. */
   --r-mark: 3px;            /* cells, tokens, tags, chips, inline highlights, printed panels */
   --radius: 6px;            /* buttons, fields, segmented controls, sheets, drawers, menus */
   /* elevation: paper lies flat on the desk; only floating things (menus, sheets) cast a real shadow */

@@ -1,4 +1,4 @@
-/* Hardware on the plate: keycaps, the brass speed dial, the scrub timeline. CSS 3D only. */
+/* Hardware on the plate: keycaps, the scrub timeline. CSS 3D only. */
 
 /* ── Keycaps ─────────────────────────────────────────── */
 .keycap {
@@ -89,34 +89,10 @@
 .timeline__range:focus-visible ~ .timeline__thumb { outline: 2px solid var(--focus); outline-offset: 2px; }
 .timeline__range:active ~ .timeline__thumb { transform: translateX(-50%) translateY(1px) scaleY(0.94); }
 
-/* ── Speed dial ──────────────────────────────────────── */
-.dial { position: relative; width: 76px; height: 64px; flex: none; display: grid; place-items: center; }
-.dial__scale { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; transform: translate(-50%, -44%); pointer-events: none; overflow: visible; }
-.dial__tick line { stroke: var(--brass-lo); stroke-width: 1.4; }
-.dial__tick text { font: 500 10.5px/1 var(--font-mono); fill: var(--ink-2); text-anchor: middle; }
-.dial__tick.is-on line { stroke: var(--ink); stroke-width: 2.4; }
-.dial__tick.is-on text { fill: var(--ink); font-weight: 600; }
-.dial__knob {
-  position: relative; width: 36px; height: 36px; margin-top: 8px; border-radius: 50%; cursor: grab; touch-action: none;
-  transform: rotate(var(--angle)); transition: transform 160ms var(--ease);
-  background: repeating-conic-gradient(var(--brass-lo) 0 5deg, var(--brass) 5deg 10deg);
-  box-shadow: 0 2px 3px rgba(40, 30, 10, 0.4), 0 0 0 1px var(--brass-lo);
-}
-.dial__knob.is-turning { cursor: grabbing; }
-.dial__cap {
-  position: absolute; inset: 4px; border-radius: 50%;
-  background: radial-gradient(circle at 38% 30%, var(--brass-hi), var(--brass) 60%, var(--brass-lo));
-  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) inset, 0 -1px 2px rgba(0, 0, 0, 0.25) inset;
-}
-.dial__notch { position: absolute; left: 50%; top: 2px; width: 3px; height: 10px; transform: translateX(-50%); background: var(--ink); border-radius: var(--r-mark); }
-.dial__knob:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 50%; }
-[data-motion='reduced'] .dial__knob { transition: none; }
-
-/* ── Dock on narrow screens: keys + readout, then the timeline at full width, then dial + Next ── */
+/* ── Dock on narrow screens: keys + readout, then the timeline at full width, then Next ── */
 @media (max-width: 999px) {
   .dock { flex-wrap: wrap; gap: 8px 14px; padding: 10px 14px; }
   .timeline { order: 3; flex-basis: 100%; min-width: 0; }
-  .dial { order: 4; }
   .dock__next { order: 5; }
 }
 @media (max-width: 640px) {

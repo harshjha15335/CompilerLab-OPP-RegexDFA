@@ -1,0 +1,7 @@
+LEADING     50 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+TRAILING    47 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+TABLE       30 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+PARSE       11 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+DIRECT      29 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+SIMULATION   5 steps  missing phase=0 type=0 message=0 source=0  shared objects between steps=0
+buildDirect mutates its input AST: false

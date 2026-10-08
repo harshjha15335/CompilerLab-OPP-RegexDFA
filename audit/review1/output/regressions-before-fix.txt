@@ -1,0 +1,12 @@
+not ok 1 - B1: a grammar typed without spaces is split around its non-terminals
+not ok 2 - B2: "$" cannot be a non-terminal
+not ok 3 - B3: mixed spacing in a test string tokenizes
+not ok 4 - B4: whitespace-only input is the empty string, not an unknown symbol
+not ok 5 - B5: tokenizing backtracks when the longest match leads nowhere
+not ok 6 - B6: parsing with a conflicting table returns REJECT instead of throwing
+not ok 7 - B7: an unescaped space in a regex is an error, not a hidden input symbol
+not ok 8 - B8: parse and simulation steps carry a phase like every other step log
+not ok 9 - B9: step records share no mutable objects, and buildDirect leaves its input AST untouched
+ok 10 - B10: every node of (a|b)*abb\# matches the hand derivation (notes fixture)
+# pass 1
+# fail 9

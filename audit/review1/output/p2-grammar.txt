@@ -1,0 +1,56 @@
+"E -> E + T | T\nT -> id" 
+    {"parseOk":true,"errors":[],"prods":["1:E->[E|+|T]","2:E->[T]","3:T->[id]"],"nts":["E","T"],"terms":["+","id"],"start":"E","validate":{"ok":true,"errors":[]}}
+"E->E+T|T\nT->id" 
+    {"parseOk":true,"errors":[],"prods":["1:E->[E|+|T]","2:E->[T]","3:T->[id]"],"nts":["E","T"],"terms":["+","id"],"start":"E","validate":{"ok":true,"errors":[]}}
+"E → E + T | T\nT → id" 
+    {"parseOk":true,"errors":[],"prods":["1:E->[E|+|T]","2:E->[T]","3:T->[id]"],"nts":["E","T"],"terms":["+","id"],"start":"E","validate":{"ok":true,"errors":[]}}
+"S -> a A\nA -> ε" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:A->[ε]"],"nts":["S","A"],"terms":["a"],"start":"S","validate":{"ok":false,"errors":["Production 2 (A → ε) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a A\nA -> eps" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:A->[eps]"],"nts":["S","A"],"terms":["a"],"start":"S","validate":{"ok":false,"errors":["Production 2 (A → eps) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a A\nA -> epsilon" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:A->[epsilon]"],"nts":["S","A"],"terms":["a"],"start":"S","validate":{"ok":false,"errors":["Production 2 (A → epsilon) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a A\nA -> λ" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:A->[λ]"],"nts":["S","A"],"terms":["a"],"start":"S","validate":{"ok":false,"errors":["Production 2 (A → λ) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a A\nA -> " 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:A->[]"],"nts":["S","A"],"terms":["a"],"start":"S","validate":{"ok":false,"errors":["Production 2 (A → ε) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a A | " 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|A]","2:S->[]"],"nts":["S"],"terms":["a","A"],"start":"S","validate":{"ok":false,"errors":["Production 2 (S → ε) derives ε. Operator grammars cannot contain ε-productions."]}}
+"S -> a\n\n\nS -> b" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a]","2:S->[b]"],"nts":["S"],"terms":["a","b"],"start":"S","validate":{"ok":true,"errors":[]}}
+"E -> id | id" 
+    {"parseOk":true,"errors":[],"prods":["1:E->[id]","2:E->[id]"],"nts":["E"],"terms":["id"],"start":"E","validate":{"ok":true,"errors":[]}}
+"S -> A + b" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[A|+|b]"],"nts":["S"],"terms":["A","+","b"],"start":"S","validate":{"ok":true,"errors":[]}}
+"S -> a $ b" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|$|b]"],"nts":["S"],"terms":["a","$","b"],"start":"S","validate":{"ok":false,"errors":["Production 1 uses \"$\", which is reserved as the end marker."]}}
+"$ -> a" 
+    {"parseOk":true,"errors":[],"prods":["1:$->[a]"],"nts":["$"],"terms":["a"],"start":"$","validate":{"ok":false,"errors":["Production 1 uses \"$\", which is reserved as the end marker."]}}
+"S -> A B | a\nA -> a\nB -> b" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[A|B]","2:S->[a]","3:A->[a]","4:B->[b]"],"nts":["S","A","B"],"terms":["a","b"],"start":"S","validate":{"ok":false,"errors":["Production 1 (S → A B) contains adjacent non-terminals: A B."]}}
+"S -> a | A B\nA -> a\nB -> b" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a]","2:S->[A|B]","3:A->[a]","4:B->[b]"],"nts":["S","A","B"],"terms":["a","b"],"start":"S","validate":{"ok":false,"errors":["Production 2 (S → A B) contains adjacent non-terminals: A B."]}}
+"S -> a | b | A ε\nA -> a" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[a]","2:S->[b]","3:S->[A|ε]","4:A->[a]"],"nts":["S","A"],"terms":["a","b"],"start":"S","validate":{"ok":false,"errors":["Production 3 (S → A ε) derives ε. Operator grammars cannot contain ε-productions."]}}
+"garbage" 
+    {"parseOk":false,"errors":["Line 1: expected \"A -> alternatives\"."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"->" 
+    {"parseOk":false,"errors":["Line 1: the left side must be a single symbol."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"-> a" 
+    {"parseOk":false,"errors":["Line 1: the left side must be a single symbol."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"A B -> c" 
+    {"parseOk":false,"errors":["Line 1: the left side must be a single symbol."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"S -> a -> b" 
+    {"parseOk":false,"errors":["Line 1: expected \"A -> alternatives\"."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"" 
+    {"parseOk":false,"errors":["Enter productions to begin."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"   " 
+    {"parseOk":false,"errors":["Enter productions to begin."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"\u0000" 
+    {"parseOk":false,"errors":["Line 1: expected \"A -> alternatives\"."],"prods":[],"nts":[],"terms":[],"start":null,"validate":null}
+"S -> a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a  …[truncated]
+    {"parseOk":true,"errors":[],"prods":["1:S->[a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a|a| …[truncated]
+"S -> id_num + id_num" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[id_num|+|id_num]"],"nts":["S"],"terms":["id_num","+"],"start":"S","validate":{"ok":true,"errors":[]}}
+"S -> ( S ) | x\n// comment line" 
+    {"parseOk":true,"errors":[],"prods":["1:S->[(|S|)]","2:S->[x]"],"nts":["S"],"terms":["(",")","x"],"start":"S","validate":{"ok":true,"errors":[]}}

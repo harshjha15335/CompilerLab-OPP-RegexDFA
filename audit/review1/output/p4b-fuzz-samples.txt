@@ -1,0 +1,5 @@
+Expression grammar: 97655 strings ≤7 tokens, |L|=60; classic false-acc 0 false-rej 0; safeguarded false-acc 0 false-rej 0
+Classic N vs Safeguarded: 21844 strings ≤7 tokens, |L|=1; classic false-acc 5 false-rej 0; safeguarded false-acc 0 false-rej 0
+skip (conflicts, parser blocked): Ambiguous expressions
+skip (not an operator grammar): Adjacent non-terminals
+skip (not an operator grammar): An ε-production

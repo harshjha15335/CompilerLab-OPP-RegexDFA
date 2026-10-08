@@ -1,0 +1,50 @@
+[
+  {
+    "name": "1 load expression grammar",
+    "clicks": 1,
+    "ok": true,
+    "note": ""
+  },
+  {
+    "name": "2 invalid-grammar error from the sample list",
+    "clicks": 1,
+    "ok": true,
+    "note": ""
+  },
+  {
+    "name": "3 step through LEADING/TRAILING",
+    "clicks": 2,
+    "ok": true,
+    "note": "(→ / End by keyboard)"
+  },
+  {
+    "name": "4 step through the table",
+    "clicks": 1,
+    "ok": true,
+    "note": ""
+  },
+  {
+    "name": "5 conflicting grammar and its verdict",
+    "clicks": 1,
+    "ok": true,
+    "note": "(picker on the table plate)"
+  },
+  {
+    "name": "6 parse id+id*id",
+    "clicks": 2,
+    "ok": true,
+    "note": ""
+  },
+  {
+    "name": "7 Classic vs Safeguarded",
+    "clicks": 1,
+    "ok": true,
+    "note": ""
+  },
+  {
+    "name": "8 (a|b)*abb → tree → followpos → DFA → simulate abb",
+    "clicks": 1,
+    "ok": true,
+    "note": "(End + PageDown by keyboard)"
+  }
+]

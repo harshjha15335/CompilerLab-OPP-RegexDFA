@@ -1,0 +1,44 @@
+— 2.7 parser —
+"a|bc*"          OK   or(a,cat(b,star(c)))
+"ab|c"           OK   or(cat(a,b),c)
+"(a|b)*abb"      OK   cat(cat(cat(star(or(a,b)),a),b),b)
+"a+?"            OK   opt(plus(a))
+"a*b+c?"         OK   cat(cat(star(a),plus(b)),opt(c))
+"((a))"          OK   a
+"\\*\\("         OK   cat(*,()
+"\\#a"           OK   cat(#,a)
+"a b"            ERR  pos=1 (1-based 2) "Space at position 2: spaces are not part of the expression. Remove it, or write "\ " for a literal space."
+"a||b"           ERR  pos=1 (1-based 2) "Nothing after "|" at position 2."
+"(a|)"           ERR  pos=2 (1-based 3) "Nothing after "|" at position 3."
+"(|a)"           ERR  pos=1 (1-based 2) "Nothing before "|" at position 2."
+"()"             ERR  pos=0 (1-based 1) "Empty group at position 1."
+"|a"             ERR  pos=0 (1-based 1) "Nothing before "|" at position 1."
+"a|"             ERR  pos=1 (1-based 2) "Nothing after "|" at position 2."
+"*a"             ERR  pos=0 (1-based 1) ""*" at position 1 has nothing to repeat."
+"a\\"            ERR  pos=1 (1-based 2) "Trailing "\" has nothing to escape."
+"(ab"            ERR  pos=0 (1-based 1) "The "(" at position 1 has no closing ")". Close it, or write \( for a literal parenthesis."
+"ab)"            ERR  pos=2 (1-based 3) "Unexpected ")" at position 3."
+"#"              ERR  pos=0 (1-based 1) ""#" is reserved for direct-method augmentation. Write \# for a literal "#"."
+"a#b"            ERR  pos=1 (1-based 2) ""#" is reserved for direct-method augmentation. Write \# for a literal "#"."
+""               ERR  pos=0 (1-based 1) "Enter a regular expression."
+"(((a|b)*c)+)?"  OK   opt(plus(cat(star(or(a,b)),c)))
+
+— 2.8 node properties vs hand derivation —
+PASS (a|b)*abb: followpos
+PASS (a|b)*abb: DFA states
+PASS (a|b)*abb: DFA transitions
+PASS (a|b)*abb: accepting
+PASS (a|b)*abb: leaves numbered 1..n left to right, end marker last
+PASS (ab|a)+b?: every node's nullable/firstpos/lastpos (11 nodes)
+PASS (ab|a)+b?: followpos
+PASS (ab|a)+b?: DFA states
+PASS (ab|a)+b?: DFA transitions
+PASS (ab|a)+b?: accepting
+PASS (ab|a)+b?: leaves numbered 1..n left to right, end marker last
+PASS a*b*c?: every node's nullable/firstpos/lastpos (10 nodes)
+PASS a*b*c?: followpos
+PASS a*b*c?: DFA states
+PASS a*b*c?: DFA transitions
+PASS a*b*c?: accepting
+PASS a*b*c?: leaves numbered 1..n left to right, end marker last
+17 passed, 0 failed

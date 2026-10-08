@@ -1,0 +1,649 @@
+Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
+
+— screens × viewports: clipping, overlap, scrollbars —
+  ok   home @ 1366x768: no clipped text
+  ok   home @ 1366x768: no overlapping interactive elements
+  ok   home @ 1366x768: no text overlapping other text or a control
+  ok   home @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   home @ 1366x768: no horizontal page scroll
+  ok   home @ 1280x720: no clipped text
+  ok   home @ 1280x720: no overlapping interactive elements
+  ok   home @ 1280x720: no text overlapping other text or a control
+  ok   home @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   home @ 1280x720: no horizontal page scroll
+  ok   home @ 1920x1080: no clipped text
+  ok   home @ 1920x1080: no overlapping interactive elements
+  ok   home @ 1920x1080: no text overlapping other text or a control
+  ok   home @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   home @ 1920x1080: no horizontal page scroll
+  ok   home-narrow-820 @ 820x1000: no clipped text
+  ok   home-narrow-820 @ 820x1000: no overlapping interactive elements
+  ok   home-narrow-820 @ 820x1000: no text overlapping other text or a control
+  ok   home-narrow-820 @ 820x1000: at most one vertical scrollbar
+  ok   home-narrow-820 @ 820x1000: no horizontal page scroll
+  ok   home-narrow-390 @ 390x844: no clipped text
+  ok   home-narrow-390 @ 390x844: no overlapping interactive elements
+  ok   home-narrow-390 @ 390x844: no text overlapping other text or a control
+  ok   home-narrow-390 @ 390x844: at most one vertical scrollbar
+  ok   home-narrow-390 @ 390x844: no horizontal page scroll
+  ok   stage-drawer @ 1366x768: no clipped text
+  ok   stage-drawer @ 1366x768: no overlapping interactive elements
+  ok   stage-drawer @ 1366x768: no text overlapping other text or a control
+  ok   stage-drawer @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   stage-drawer @ 1366x768: no horizontal page scroll
+  ok   stage-drawer @ 1280x720: no clipped text
+  ok   stage-drawer @ 1280x720: no overlapping interactive elements
+  ok   stage-drawer @ 1280x720: no text overlapping other text or a control
+  ok   stage-drawer @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   stage-drawer @ 1280x720: no horizontal page scroll
+  ok   stage-drawer @ 1920x1080: no clipped text
+  ok   stage-drawer @ 1920x1080: no overlapping interactive elements
+  ok   stage-drawer @ 1920x1080: no text overlapping other text or a control
+  ok   stage-drawer @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   stage-drawer @ 1920x1080: no horizontal page scroll
+  ok   opp-grammar @ 1366x768: no clipped text
+  ok   opp-grammar @ 1366x768: no overlapping interactive elements
+  ok   opp-grammar @ 1366x768: no text overlapping other text or a control
+  ok   opp-grammar @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar @ 1366x768: no horizontal page scroll
+  ok   opp-grammar @ 1280x720: no clipped text
+  ok   opp-grammar @ 1280x720: no overlapping interactive elements
+  ok   opp-grammar @ 1280x720: no text overlapping other text or a control
+  ok   opp-grammar @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar @ 1280x720: no horizontal page scroll
+  ok   opp-grammar @ 1920x1080: no clipped text
+  ok   opp-grammar @ 1920x1080: no overlapping interactive elements
+  ok   opp-grammar @ 1920x1080: no text overlapping other text or a control
+  ok   opp-grammar @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar @ 1920x1080: no horizontal page scroll
+  ok   opp-grammar-adjacent @ 1366x768: no clipped text
+  ok   opp-grammar-adjacent @ 1366x768: no overlapping interactive elements
+  ok   opp-grammar-adjacent @ 1366x768: no text overlapping other text or a control
+  ok   opp-grammar-adjacent @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-adjacent @ 1366x768: no horizontal page scroll
+  ok   opp-grammar-adjacent @ 1280x720: no clipped text
+  ok   opp-grammar-adjacent @ 1280x720: no overlapping interactive elements
+  ok   opp-grammar-adjacent @ 1280x720: no text overlapping other text or a control
+  ok   opp-grammar-adjacent @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-adjacent @ 1280x720: no horizontal page scroll
+  ok   opp-grammar-adjacent @ 1920x1080: no clipped text
+  ok   opp-grammar-adjacent @ 1920x1080: no overlapping interactive elements
+  ok   opp-grammar-adjacent @ 1920x1080: no text overlapping other text or a control
+  ok   opp-grammar-adjacent @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-adjacent @ 1920x1080: no horizontal page scroll
+  ok   opp-grammar-epsilon @ 1366x768: no clipped text
+  ok   opp-grammar-epsilon @ 1366x768: no overlapping interactive elements
+  ok   opp-grammar-epsilon @ 1366x768: no text overlapping other text or a control
+  ok   opp-grammar-epsilon @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-epsilon @ 1366x768: no horizontal page scroll
+  ok   opp-grammar-epsilon @ 1280x720: no clipped text
+  ok   opp-grammar-epsilon @ 1280x720: no overlapping interactive elements
+  ok   opp-grammar-epsilon @ 1280x720: no text overlapping other text or a control
+  ok   opp-grammar-epsilon @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-epsilon @ 1280x720: no horizontal page scroll
+  ok   opp-grammar-epsilon @ 1920x1080: no clipped text
+  ok   opp-grammar-epsilon @ 1920x1080: no overlapping interactive elements
+  ok   opp-grammar-epsilon @ 1920x1080: no text overlapping other text or a control
+  ok   opp-grammar-epsilon @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-epsilon @ 1920x1080: no horizontal page scroll
+  ok   opp-grammar-conflict @ 1366x768: no clipped text
+  ok   opp-grammar-conflict @ 1366x768: no overlapping interactive elements
+  ok   opp-grammar-conflict @ 1366x768: no text overlapping other text or a control
+  ok   opp-grammar-conflict @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-conflict @ 1366x768: no horizontal page scroll
+  ok   opp-grammar-conflict @ 1280x720: no clipped text
+  ok   opp-grammar-conflict @ 1280x720: no overlapping interactive elements
+  ok   opp-grammar-conflict @ 1280x720: no text overlapping other text or a control
+  ok   opp-grammar-conflict @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-conflict @ 1280x720: no horizontal page scroll
+  ok   opp-grammar-conflict @ 1920x1080: no clipped text
+  ok   opp-grammar-conflict @ 1920x1080: no overlapping interactive elements
+  ok   opp-grammar-conflict @ 1920x1080: no text overlapping other text or a control
+  ok   opp-grammar-conflict @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-grammar-conflict @ 1920x1080: no horizontal page scroll
+  ok   opp-sets @ 1366x768: no clipped text
+  ok   opp-sets @ 1366x768: no overlapping interactive elements
+  ok   opp-sets @ 1366x768: no text overlapping other text or a control
+  ok   opp-sets @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-sets @ 1366x768: no horizontal page scroll
+  ok   opp-sets @ 1280x720: no clipped text
+  ok   opp-sets @ 1280x720: no overlapping interactive elements
+  ok   opp-sets @ 1280x720: no text overlapping other text or a control
+  ok   opp-sets @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-sets @ 1280x720: no horizontal page scroll
+  ok   opp-sets @ 1920x1080: no clipped text
+  ok   opp-sets @ 1920x1080: no overlapping interactive elements
+  ok   opp-sets @ 1920x1080: no text overlapping other text or a control
+  ok   opp-sets @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-sets @ 1920x1080: no horizontal page scroll
+  ok   opp-sets-end @ 1366x768: no clipped text
+  ok   opp-sets-end @ 1366x768: no overlapping interactive elements
+  ok   opp-sets-end @ 1366x768: no text overlapping other text or a control
+  ok   opp-sets-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-sets-end @ 1366x768: no horizontal page scroll
+  ok   opp-sets-end @ 1280x720: no clipped text
+  ok   opp-sets-end @ 1280x720: no overlapping interactive elements
+  ok   opp-sets-end @ 1280x720: no text overlapping other text or a control
+  ok   opp-sets-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-sets-end @ 1280x720: no horizontal page scroll
+  ok   opp-sets-end @ 1920x1080: no clipped text
+  ok   opp-sets-end @ 1920x1080: no overlapping interactive elements
+  ok   opp-sets-end @ 1920x1080: no text overlapping other text or a control
+  ok   opp-sets-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-sets-end @ 1920x1080: no horizontal page scroll
+  ok   opp-table @ 1366x768: no clipped text
+  ok   opp-table @ 1366x768: no overlapping interactive elements
+  ok   opp-table @ 1366x768: no text overlapping other text or a control
+  ok   opp-table @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-table @ 1366x768: no horizontal page scroll
+  ok   opp-table @ 1280x720: no clipped text
+  ok   opp-table @ 1280x720: no overlapping interactive elements
+  ok   opp-table @ 1280x720: no text overlapping other text or a control
+  ok   opp-table @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-table @ 1280x720: no horizontal page scroll
+  ok   opp-table @ 1920x1080: no clipped text
+  ok   opp-table @ 1920x1080: no overlapping interactive elements
+  ok   opp-table @ 1920x1080: no text overlapping other text or a control
+  ok   opp-table @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-table @ 1920x1080: no horizontal page scroll
+  ok   opp-table-end @ 1366x768: no clipped text
+  ok   opp-table-end @ 1366x768: no overlapping interactive elements
+  ok   opp-table-end @ 1366x768: no text overlapping other text or a control
+  ok   opp-table-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-table-end @ 1366x768: no horizontal page scroll
+  ok   opp-table-end @ 1280x720: no clipped text
+  ok   opp-table-end @ 1280x720: no overlapping interactive elements
+  ok   opp-table-end @ 1280x720: no text overlapping other text or a control
+  ok   opp-table-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-table-end @ 1280x720: no horizontal page scroll
+  ok   opp-table-end @ 1920x1080: no clipped text
+  ok   opp-table-end @ 1920x1080: no overlapping interactive elements
+  ok   opp-table-end @ 1920x1080: no text overlapping other text or a control
+  ok   opp-table-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-table-end @ 1920x1080: no horizontal page scroll
+  ok   opp-table-provenance @ 1366x768: no clipped text
+  ok   opp-table-provenance @ 1366x768: no overlapping interactive elements
+  ok   opp-table-provenance @ 1366x768: no text overlapping other text or a control
+  ok   opp-table-provenance @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-table-provenance @ 1366x768: no horizontal page scroll
+  ok   opp-table-provenance @ 1280x720: no clipped text
+  ok   opp-table-provenance @ 1280x720: no overlapping interactive elements
+  ok   opp-table-provenance @ 1280x720: no text overlapping other text or a control
+  ok   opp-table-provenance @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-table-provenance @ 1280x720: no horizontal page scroll
+  ok   opp-table-provenance @ 1920x1080: no clipped text
+  ok   opp-table-provenance @ 1920x1080: no overlapping interactive elements
+  ok   opp-table-provenance @ 1920x1080: no text overlapping other text or a control
+  ok   opp-table-provenance @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-table-provenance @ 1920x1080: no horizontal page scroll
+  ok   opp-table-conflict @ 1366x768: no clipped text
+  ok   opp-table-conflict @ 1366x768: no overlapping interactive elements
+  ok   opp-table-conflict @ 1366x768: no text overlapping other text or a control
+  ok   opp-table-conflict @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict @ 1366x768: no horizontal page scroll
+  ok   opp-table-conflict @ 1280x720: no clipped text
+  ok   opp-table-conflict @ 1280x720: no overlapping interactive elements
+  ok   opp-table-conflict @ 1280x720: no text overlapping other text or a control
+  ok   opp-table-conflict @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict @ 1280x720: no horizontal page scroll
+  ok   opp-table-conflict @ 1920x1080: no clipped text
+  ok   opp-table-conflict @ 1920x1080: no overlapping interactive elements
+  ok   opp-table-conflict @ 1920x1080: no text overlapping other text or a control
+  ok   opp-table-conflict @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict @ 1920x1080: no horizontal page scroll
+  ok   opp-table-conflict-end @ 1366x768: no clipped text
+  ok   opp-table-conflict-end @ 1366x768: no overlapping interactive elements
+  ok   opp-table-conflict-end @ 1366x768: no text overlapping other text or a control
+  ok   opp-table-conflict-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict-end @ 1366x768: no horizontal page scroll
+  ok   opp-table-conflict-end @ 1280x720: no clipped text
+  ok   opp-table-conflict-end @ 1280x720: no overlapping interactive elements
+  ok   opp-table-conflict-end @ 1280x720: no text overlapping other text or a control
+  ok   opp-table-conflict-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict-end @ 1280x720: no horizontal page scroll
+  ok   opp-table-conflict-end @ 1920x1080: no clipped text
+  ok   opp-table-conflict-end @ 1920x1080: no overlapping interactive elements
+  ok   opp-table-conflict-end @ 1920x1080: no text overlapping other text or a control
+  ok   opp-table-conflict-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-table-conflict-end @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-conflict-blocked @ 1366x768: no clipped text
+  ok   opp-parse-conflict-blocked @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-conflict-blocked @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-conflict-blocked @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-conflict-blocked @ 1366x768: no horizontal page scroll
+  ok   opp-parse-conflict-blocked @ 1280x720: no clipped text
+  ok   opp-parse-conflict-blocked @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-conflict-blocked @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-conflict-blocked @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-conflict-blocked @ 1280x720: no horizontal page scroll
+  ok   opp-parse-conflict-blocked @ 1920x1080: no clipped text
+  ok   opp-parse-conflict-blocked @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-conflict-blocked @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-conflict-blocked @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-conflict-blocked @ 1920x1080: no horizontal page scroll
+  ok   opp-invalid-blocked @ 1366x768: no clipped text
+  ok   opp-invalid-blocked @ 1366x768: no overlapping interactive elements
+  ok   opp-invalid-blocked @ 1366x768: no text overlapping other text or a control
+  ok   opp-invalid-blocked @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-invalid-blocked @ 1366x768: no horizontal page scroll
+  ok   opp-invalid-blocked @ 1280x720: no clipped text
+  ok   opp-invalid-blocked @ 1280x720: no overlapping interactive elements
+  ok   opp-invalid-blocked @ 1280x720: no text overlapping other text or a control
+  ok   opp-invalid-blocked @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-invalid-blocked @ 1280x720: no horizontal page scroll
+  ok   opp-invalid-blocked @ 1920x1080: no clipped text
+  ok   opp-invalid-blocked @ 1920x1080: no overlapping interactive elements
+  ok   opp-invalid-blocked @ 1920x1080: no text overlapping other text or a control
+  ok   opp-invalid-blocked @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-invalid-blocked @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-shift @ 1366x768: no clipped text
+  ok   opp-parse-shift @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-shift @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-shift @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-shift @ 1366x768: no horizontal page scroll
+  ok   opp-parse-shift @ 1280x720: no clipped text
+  ok   opp-parse-shift @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-shift @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-shift @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-shift @ 1280x720: no horizontal page scroll
+  ok   opp-parse-shift @ 1920x1080: no clipped text
+  ok   opp-parse-shift @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-shift @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-shift @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-shift @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-reduce @ 1366x768: no clipped text
+  ok   opp-parse-reduce @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-reduce @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-reduce @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reduce @ 1366x768: no horizontal page scroll
+  ok   opp-parse-reduce @ 1280x720: no clipped text
+  ok   opp-parse-reduce @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-reduce @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-reduce @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reduce @ 1280x720: no horizontal page scroll
+  ok   opp-parse-reduce @ 1920x1080: no clipped text
+  ok   opp-parse-reduce @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-reduce @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-reduce @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reduce @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-lookup @ 1366x768: no clipped text
+  ok   opp-parse-lookup @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-lookup @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-lookup @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-lookup @ 1366x768: no horizontal page scroll
+  ok   opp-parse-lookup @ 1280x720: no clipped text
+  ok   opp-parse-lookup @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-lookup @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-lookup @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-lookup @ 1280x720: no horizontal page scroll
+  ok   opp-parse-lookup @ 1920x1080: no clipped text
+  ok   opp-parse-lookup @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-lookup @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-lookup @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-lookup @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-accept @ 1366x768: no clipped text
+  ok   opp-parse-accept @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-accept @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-accept @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-accept @ 1366x768: no horizontal page scroll
+  ok   opp-parse-accept @ 1280x720: no clipped text
+  ok   opp-parse-accept @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-accept @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-accept @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-accept @ 1280x720: no horizontal page scroll
+  ok   opp-parse-accept @ 1920x1080: no clipped text
+  ok   opp-parse-accept @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-accept @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-accept @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-accept @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-reject @ 1366x768: no clipped text
+  ok   opp-parse-reject @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-reject @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-reject @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reject @ 1366x768: no horizontal page scroll
+  ok   opp-parse-reject @ 1280x720: no clipped text
+  ok   opp-parse-reject @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-reject @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-reject @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reject @ 1280x720: no horizontal page scroll
+  ok   opp-parse-reject @ 1920x1080: no clipped text
+  ok   opp-parse-reject @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-reject @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-reject @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-reject @ 1920x1080: no horizontal page scroll
+  ok   opp-parse-classic @ 1366x768: no clipped text
+  ok   opp-parse-classic @ 1366x768: no overlapping interactive elements
+  ok   opp-parse-classic @ 1366x768: no text overlapping other text or a control
+  ok   opp-parse-classic @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-classic @ 1366x768: no horizontal page scroll
+  ok   opp-parse-classic @ 1280x720: no clipped text
+  ok   opp-parse-classic @ 1280x720: no overlapping interactive elements
+  ok   opp-parse-classic @ 1280x720: no text overlapping other text or a control
+  ok   opp-parse-classic @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-classic @ 1280x720: no horizontal page scroll
+  ok   opp-parse-classic @ 1920x1080: no clipped text
+  ok   opp-parse-classic @ 1920x1080: no overlapping interactive elements
+  ok   opp-parse-classic @ 1920x1080: no text overlapping other text or a control
+  ok   opp-parse-classic @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-parse-classic @ 1920x1080: no horizontal page scroll
+  ok   opp-modes-open @ 1366x768: no clipped text
+  ok   opp-modes-open @ 1366x768: no overlapping interactive elements
+  ok   opp-modes-open @ 1366x768: no text overlapping other text or a control
+  ok   opp-modes-open @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-open @ 1366x768: no horizontal page scroll
+  ok   opp-modes-open @ 1280x720: no clipped text
+  ok   opp-modes-open @ 1280x720: no overlapping interactive elements
+  ok   opp-modes-open @ 1280x720: no text overlapping other text or a control
+  ok   opp-modes-open @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-open @ 1280x720: no horizontal page scroll
+  ok   opp-modes-open @ 1920x1080: no clipped text
+  ok   opp-modes-open @ 1920x1080: no overlapping interactive elements
+  ok   opp-modes-open @ 1920x1080: no text overlapping other text or a control
+  ok   opp-modes-open @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-open @ 1920x1080: no horizontal page scroll
+  ok   opp-modes-diverge @ 1366x768: no clipped text
+  ok   opp-modes-diverge @ 1366x768: no overlapping interactive elements
+  ok   opp-modes-diverge @ 1366x768: no text overlapping other text or a control
+  ok   opp-modes-diverge @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-diverge @ 1366x768: no horizontal page scroll
+  ok   opp-modes-diverge @ 1280x720: no clipped text
+  ok   opp-modes-diverge @ 1280x720: no overlapping interactive elements
+  ok   opp-modes-diverge @ 1280x720: no text overlapping other text or a control
+  ok   opp-modes-diverge @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-diverge @ 1280x720: no horizontal page scroll
+  ok   opp-modes-diverge @ 1920x1080: no clipped text
+  ok   opp-modes-diverge @ 1920x1080: no overlapping interactive elements
+  ok   opp-modes-diverge @ 1920x1080: no text overlapping other text or a control
+  ok   opp-modes-diverge @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-diverge @ 1920x1080: no horizontal page scroll
+  ok   opp-modes-end @ 1366x768: no clipped text
+  ok   opp-modes-end @ 1366x768: no overlapping interactive elements
+  ok   opp-modes-end @ 1366x768: no text overlapping other text or a control
+  ok   opp-modes-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-end @ 1366x768: no horizontal page scroll
+  ok   opp-modes-end @ 1280x720: no clipped text
+  ok   opp-modes-end @ 1280x720: no overlapping interactive elements
+  ok   opp-modes-end @ 1280x720: no text overlapping other text or a control
+  ok   opp-modes-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-end @ 1280x720: no horizontal page scroll
+  ok   opp-modes-end @ 1920x1080: no clipped text
+  ok   opp-modes-end @ 1920x1080: no overlapping interactive elements
+  ok   opp-modes-end @ 1920x1080: no text overlapping other text or a control
+  ok   opp-modes-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   opp-modes-end @ 1920x1080: no horizontal page scroll
+  ok   lr @ 1366x768: no clipped text
+  ok   lr @ 1366x768: no overlapping interactive elements
+  ok   lr @ 1366x768: no text overlapping other text or a control
+  ok   lr @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   lr @ 1366x768: no horizontal page scroll
+  ok   lr @ 1280x720: no clipped text
+  ok   lr @ 1280x720: no overlapping interactive elements
+  ok   lr @ 1280x720: no text overlapping other text or a control
+  ok   lr @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   lr @ 1280x720: no horizontal page scroll
+  ok   lr @ 1920x1080: no clipped text
+  ok   lr @ 1920x1080: no overlapping interactive elements
+  ok   lr @ 1920x1080: no text overlapping other text or a control
+  ok   lr @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   lr @ 1920x1080: no horizontal page scroll
+  ok   regex-tree @ 1366x768: no clipped text
+  ok   regex-tree @ 1366x768: no overlapping interactive elements
+  ok   regex-tree @ 1366x768: no text overlapping other text or a control
+  ok   regex-tree @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-tree @ 1366x768: no horizontal page scroll
+  ok   regex-tree @ 1280x720: no clipped text
+  ok   regex-tree @ 1280x720: no overlapping interactive elements
+  ok   regex-tree @ 1280x720: no text overlapping other text or a control
+  ok   regex-tree @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-tree @ 1280x720: no horizontal page scroll
+  ok   regex-tree @ 1920x1080: no clipped text
+  ok   regex-tree @ 1920x1080: no overlapping interactive elements
+  ok   regex-tree @ 1920x1080: no text overlapping other text or a control
+  ok   regex-tree @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-tree @ 1920x1080: no horizontal page scroll
+  ok   regex-malformed @ 1366x768: no clipped text
+  ok   regex-malformed @ 1366x768: no overlapping interactive elements
+  ok   regex-malformed @ 1366x768: no text overlapping other text or a control
+  ok   regex-malformed @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-malformed @ 1366x768: no horizontal page scroll
+  ok   regex-malformed @ 1280x720: no clipped text
+  ok   regex-malformed @ 1280x720: no overlapping interactive elements
+  ok   regex-malformed @ 1280x720: no text overlapping other text or a control
+  ok   regex-malformed @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-malformed @ 1280x720: no horizontal page scroll
+  ok   regex-malformed @ 1920x1080: no clipped text
+  ok   regex-malformed @ 1920x1080: no overlapping interactive elements
+  ok   regex-malformed @ 1920x1080: no text overlapping other text or a control
+  ok   regex-malformed @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-malformed @ 1920x1080: no horizontal page scroll
+  ok   regex-reserved-hash @ 1366x768: no clipped text
+  ok   regex-reserved-hash @ 1366x768: no overlapping interactive elements
+  ok   regex-reserved-hash @ 1366x768: no text overlapping other text or a control
+  ok   regex-reserved-hash @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-reserved-hash @ 1366x768: no horizontal page scroll
+  ok   regex-reserved-hash @ 1280x720: no clipped text
+  ok   regex-reserved-hash @ 1280x720: no overlapping interactive elements
+  ok   regex-reserved-hash @ 1280x720: no text overlapping other text or a control
+  ok   regex-reserved-hash @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-reserved-hash @ 1280x720: no horizontal page scroll
+  ok   regex-reserved-hash @ 1920x1080: no clipped text
+  ok   regex-reserved-hash @ 1920x1080: no overlapping interactive elements
+  ok   regex-reserved-hash @ 1920x1080: no text overlapping other text or a control
+  ok   regex-reserved-hash @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-reserved-hash @ 1920x1080: no horizontal page scroll
+  ok   regex-props @ 1366x768: no clipped text
+  ok   regex-props @ 1366x768: no overlapping interactive elements
+  ok   regex-props @ 1366x768: no text overlapping other text or a control
+  ok   regex-props @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-props @ 1366x768: no horizontal page scroll
+  ok   regex-props @ 1280x720: no clipped text
+  ok   regex-props @ 1280x720: no overlapping interactive elements
+  ok   regex-props @ 1280x720: no text overlapping other text or a control
+  ok   regex-props @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-props @ 1280x720: no horizontal page scroll
+  ok   regex-props @ 1920x1080: no clipped text
+  ok   regex-props @ 1920x1080: no overlapping interactive elements
+  ok   regex-props @ 1920x1080: no text overlapping other text or a control
+  ok   regex-props @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-props @ 1920x1080: no horizontal page scroll
+  ok   regex-props-end @ 1366x768: no clipped text
+  ok   regex-props-end @ 1366x768: no overlapping interactive elements
+  ok   regex-props-end @ 1366x768: no text overlapping other text or a control
+  ok   regex-props-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-props-end @ 1366x768: no horizontal page scroll
+  ok   regex-props-end @ 1280x720: no clipped text
+  ok   regex-props-end @ 1280x720: no overlapping interactive elements
+  ok   regex-props-end @ 1280x720: no text overlapping other text or a control
+  ok   regex-props-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-props-end @ 1280x720: no horizontal page scroll
+  ok   regex-props-end @ 1920x1080: no clipped text
+  ok   regex-props-end @ 1920x1080: no overlapping interactive elements
+  ok   regex-props-end @ 1920x1080: no text overlapping other text or a control
+  ok   regex-props-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-props-end @ 1920x1080: no horizontal page scroll
+  ok   regex-follow @ 1366x768: no clipped text
+  ok   regex-follow @ 1366x768: no overlapping interactive elements
+  ok   regex-follow @ 1366x768: no text overlapping other text or a control
+  ok   regex-follow @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-follow @ 1366x768: no horizontal page scroll
+  ok   regex-follow @ 1280x720: no clipped text
+  ok   regex-follow @ 1280x720: no overlapping interactive elements
+  ok   regex-follow @ 1280x720: no text overlapping other text or a control
+  ok   regex-follow @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-follow @ 1280x720: no horizontal page scroll
+  ok   regex-follow @ 1920x1080: no clipped text
+  ok   regex-follow @ 1920x1080: no overlapping interactive elements
+  ok   regex-follow @ 1920x1080: no text overlapping other text or a control
+  ok   regex-follow @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-follow @ 1920x1080: no horizontal page scroll
+  ok   regex-follow-provenance @ 1366x768: no clipped text
+  ok   regex-follow-provenance @ 1366x768: no overlapping interactive elements
+  ok   regex-follow-provenance @ 1366x768: no text overlapping other text or a control
+  ok   regex-follow-provenance @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-follow-provenance @ 1366x768: no horizontal page scroll
+  ok   regex-follow-provenance @ 1280x720: no clipped text
+  ok   regex-follow-provenance @ 1280x720: no overlapping interactive elements
+  ok   regex-follow-provenance @ 1280x720: no text overlapping other text or a control
+  ok   regex-follow-provenance @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-follow-provenance @ 1280x720: no horizontal page scroll
+  ok   regex-follow-provenance @ 1920x1080: no clipped text
+  ok   regex-follow-provenance @ 1920x1080: no overlapping interactive elements
+  ok   regex-follow-provenance @ 1920x1080: no text overlapping other text or a control
+  ok   regex-follow-provenance @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-follow-provenance @ 1920x1080: no horizontal page scroll
+  ok   regex-dfa @ 1366x768: no clipped text
+  ok   regex-dfa @ 1366x768: no overlapping interactive elements
+  ok   regex-dfa @ 1366x768: no text overlapping other text or a control
+  ok   regex-dfa @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa @ 1366x768: no horizontal page scroll
+  ok   regex-dfa @ 1280x720: no clipped text
+  ok   regex-dfa @ 1280x720: no overlapping interactive elements
+  ok   regex-dfa @ 1280x720: no text overlapping other text or a control
+  ok   regex-dfa @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa @ 1280x720: no horizontal page scroll
+  ok   regex-dfa @ 1920x1080: no clipped text
+  ok   regex-dfa @ 1920x1080: no overlapping interactive elements
+  ok   regex-dfa @ 1920x1080: no text overlapping other text or a control
+  ok   regex-dfa @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa @ 1920x1080: no horizontal page scroll
+  ok   regex-dfa-end @ 1366x768: no clipped text
+  ok   regex-dfa-end @ 1366x768: no overlapping interactive elements
+  ok   regex-dfa-end @ 1366x768: no text overlapping other text or a control
+  ok   regex-dfa-end @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-end @ 1366x768: no horizontal page scroll
+  ok   regex-dfa-end @ 1280x720: no clipped text
+  ok   regex-dfa-end @ 1280x720: no overlapping interactive elements
+  ok   regex-dfa-end @ 1280x720: no text overlapping other text or a control
+  ok   regex-dfa-end @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-end @ 1280x720: no horizontal page scroll
+  ok   regex-dfa-end @ 1920x1080: no clipped text
+  ok   regex-dfa-end @ 1920x1080: no overlapping interactive elements
+  ok   regex-dfa-end @ 1920x1080: no text overlapping other text or a control
+  ok   regex-dfa-end @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-end @ 1920x1080: no horizontal page scroll
+  ok   regex-dfa-big @ 1366x768: no clipped text
+  ok   regex-dfa-big @ 1366x768: no overlapping interactive elements
+  ok   regex-dfa-big @ 1366x768: no text overlapping other text or a control
+  ok   regex-dfa-big @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-big @ 1366x768: no horizontal page scroll
+  ok   regex-dfa-big @ 1280x720: no clipped text
+  ok   regex-dfa-big @ 1280x720: no overlapping interactive elements
+  ok   regex-dfa-big @ 1280x720: no text overlapping other text or a control
+  ok   regex-dfa-big @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-big @ 1280x720: no horizontal page scroll
+  ok   regex-dfa-big @ 1920x1080: no clipped text
+  ok   regex-dfa-big @ 1920x1080: no overlapping interactive elements
+  ok   regex-dfa-big @ 1920x1080: no text overlapping other text or a control
+  ok   regex-dfa-big @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-dfa-big @ 1920x1080: no horizontal page scroll
+  ok   regex-sim @ 1366x768: no clipped text
+  ok   regex-sim @ 1366x768: no overlapping interactive elements
+  ok   regex-sim @ 1366x768: no text overlapping other text or a control
+  ok   regex-sim @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-sim @ 1366x768: no horizontal page scroll
+  ok   regex-sim @ 1280x720: no clipped text
+  ok   regex-sim @ 1280x720: no overlapping interactive elements
+  ok   regex-sim @ 1280x720: no text overlapping other text or a control
+  ok   regex-sim @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-sim @ 1280x720: no horizontal page scroll
+  ok   regex-sim @ 1920x1080: no clipped text
+  ok   regex-sim @ 1920x1080: no overlapping interactive elements
+  ok   regex-sim @ 1920x1080: no text overlapping other text or a control
+  ok   regex-sim @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-sim @ 1920x1080: no horizontal page scroll
+  ok   regex-sim-accept @ 1366x768: no clipped text
+  ok   regex-sim-accept @ 1366x768: no overlapping interactive elements
+  ok   regex-sim-accept @ 1366x768: no text overlapping other text or a control
+  ok   regex-sim-accept @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-accept @ 1366x768: no horizontal page scroll
+  ok   regex-sim-accept @ 1280x720: no clipped text
+  ok   regex-sim-accept @ 1280x720: no overlapping interactive elements
+  ok   regex-sim-accept @ 1280x720: no text overlapping other text or a control
+  ok   regex-sim-accept @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-accept @ 1280x720: no horizontal page scroll
+  ok   regex-sim-accept @ 1920x1080: no clipped text
+  ok   regex-sim-accept @ 1920x1080: no overlapping interactive elements
+  ok   regex-sim-accept @ 1920x1080: no text overlapping other text or a control
+  ok   regex-sim-accept @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-accept @ 1920x1080: no horizontal page scroll
+  ok   regex-sim-reject @ 1366x768: no clipped text
+  ok   regex-sim-reject @ 1366x768: no overlapping interactive elements
+  ok   regex-sim-reject @ 1366x768: no text overlapping other text or a control
+  ok   regex-sim-reject @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-reject @ 1366x768: no horizontal page scroll
+  ok   regex-sim-reject @ 1280x720: no clipped text
+  ok   regex-sim-reject @ 1280x720: no overlapping interactive elements
+  ok   regex-sim-reject @ 1280x720: no text overlapping other text or a control
+  ok   regex-sim-reject @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-reject @ 1280x720: no horizontal page scroll
+  ok   regex-sim-reject @ 1920x1080: no clipped text
+  ok   regex-sim-reject @ 1920x1080: no overlapping interactive elements
+  ok   regex-sim-reject @ 1920x1080: no text overlapping other text or a control
+  ok   regex-sim-reject @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   regex-sim-reject @ 1920x1080: no horizontal page scroll
+
+— homepage acceptance —
+  ok   1. first view fits 1366×768: no page scroll, no clipped text, no overlaps
+  ok   3a. Tab order is headline → doors (3)
+  ok   3b. all three doors open their tool with Enter
+  ok   4. zero network requests so far
+  ok   5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png)
+  ok   project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note
+
+— keyboard-only demos —
+  ok   full Operator Precedence demo with the keyboard only
+  ok   full RE→DFA demo with the keyboard only
+  ok   timeline is operable by keyboard (step 2)
+  ok   there is no speed dial (removed in the Review-1 audit)
+  ok   PageDown / PageUp move between stages (#/opp/parse)
+  ok   grammar picker on the table plate loads a conflicting grammar, an invalid one (picker stays), and back
+
+— forward then Back restores the identical rendered DOM —
+  ok   #/opp/sets: Back restores the exact DOM at all 97 steps (incl. mid-animation)
+  ok   #/opp/table: Back restores the exact DOM at all 30 steps (incl. mid-animation)
+  ok   #/opp/parse: Back restores the exact DOM at all 11 steps (incl. mid-animation)
+  ok   #/opp/modes: Back restores the exact DOM at all 11 steps (incl. mid-animation)
+  ok   #/regex/props: Back restores the exact DOM at all 12 steps (incl. mid-animation)
+  ok   #/regex/follow: Back restores the exact DOM at all 7 steps (incl. mid-animation)
+  ok   #/regex/dfa: Back restores the exact DOM at all 10 steps (incl. mid-animation)
+  ok   #/regex/sim: Back restores the exact DOM at all 5 steps (incl. mid-animation)
+
+— reduced motion —
+  ok   prefers-reduced-motion: the homepage runs no animations (0)
+  ok   stepping forward runs no animations and draws no overlays
+  ok   every step is still explained without motion (corner brackets + note)
+  ok   a stored reduced-motion preference (cl.reduced) also stops all motion
+
+— grayscale legibility —
+  ok   ⋖ ⋗ ≐ keep ≥ 4.5:1 luminance contrast in grayscale (min 6.27:1)
+  ok   the three relations are told apart by glyph shape, not colour (⋗ ⋖ ≐)
+  ok   conflict cells carry structure, not just colour: fracture marks, ×2 count, slash between glyphs (4 cells)
+
+— frame rate with 4× CPU throttling (Chrome software compositing) —
+  ok   precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 1/235, 1/234, 2/233); 3 step commits, worst 17 ms
+  ok   parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/236, 2/234, 3/233); 3 step commits, worst 17 ms
+  ok   DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 0/237 (runs: 0/237, 0/237, 1/236); 3 step commits, worst 17 ms
+
+— runs without WebGL —
+  ok   with WebGL disabled (disabled) the precedence table renders
+
+— fonts —
+  ok   IBM Plex Sans, Serif and Mono loaded from the bundle
+  ok   every relation glyph ⋖ ⋗ ≐ is inline SVG, no glyph font needed (32/32)
+  ok   no IBM Plex Math face is declared
+
+— bundle scan —
+  ok   no fetch() / XMLHttpRequest / sendBeacon / WebSocket / EventSource
+  ok   no camera or microphone code (getUserMedia, mediaDevices)
+  ok   no eval / new Function
+  ok   no dangerouslySetInnerHTML in our source
+  ok   no analytics hosts
+  ok   bundle sizes: index-BkDzBBwd.js 386 KB
+
+— network and console —
+  ok   zero network requests across the whole run
+  ok   no page errors, console errors or failed requests
+
+Published screenshots to docs/screenshots/
+
+622 passed, 0 failed  (report: artifacts/report.json, screenshots: artifacts/screenshots/)

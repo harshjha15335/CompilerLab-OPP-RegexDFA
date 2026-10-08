@@ -1,0 +1,157 @@
+[
+  {
+    "id": "1366x768 modes: heading fully visible (\"Classic vs Safeguarded\")",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1366x768 modes: no permanent sidebar taking ≥20% width",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "1366x768 no all-caps label styling on the modes screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1366x768 no boxed section numbers like \"1.5\"",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "comparison opens on S → A + B with id/id+id*id",
+    "ok": true,
+    "detail": "GrammarS→A+BA→id*idB→id/id / id/id+id*id"
+  },
+  {
+    "id": "comparison rows are not all ACCEPT/ACCEPT",
+    "ok": true,
+    "detail": "id/id+id*idAcceptsRejects || id*id+id/idAcceptsAccepts || id*idAcceptsRejects || id+idRejectsRejects"
+  },
+  {
+    "id": "1366x768 #/opp/parse: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1366x768 #/opp/modes: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1280x720 modes: heading fully visible (\"Classic vs Safeguarded\")",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1280x720 modes: no permanent sidebar taking ≥20% width",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "1280x720 no all-caps label styling on the modes screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1280x720 no boxed section numbers like \"1.5\"",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "1280x720 #/opp/parse: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1280x720 #/opp/modes: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1920x1080 modes: heading fully visible (\"Classic vs Safeguarded\")",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1920x1080 modes: no permanent sidebar taking ≥20% width",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "1920x1080 no all-caps label styling on the modes screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1920x1080 no boxed section numbers like \"1.5\"",
+    "ok": true,
+    "detail": "0"
+  },
+  {
+    "id": "1920x1080 #/opp/parse: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "1920x1080 #/opp/modes: no tile or label overlaps another (incl. \"$\" vs \"id\", \"lookahead\" label)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "shortcuts (→, End, Space, ], Home) do not fire while typing in the input",
+    "ok": true,
+    "detail": "readout 0 → 0"
+  },
+  {
+    "id": "the same → steps the replay once focus leaves the input",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "every Tab stop on 7 screens shows a visible focus ring",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "viva step 1 load expression grammar: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks"
+  },
+  {
+    "id": "viva step 2 invalid-grammar error from the sample list: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks"
+  },
+  {
+    "id": "viva step 3 step through LEADING/TRAILING: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "2 clicks (→ / End by keyboard)"
+  },
+  {
+    "id": "viva step 4 step through the table: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks"
+  },
+  {
+    "id": "viva step 5 conflicting grammar and its verdict: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks (picker on the table plate)"
+  },
+  {
+    "id": "viva step 6 parse id+id*id: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "2 clicks"
+  },
+  {
+    "id": "viva step 7 Classic vs Safeguarded: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks"
+  },
+  {
+    "id": "viva step 8 (a|b)*abb → tree → followpos → DFA → simulate abb: reached with ≤2 clicks",
+    "ok": true,
+    "detail": "1 clicks (End + PageDown by keyboard)"
+  }
+]

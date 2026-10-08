@@ -1,0 +1,21 @@
+S->A+B table verdict: OPERATOR_PRECEDENCE  conflicts: 0
+PASS id*id+id/id   classic=ACCEPT safe=ACCEPT (expected ACCEPT/ACCEPT)  safe reason: Stack is $ N and input is exhausted.
+PASS id/id+id*id   classic=ACCEPT safe=REJECT (expected ACCEPT/REJECT)  safe reason: Handle {B} + {A} matches no production with the required non-terminals.
+PASS id*id+id*id   classic=ACCEPT safe=REJECT (expected ACCEPT/REJECT)  safe reason: Handle {A} + {A} matches no production with the required non-terminals.
+PASS id/id+id/id   classic=ACCEPT safe=REJECT (expected ACCEPT/REJECT)  safe reason: Handle {B} + {B} matches no production with the required non-terminals.
+PASS id*id         classic=ACCEPT safe=REJECT (expected ACCEPT/REJECT)  safe reason: Input reduced to {A}, which does not contain the start symbol S.
+PASS id/id         classic=ACCEPT safe=REJECT (expected ACCEPT/REJECT)  safe reason: Input reduced to {B}, which does not contain the start symbol S.
+PASS id+id         classic=REJECT safe=REJECT (expected REJECT/REJECT)  safe reason: Handle id matches no production with the required non-terminals.
+PASS id*id+id      classic=REJECT safe=REJECT (expected REJECT/REJECT)  safe reason: Handle id matches no production with the required non-terminals.
+compareModes(id/id+id*id): firstStateDivergence=4 firstDecisionDivergence=10
+   classic steps: 1:SHIFT[$ id]  2:SHIFT[$ id /]  3:SHIFT[$ id / id]  4:REDUCE[$ N]  5:SHIFT[$ N +]  6:SHIFT[$ N + id]  7:SHIFT[$ N + id *]  8:SHIFT[$ N + id * id]  9:REDUCE[$ N + N]  10:REDUCE[$ N]  11:ACCEPT[$ N]
+   safe steps   : 1:SHIFT[$ id]  2:SHIFT[$ id /]  3:SHIFT[$ id / id]  4:REDUCE[$ {B}]  5:SHIFT[$ {B} +]  6:SHIFT[$ {B} + id]  7:SHIFT[$ {B} + id *]  8:SHIFT[$ {B} + id * id]  9:REDUCE[$ {B} + {A}]  10:REJECT[$ {B} + {A}]
+fixture: 8 pass, 0 fail
+
+FUZZ expression grammar: all 97655 token strings up to length 7; |L(G) ∩ len≤7| = 60
+  classic     accepts-not-in-L(G): 0   rejects-in-L(G): 0
+  safeguarded accepts-not-in-L(G): 0   rejects-in-L(G): 0
+
+FUZZ S -> A + B: all 87380 token strings up to length 8; |L(G) ∩ len≤8| = 1
+  classic     accepts-not-in-L(G): 5  e.g. id * id | id * id + id * id | id / id | id / id + id * id | id / id + id / id   rejects-in-L(G): 0
+  safeguarded accepts-not-in-L(G): 0   rejects-in-L(G): 0

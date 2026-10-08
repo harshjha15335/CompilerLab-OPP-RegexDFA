@@ -1,0 +1,9 @@
+dist total bytes: 2122549
+dist files: 50
+dist/assets/index-CEuhoobg.js 577703 bytes, gzip 179241
+dist/assets/intro.js 554315 bytes, gzip 138117
+font files: 47 totalling 989752 bytes
+direct deps: 7 runtime + 8 dev
+installed packages (npm ls --all): 46
+lockfile entries: 87
+src files: 54, src bytes: 326891

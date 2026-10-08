@@ -1,0 +1,24 @@
+PASS LEADING expr grammar
+PASS TRAILING expr grammar
+PASS 6x6 table vs hand derivation (36 cells)
+PASS expr grammar verdict OPERATOR_PRECEDENCE
+PASS unambiguous grammar reproduces the notes' hand-resolved (id,+,*,$) table
+   trace id+id*id: SHIFT → REDUCE[id] → SHIFT → SHIFT → REDUCE[id] → SHIFT → SHIFT → REDUCE[id] → REDUCE[{E,F,T} * {E,F,T}] → REDUCE[{E,F,T} + {E,T}] → ACCEPT => ACCEPT
+PASS id+id*id ACCEPT
+   reductions: F->id, F->id, F->id, T->T*F, E->E+T
+   trace (id+id)*id: SSRSSRRSRSSRRA => ACCEPT
+PASS (id+id)*id ACCEPT
+   ambiguous grammar conflicts: (+,+) (+,*) (*,+) (*,*)
+PASS ambiguous E->E+E|E*E: conflict at (+,+)
+PASS ambiguous E->E+E|E*E: conflict at (+,*)
+PASS ambiguous grammar verdict NOT_OPERATOR_PRECEDENCE
+PASS duplicate relation is not a conflict
+PASS ≐ for a A b (R2)
+PASS ≐ for adjacent c d (R1)
+PASS length-1 production A->e adds no ≐
+   unit chain LEADING: {"S":["b"],"A":["b"],"B":["b"]} TRAILING: {"S":["+","b"],"A":["+","b"],"B":["+","b"]}
+PASS unit chain S->A->B: LEADING(S)={b}, TRAILING(S)={+,b} (hand-derived; my first expectation was wrong)
+PASS first symbol NT then terminal: LEADING(S)={+,c}
+PASS fixed point terminates and logs "No set change"
+
+17 passed, 0 failed

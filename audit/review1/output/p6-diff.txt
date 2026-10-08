@@ -1,0 +1,12 @@
+(a|b)*abb      states=4 mismatches=0/5000
+(ab|a)+b?      states=4 mismatches=0/5000
+a*b*c?         states=3 mismatches=0/5000
+((a|b)*c)+     states=2 mismatches=0/5000
+(a(b|c)*)*d?   states=3 mismatches=0/5000
+a+b+|(ba)*     states=5 mismatches=0/5000
+((ab)*|c+)?a   states=5 mismatches=0/5000
+(a|b|c)*abc    states=4 mismatches=0/5000
+a(ba)*b        states=3 mismatches=0/5000
+((a*b)+c?)*    states=3 mismatches=0/5000
+
+TOTAL 50000 strings, 0 mismatches; structural problems: none (deterministic, no duplicate or unreachable states)

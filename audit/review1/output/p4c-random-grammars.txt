@@ -1,0 +1,4 @@
+random operator grammars tested: 120 (skipped 280 invalid/conflicting/unbounded); token strings checked: 948
+  classic     false accepts 169, false rejects 0, grammars affected 71
+  safeguarded false accepts 0, false rejects 0, grammars affected 0
+

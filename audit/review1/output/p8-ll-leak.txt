@@ -1,0 +1,6 @@
+== LL/top-down leak check: grep src/ and the built bundle ==
+$ grep -rniE '\bFIRST\(|\bFOLLOW\(|LL\(1\)|top-down|predictive|recursive descent' src
+(no matches)
+$ grep -oiE 'LL\(1\)|top-down|predictive pars|FOLLOW\(' dist/assets/index-*.js | sort | uniq -c
+$ grep -rnoiE 'firstpos|followpos' src --include=*.tsx | wc -l  (direct-method terms, expected)
+33

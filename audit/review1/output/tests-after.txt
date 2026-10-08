@@ -1,0 +1,49 @@
+$ npm run typecheck
+> tsc -p tsconfig.json
+
+$ npm test
+ok 1 - B1: a grammar typed without spaces is split around its non-terminals
+ok 2 - B2: "$" cannot be a non-terminal
+ok 3 - B3: mixed spacing in a test string tokenizes
+ok 4 - B4: whitespace-only input is the empty string, not an unknown symbol
+ok 5 - B5: tokenizing backtracks when the longest match leads nowhere
+ok 6 - B6: parsing with a conflicting table returns REJECT instead of throwing
+ok 7 - B7: an unescaped space in a regex is an error, not a hidden input symbol
+ok 8 - B8: parse and simulation steps carry a phase like every other step log
+ok 9 - B9: step records share no mutable objects, and buildDirect leaves its input AST untouched
+ok 10 - B10: every node of (a|b)*abb\# matches the hand derivation (notes fixture)
+ok 11 - expression grammar LEADING/TRAILING
+ok 12 - expression grammar table is conflict-free with known cells
+ok 13 - expression grammar parses
+ok 14 - ambiguous grammar is NOT operator-precedence
+ok 15 - invalid operator grammars are rejected with clear messages
+ok 16 - Classic N vs Safeguarded regression
+ok 17 - (a|b)*abb\# followpos and DFA match the textbook answer
+ok 18 - node properties for (a|b)*abb\#
+ok 19 - simulation
+ok 20 - plus, optional, escapes
+ok 21 - malformed regexes give position-aware errors
+ok 22 - cross-check against JS RegExp on random strings
+ok 23 - sets replay: empty at 0, audited fixture at the end, pure in between
+ok 24 - table replay equals the core table and keeps provenance
+ok 25 - conflict grammar: (+,+) and (+,*) conflict, and the conflict is visible at the step it happens
+ok 26 - mode divergence: the safeguarded rejection point is identified
+ok 27 - direct-method replay: props, followpos fixture and DFA fixture
+ok 28 - graph model: A loops on b only; layout is deterministic
+ok 29 - DFA drawing: no label overlaps a label or a node, for every sample and some larger automata
+ok 30 - DFA drawing, phone column layout: same graph top-to-bottom, still no overlaps
+ok 31 - simulation replay
+ok 32 - grammar errors carry a code, a message and a production or line reference
+ok 33 - LEADING/TRAILING steps: every step has phase, message and snapshot; ADD steps have provenance
+ok 34 - precedence steps: ADD_RELATION has left/right/relation/rule/explanation; last step is VERDICT
+ok 35 - parser steps: SHIFT/REDUCE expose stack before/after, top, lookahead, relation; REDUCE exposes the handle
+ok 36 - safeguarded mode shows the unit-production closure: id reduces to {E,F,T}
+ok 37 - compareModes result shape and the spaced divergence fixtures
+ok 38 - direct-method steps: NODE_PROPS, ADD_FOLLOWPOS, DFA_* fields
+ok 39 - regex errors expose message and source position; simulation steps expose state/index
+# tests 39
+# pass 39
+# fail 0
+$ npm run check:contrast
+ok    6.21:1 (needs 3)  --focus on --desk  focus ring on the desk
+ok    7.20:1 (needs 3)  --focus on --plate-2  focus ring in wells

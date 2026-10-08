@@ -1,0 +1,17 @@
+== AFTER (commit 36b17c2) ==
+$ du -sb dist; find dist -type f | wc -l
+511280	dist
+7
+$ ls -l dist/assets
+14708 ibm-plex-mono-latin-400-normal-DMJ8VG8y.woff2
+14888 ibm-plex-mono-latin-500-normal-DSY6xOcd.woff2
+45712 ibm-plex-sans-latin-wght-normal-IvpUvPa2.woff2
+19580 ibm-plex-serif-latin-400-normal-BIGslYFI.woff2
+20308 ibm-plex-serif-latin-500-normal-REKAfBVG.woff2
+395305 index-BkDzBBwd.js
+dist/assets/index-BkDzBBwd.js gzip: 115333
+font files: 5, bytes: 115196
+direct deps: runtime 5 + dev 7
+installed (npm ls --all): 32
+lockfile entries: 74
+src files: 44, bytes: 276724

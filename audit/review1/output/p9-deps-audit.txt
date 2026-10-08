@@ -1,0 +1,41 @@
+$ npm audit --audit-level=low
+found 0 vulnerabilities
+exit=0
+
+$ npm ls --depth=0
+compiler-lab@2.0.0 /home/user/CompilerLab-OPP-RegexDFA
++-- @fontsource-variable/ibm-plex-sans@5.3.0
++-- @fontsource/ibm-plex-mono@5.3.0
++-- @fontsource/ibm-plex-serif@5.3.0
++-- @types/node@22.20.5
++-- @types/react-dom@19.3.0
++-- @types/react@19.3.0
++-- @vitejs/plugin-react@6.1.2
++-- playwright-core@1.63.0
++-- react-dom@19.3.0
++-- react@19.3.0
++-- typescript@7.0.2
+`-- vite@8.3.3
+
+
+$ npm ls --all --parseable | wc -l
+32
+$ lockfile packages
+74
+$ npm ls vite postcss esbuild rollup rolldown
+compiler-lab@2.0.0 /home/user/CompilerLab-OPP-RegexDFA
++-- @vitejs/plugin-react@6.1.2
+| `-- vite@8.3.3 deduped
+`-- vite@8.3.3
+  +-- postcss@8.5.29 overridden
+  `-- rolldown@1.2.12
+
+{}
+== Live advisory check (2026-10-08) ==
+npm bulk advisory endpoint (above): {}  -> no advisories for vite 8.3.3, postcss 8.5.29, rolldown 1.2.12, react 19.3.0.
+Web search, Vite 2026 advisories on the 8.x line:
+  GHSA-v2wj-q39q-566r / CVE-2026-39364  fs.deny bypass        fixed 8.0.5   (dev server only)
+  GHSA-p9ff-h696-f583 / CVE-2026-39363  WS fetchModule read   fixed 8.0.5   (dev server only)
+  GHSA-fx2h-pf6j-xcff / CVE-2026-53571  Windows fs.deny ADS   fixed 8.0.16  (dev server only)
+  installed vite 8.3.3 >= 8.0.16 -> not affected. The shipped dist/ contains no dev server at all.
+PostCSS: pinned by "overrides" to 8.5.29; bulk endpoint returns no advisory for it.

@@ -1,0 +1,55 @@
+"id+id*id"         ACCEPT: Stack is $ N and input is exhausted. [11 steps]
+"id + id * id"     ACCEPT: Stack is $ N and input is exhausted. [11 steps]
+"id + id*id"       ACCEPT: Stack is $ N and input is exhausted. [11 steps]
+"id  +id"          ACCEPT: Stack is $ N and input is exhausted. [7 steps]
+"(id+id)*id"       ACCEPT: Stack is $ N and input is exhausted. [14 steps]
+"((id))"           ACCEPT: Stack is $ N and input is exhausted. [9 steps]
+"(((id+id)))*id"   ACCEPT: Stack is $ N and input is exhausted. [20 steps]
+""                 REJECT: Input is empty. [1 steps]
+"   "              REJECT: Input is empty. [1 steps]
+"id id"            REJECT: No precedence relation between id and id. [2 steps]
+"( )"              REJECT: Handle ( ) matches no production with the required non-terminals. [3 steps]
+"()"               REJECT: Handle ( ) matches no production with the required non-terminals. [3 steps]
+"id +"             REJECT: Handle {E,F,T} + matches no production with the required non-terminals. [4 steps]
+"+ id"             REJECT: Handle + {E,F,T} matches no production with the required non-terminals. [4 steps]
+"id + * id"        REJECT: Handle * {E,F,T} matches no production with the required non-terminals. [7 steps]
+"id ) "            REJECT: No precedence relation between $ and ). [3 steps]
+"( id"             REJECT: No precedence relation between ( and $. [4 steps]
+"x"                REJECT: Unknown symbol at position 1: "x". [0 steps]
+"id+x"             REJECT: Unknown symbol at position 4: "x". [0 steps]
+"idid"             REJECT: No precedence relation between id and id. [2 steps]
+"$"                REJECT: Unknown symbol at position 1: "$". [0 steps]
+"id $ id"          REJECT: Unknown symbol at position 4: "$". [0 steps]
+
+prefix terminals: tokenize("abcd", [ab, abc, cd]) = {"ok":true,"tokens":["ab","cd"]}
+prefix terminals: tokenize("aab", [a, aa, ab]) = {"ok":true,"tokens":["a","ab"]}
+
+FULL TRACE id+id*id
+   1 SHIFT   top=$ la=id rel=⋖  stack: $ id  
+   2 REDUCE  top=id la=+ rel=⋗  stack: $ {E,F,T}  handle: id  via F->id
+   3 SHIFT   top=$ la=+ rel=⋖  stack: $ {E,F,T} +  
+   4 SHIFT   top=+ la=id rel=⋖  stack: $ {E,F,T} + id  
+   5 REDUCE  top=id la=* rel=⋗  stack: $ {E,F,T} + {E,F,T}  handle: id  via F->id
+   6 SHIFT   top=+ la=* rel=⋖  stack: $ {E,F,T} + {E,F,T} *  
+   7 SHIFT   top=* la=id rel=⋖  stack: $ {E,F,T} + {E,F,T} * id  
+   8 REDUCE  top=id la=$ rel=⋗  stack: $ {E,F,T} + {E,F,T} * {E,F,T}  handle: id  via F->id
+   9 REDUCE  top=* la=$ rel=⋗  stack: $ {E,F,T} + {E,T}  handle: {E,F,T} * {E,F,T}  via T->T * F
+  10 REDUCE  top=+ la=$ rel=⋗  stack: $ {E}  handle: {E,F,T} + {E,T}  via E->E + T
+  11 ACCEPT  top=$ la=$ rel=  stack: $ {E}  
+FULL TRACE (id+id)*id
+   1 SHIFT   $ ⋖ (  stack: $ (
+   2 SHIFT   ( ⋖ id  stack: $ ( id
+   3 REDUCE  id ⋗ +  stack: $ ( {E,F,T}
+   4 SHIFT   ( ⋖ +  stack: $ ( {E,F,T} +
+   5 SHIFT   + ⋖ id  stack: $ ( {E,F,T} + id
+   6 REDUCE  id ⋗ )  stack: $ ( {E,F,T} + {E,F,T}
+   7 REDUCE  + ⋗ )  stack: $ ( {E}
+   8 SHIFT   ( ≐ )  stack: $ ( {E} )
+   9 REDUCE  ) ⋗ *  stack: $ {E,F,T}
+  10 SHIFT   $ ⋖ *  stack: $ {E,F,T} *
+  11 SHIFT   * ⋖ id  stack: $ {E,F,T} * id
+  12 REDUCE  id ⋗ $  stack: $ {E,F,T} * {E,F,T}
+  13 REDUCE  * ⋗ $  stack: $ {E,T}
+  14 ACCEPT  $  $  stack: $ {E,T}
+
+parse on CONFLICTING table: REJECT: Cell (+, *) holds ⋖ and ⋗: a conflict, so the parser cannot choose between shift and reduce. [6 steps]

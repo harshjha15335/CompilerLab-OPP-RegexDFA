@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MotionConfig } from 'motion/react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Settings, type Speed } from './replay/useReplay.ts';
@@ -85,7 +84,6 @@ export default function App() {
 
   return (
     <SettingsContext.Provider value={settings}>
-      <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
         <div className="app" data-page={route.page === 'home' ? 'home' : route.chapter.id}>
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
           <Rail route={route} />
@@ -93,7 +91,6 @@ export default function App() {
             {page}
           </main>
         </div>
-      </MotionConfig>
     </SettingsContext.Provider>
   );
 }

@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
-import { motion } from 'motion/react';
 import type { Mode, ParseStep, StackItem } from '../../core/index.ts';
 import { all, fly, gather, pop } from '../../motion/fx.ts';
 import { cx, Production, Rel, Verdict } from '../../ui/kit.tsx';
@@ -159,7 +158,6 @@ export function ModeSwitch({ mode, onChange, name }: { mode: Mode; onChange: (m:
           <button key={id} type="button" role="radio" aria-checked={mode === id} className={cx('modes__opt', mode === id && 'is-on')}
             onClick={() => onChange(id)}
             onKeyDown={(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); onChange(mode === 'classic' ? 'safeguarded' : 'classic'); } }}>
-            {mode === id && <motion.i layoutId={`${name}-rule`} className="modes__rule" aria-hidden="true" transition={{ duration: 0.18, ease: [0.2, 0.7, 0.2, 1] }} />}
             <span>{text}</span>
           </button>
         ))}

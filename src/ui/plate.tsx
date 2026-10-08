@@ -1,7 +1,6 @@
 // The printed plate every workspace screen sits on: plate number + title + one line of purpose, a
 // stage switcher (prev / drawer / next), the body, and an optional hardware dock.
 import { useEffect, useLayoutEffect, useRef, useState, type DependencyList, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { CHAPTERS, hashFor, type Chapter, type Stage } from '../data/nav.ts';
 import type { Replay } from '../replay/useReplay.ts';
 import { cx, Tx } from './kit.tsx';
@@ -51,24 +50,21 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
         aria-disabled={!next || undefined} aria-label={next ? `Next stage: ${next.title}` : 'No next stage'}>
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" /></svg>
       </a>
-      <AnimatePresence>
-        {open && (
-          <motion.nav id="stage-drawer" className="drawer" aria-label={`${chapter.title} stages`}
-            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>
-            <ol>
-              {chapter.stages.map((s) => (
-                <li key={s.id}>
-                  <a href={hashFor(chapter.id, s.id)} className={cx('drawer__item', s.id === stage.id && 'is-current')} aria-current={s.id === stage.id ? 'step' : undefined}>
-                    <span className="drawer__no">{s.no}</span>
-                    <span className="drawer__title">{s.title}</span>
-                    <span className="drawer__does">{s.does}</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+      {open && (
+        <nav id="stage-drawer" className="drawer" aria-label={`${chapter.title} stages`}>
+          <ol>
+            {chapter.stages.map((s) => (
+              <li key={s.id}>
+                <a href={hashFor(chapter.id, s.id)} className={cx('drawer__item', s.id === stage.id && 'is-current')} aria-current={s.id === stage.id ? 'step' : undefined}>
+                  <span className="drawer__no">{s.no}</span>
+                  <span className="drawer__title">{s.title}</span>
+                  <span className="drawer__does">{s.does}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
     </div>
   );
 }

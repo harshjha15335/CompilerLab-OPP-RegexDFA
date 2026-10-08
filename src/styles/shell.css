@@ -141,9 +141,7 @@
 .modes { display: grid; gap: 4px; }
 .modes__row { display: flex; border: 1px solid var(--line); border-radius: var(--radius); padding: 2px; background: var(--plate); }
 .modes__opt { position: relative; border: 0; background: none; padding: 7px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); border-radius: calc(var(--radius) - 2px); }
-.modes__opt span { position: relative; }
-.modes__opt.is-on { color: var(--plate); }
-.modes__rule { position: absolute; inset: 0; background: var(--ink); border-radius: calc(var(--radius) - 2px); }
+.modes__opt.is-on { color: var(--plate); background: var(--ink); }
 
 /* grammar stage */
 .editor { display: grid; grid-template-columns: 34px minmax(0, 1fr); border: 1px solid var(--line); border-radius: var(--radius); background: var(--plate); }

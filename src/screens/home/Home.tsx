@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
 import { CHAPTERS, hashFor } from '../../data/nav.ts';
 import { cx, Tag } from '../../ui/kit.tsx';
 
@@ -17,7 +16,7 @@ function Door({ id, numeral, title, pipeline, href, planned }: { id: string; num
           {pipeline.map((w, i) => (
             <span key={w} className={cx('door__stage', i === at && 'is-at')}>
               {i > 0 && <span className="door__arrow" aria-hidden="true">→</span>}
-              <span className="door__word">{w}{i === at && <motion.i layoutId={`door-mark-${id}`} className="door__mark" aria-hidden="true" transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }} />}</span>
+              <span className="door__word">{w}{i === at && <i className="door__mark" aria-hidden="true" />}</span>
             </span>
           ))}
         </span>

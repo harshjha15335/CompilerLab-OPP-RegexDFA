@@ -30,6 +30,23 @@ test('B2: "$" cannot be a non-terminal', () => {
   assert.ok(v.errors.some((e) => e.code === 'RESERVED'));
 });
 
+test('B3: mixed spacing in a test string tokenizes', () => {
+  const { g, t } = analyse(EXPR);
+  for (const s of ['id + id*id', 'id +id', '( id+id ) *id']) assert.equal(parseString(g, t, s).result, 'ACCEPT', s);
+  assert.deepEqual(tokenize('id + id*id', g.terminals), { ok: true, tokens: ['id', '+', 'id', '*', 'id'] });
+});
+
+test('B4: whitespace-only input is the empty string, not an unknown symbol', () => {
+  const { g, t } = analyse(EXPR);
+  assert.equal(parseString(g, t, '   ').reason, 'Input is empty.');
+});
+
+test('B5: tokenizing backtracks when the longest match leads nowhere', () => {
+  assert.deepEqual(tokenize('abcd', ['ab', 'abc', 'cd']), { ok: true, tokens: ['ab', 'cd'] });
+  assert.deepEqual(tokenize('aab', ['a', 'aa', 'ab']), { ok: true, tokens: ['a', 'ab'] });
+  assert.equal(tokenize('id+x', ['id', '+']).ok, false);
+});
+
 test('B10: every node of (a|b)*abb# matches the hand derivation (notes fixture)', () => {
   const d = buildDirect(parseRegex('(a|b)*abb').ast);
   const rows = d.nodes.map((n) => `${n.type === 'leaf' ? n.symbol + n.pos : n.type}:${n.nullable ? 'T' : 'F'}:{${n.first}}:{${n.last}}`);

@@ -3,22 +3,39 @@ import { REL } from './precedence.js';
 
 export const MODES = { CLASSIC: 'classic', SAFEGUARDED: 'safeguarded' };
 
-/** Split input into terminals: by whitespace if present, else greedy longest match. */
+/** Split one whitespace-free chunk into terminals: longest match first, backtracking when the longest
+ *  match leaves a remainder that cannot be split. On failure, `at` is the furthest index reached. */
+function segment(chunk, sorted) {
+  const memo = new Map();
+  let far = 0;
+  const go = (i) => {
+    if (i === chunk.length) return [];
+    if (memo.has(i)) return memo.get(i);
+    far = Math.max(far, i);
+    let found = null;
+    for (const t of sorted) {
+      if (!chunk.startsWith(t, i)) continue;
+      const rest = go(i + t.length);
+      if (rest) { found = [t, ...rest]; break; }
+    }
+    memo.set(i, found);
+    return found;
+  };
+  const tokens = go(0);
+  return tokens ? { ok: true, tokens } : { ok: false, at: far };
+}
+
+/** Split input into terminals. Whitespace separates chunks, and each chunk is split into terminals, so
+ *  "id+id*id", "id + id * id" and "id + id*id" all give the same tokens. */
 export function tokenize(input, terminals) {
-  if (/\s/.test(input.trim())) {
-    const toks = input.trim().split(/\s+/);
-    const bad = toks.find((t) => !terminals.includes(t));
-    return bad ? { ok: false, error: `Unknown symbol "${bad}".` } : { ok: true, tokens: toks };
-  }
   const sorted = [...terminals].sort((a, b) => b.length - a.length);
-  const toks = [];
-  let i = 0;
-  while (i < input.length) {
-    const t = sorted.find((s) => input.startsWith(s, i));
-    if (!t) return { ok: false, error: `Unknown symbol at position ${i + 1}: "${input[i]}".` };
-    toks.push(t); i += t.length;
+  const tokens = [];
+  for (const m of input.matchAll(/\S+/g)) {
+    const seg = segment(m[0], sorted);
+    if (!seg.ok) return { ok: false, error: `Unknown symbol at position ${m.index + seg.at + 1}: "${m[0][seg.at]}".` };
+    tokens.push(...seg.tokens);
   }
-  return { ok: true, tokens: toks };
+  return { ok: true, tokens };
 }
 
 // unit-production closure: if B is possible and A → B exists, A is possible too

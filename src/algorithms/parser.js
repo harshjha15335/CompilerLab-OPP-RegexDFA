@@ -58,7 +58,7 @@ export function parseString(grammar, table, input, mode = MODES.SAFEGUARDED) {
   const nt = new Set(grammar.nonterminals);
   const tk = tokenize(input, grammar.terminals);
   if (!tk.ok) return { result: 'REJECT', reason: tk.error, steps: [] };
-  if (!table.get) throw new Error('table required');
+  if (!table?.get) return { result: 'REJECT', reason: 'No precedence table to parse with.', steps: [] };
   const toks = [...tk.tokens, END_MARKER];
   const stack = [{ kind: 'T', symbol: END_MARKER }];
   const steps = [];
@@ -83,7 +83,8 @@ export function parseString(grammar, table, input, mode = MODES.SAFEGUARDED) {
     const rels = table.get(a, b);
     if (rels.length === 0)
       return finish('REJECT', `No precedence relation between ${a} and ${b}.`, { top: a, lookahead: b, relation: null });
-    if (rels.length > 1) throw new Error(`Table has a conflict at (${a}, ${b}).`);
+    if (rels.length > 1)   // a conflicting table: the parser cannot choose, so it stops instead of guessing
+      return finish('REJECT', `Cell (${a}, ${b}) holds ${rels.join(' and ')}: a conflict, so the parser cannot choose between shift and reduce.`, { top: a, lookahead: b, relation: null });
     const rel = rels[0];
 
     if (rel === REL.YIELDS || rel === REL.EQUAL) {

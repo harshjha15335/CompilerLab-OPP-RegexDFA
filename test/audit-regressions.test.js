@@ -47,6 +47,13 @@ test('B5: tokenizing backtracks when the longest match leads nowhere', () => {
   assert.equal(tokenize('id+x', ['id', '+']).ok, false);
 });
 
+test('B6: parsing with a conflicting table returns REJECT instead of throwing', () => {
+  const { g, t } = analyse('E -> E + E | E * E | ( E ) | id');
+  const r = parseString(g, t, 'id+id*id');
+  assert.equal(r.result, 'REJECT');
+  assert.match(r.reason, /conflict/i);
+});
+
 test('B10: every node of (a|b)*abb# matches the hand derivation (notes fixture)', () => {
   const d = buildDirect(parseRegex('(a|b)*abb').ast);
   const rows = d.nodes.map((n) => `${n.type === 'leaf' ? n.symbol + n.pos : n.type}:${n.nullable ? 'T' : 'F'}:{${n.first}}:{${n.last}}`);

@@ -9,11 +9,12 @@ import { GrammarStage } from './screens/opp/GrammarStage.tsx';
 import { SetsStage } from './screens/opp/SetsStage.tsx';
 import { TableStage } from './screens/opp/TableStage.tsx';
 import { ConflictBlock, ParseStage } from './screens/opp/ParseStage.tsx';
+import { GrammarPicker } from './screens/opp/GrammarStage.tsx';
 import { ModesStage } from './screens/opp/ModesStage.tsx';
 import { LrStage } from './screens/lr/LrStage.tsx';
 import { DfaStage, FollowStage, PropsStage, RegexBlocked, SimStage, TreeStage } from './screens/regex/RegexStages.tsx';
 import { Empty } from './ui/kit.tsx';
-import { Plate } from './ui/plate.tsx';
+import { Plate, PlateTools } from './ui/plate.tsx';
 import { KEYS, read, write } from './ui/store.ts';
 
 /** Hash routing: the hash is the route, so the build works from file:// and any folder. */
@@ -79,6 +80,8 @@ export default function App() {
     if (stage.id === 'dfa') return <DfaStage chapter={chapter} stage={stage} r={regex.ok} />;
     return <SimStage chapter={chapter} stage={stage} model={regex} r={regex.ok} />;
   })();
+  const picker = route.page === 'chapter' && route.chapter.id === 'opp' && ['sets', 'table', 'parse'].includes(route.stage?.id ?? '')
+    ? <GrammarPicker model={opp} /> : null;
   const routeKey = route.page === 'home' ? 'home' : `${route.chapter.id}/${route.stage?.id ?? ''}`;
 
   return (
@@ -87,7 +90,7 @@ export default function App() {
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
           <Rail route={route} />
           <main id="main" className="main" tabIndex={-1} key={routeKey}>
-            {page}
+            <PlateTools.Provider value={picker}>{page}</PlateTools.Provider>
           </main>
         </div>
     </SettingsContext.Provider>

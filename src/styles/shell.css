@@ -230,3 +230,14 @@
   .facts div { grid-template-columns: 96px minmax(0, 1fr); }
   .provlist li { grid-template-columns: 56px minmax(0, 1fr); }
 }
+
+/* ── OPP grammar picker in the plate header (stages 2–4) ── */
+.picker { display: inline-flex; align-items: center; gap: 8px; }
+.picker__label { font: var(--t-label); color: var(--ink-3); }
+.picker__select {
+  height: 30px; max-width: 260px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--plate); cursor: pointer;
+}
+.plate__aside { flex-wrap: wrap; min-width: 0; }
+.picker { min-width: 0; max-width: 100%; }
+.picker__select { min-width: 0; flex: 1 1 auto; }

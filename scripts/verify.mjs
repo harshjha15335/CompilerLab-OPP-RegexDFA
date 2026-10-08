@@ -408,6 +408,20 @@ if (want('keyboard')) {
   await page.focus('.timeline__range'); await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight');
   check('keyboard', `timeline is operable by keyboard (step ${await readout(page)})`, (await readout(page)) === 2);
   check('keyboard', 'there is no speed dial (removed in the Review-1 audit)', (await page.$$('.dial, [aria-label="Playback speed"]')).length === 0);
+  await page.keyboard.press('Escape'); await page.click('.plate__title');
+  await page.keyboard.press('PageDown'); await sleep(300);
+  const down = await page.evaluate(() => location.hash);
+  await page.keyboard.press('PageUp'); await sleep(300);
+  check('keyboard', `PageDown / PageUp move between stages (${down})`, down === '#/opp/parse' && (await page.evaluate(() => location.hash)) === '#/opp/table');
+  // the grammar picker on stages 2–4 switches the analysed grammar without going back to stage 1
+  const verdictTag = async () => { await page.click('.plate__title'); await page.keyboard.press('End'); await sleep(300); return page.$eval('.plate__aside .tag', (e) => e.textContent).catch(() => ''); };
+  await page.selectOption('.picker__select', 'conflict'); await sleep(300);
+  const conflictAside = await verdictTag();
+  await page.selectOption('.picker__select', 'adjacent'); await sleep(300);
+  const invalidPicker = (await page.$$('.picker__select')).length === 1 && /no valid operator grammar/i.test(await page.textContent('.plate__body'));
+  await page.selectOption('.picker__select', 'expr'); await sleep(300);
+  check('keyboard', 'grammar picker on the table plate loads a conflicting grammar, an invalid one (picker stays), and back',
+    /conflicting cell/.test(conflictAside) && invalidPicker && /Conflict-free/.test(await verdictTag()), conflictAside);
   await ctx.close();
 }
 

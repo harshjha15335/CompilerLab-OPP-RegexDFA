@@ -1,8 +1,8 @@
 // The printed plate every workspace screen sits on: plate number + title + one line of purpose, a
 // stage switcher (prev / drawer / next), the body, and an optional hardware dock.
-import { useEffect, useLayoutEffect, useRef, useState, type DependencyList, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type DependencyList, type ReactNode } from 'react';
 import { CHAPTERS, hashFor, type Chapter, type Stage } from '../data/nav.ts';
-import type { Replay } from '../replay/useReplay.ts';
+import { isTyping, type Replay } from '../replay/useReplay.ts';
 import { cx, Tx } from './kit.tsx';
 
 /** Run a motion effect once each time the replay lands on a new step by stepping forward.
@@ -36,10 +36,22 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
     return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('pointerdown', onDown); };
   }, [open]);
   useEffect(() => { setOpen(false); }, [stage.id]);
+  // PageDown / PageUp move to the next / previous stage (never while typing in a field)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented || isTyping(e.target)) return;
+      const to = e.key === 'PageDown' ? next : e.key === 'PageUp' ? prev : null;
+      if (!to) return;
+      e.preventDefault();
+      window.location.hash = hashFor(chapter.id, to.id);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [chapter.id, prev, next]);
   return (
     <div className="stages" ref={wrap}>
       <a className={cx('stages__step', !prev && 'is-off')} href={prev ? hashFor(chapter.id, prev.id) : undefined}
-        aria-disabled={!prev || undefined} aria-label={prev ? `Previous stage: ${prev.title}` : 'No previous stage'}>
+        aria-disabled={!prev || undefined} aria-label={prev ? `Previous stage: ${prev.title}` : 'No previous stage'} aria-keyshortcuts={prev ? 'PageUp' : undefined}>
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 2.5 4 6l3.5 3.5" /></svg>
       </a>
       <button type="button" className="stages__toggle" aria-expanded={open} aria-controls="stage-drawer" onClick={() => setOpen((o) => !o)}>
@@ -47,7 +59,7 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
       </button>
       <a className={cx('stages__step', !next && 'is-off')} href={next ? hashFor(chapter.id, next.id) : undefined}
-        aria-disabled={!next || undefined} aria-label={next ? `Next stage: ${next.title}` : 'No next stage'}>
+        aria-disabled={!next || undefined} aria-label={next ? `Next stage: ${next.title}` : 'No next stage'} aria-keyshortcuts={next ? 'PageDown' : undefined}>
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" /></svg>
       </a>
       {open && (
@@ -69,9 +81,13 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
   );
 }
 
+/** Extra controls a chapter puts in every plate header (the OPP grammar picker on stages 2–4). */
+export const PlateTools = createContext<ReactNode>(null);
+
 export function Plate({ chapter, stage, title, aside, children, dock, controls, className }: {
   chapter: Chapter; stage: Stage | null; title?: string; aside?: ReactNode; children: ReactNode; dock?: ReactNode; controls?: ReactNode; className?: string;
 }) {
+  const tools = useContext(PlateTools);
   return (
     <article className={cx('plate', className)} aria-labelledby="plate-title">
       <header className="plate__head">
@@ -80,7 +96,7 @@ export function Plate({ chapter, stage, title, aside, children, dock, controls, 
           <h1 className="plate__title" id="plate-title">{title ?? stage?.title ?? chapter.title}</h1>
         </div>
         {stage && <p className="plate__does">{stage.does}</p>}
-        <div className="plate__aside">{aside}</div>
+        <div className="plate__aside">{tools}{aside}</div>
         {stage && <StageSwitch chapter={chapter} stage={stage} />}
       </header>
       {controls && <div className="plate__controls">{controls}</div>}

@@ -111,3 +111,19 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
     </Plate>
   );
 }
+
+/** Switch the analysed grammar from any later stage, so a viva never has to walk back to stage 1. */
+export function GrammarPicker({ model }: { model: OppModel }) {
+  const { committed, loadSample } = model;
+  const current = GRAMMAR_SAMPLES.find((s) => s.text === committed);
+  return (
+    <label className="picker">
+      <span className="picker__label">Grammar</span>
+      <select className="picker__select" value={current?.id ?? ''}
+        onChange={(e) => { const s = GRAMMAR_SAMPLES.find((x) => x.id === e.target.value); if (s) loadSample(s); }}>
+        {!current && <option value="">Your grammar (edit on stage 1)</option>}
+        {GRAMMAR_SAMPLES.map((s) => <option key={s.id} value={s.id}>{s.title} ({KIND[s.kind].word.toLowerCase()})</option>)}
+      </select>
+    </label>
+  );
+}

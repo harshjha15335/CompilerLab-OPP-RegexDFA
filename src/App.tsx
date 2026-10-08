@@ -4,7 +4,7 @@ import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Settings, type Speed } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
-import { Examples, Rail } from './shell/Shell.tsx';
+import { Rail } from './shell/Shell.tsx';
 import { Home } from './screens/home/Home.tsx';
 import { GrammarStage } from './screens/opp/GrammarStage.tsx';
 import { SetsStage } from './screens/opp/SetsStage.tsx';
@@ -47,8 +47,6 @@ export default function App() {
   const route = useRoute();
   const opp = useOppModel();
   const regex = useRegexModel();
-  const [examples, setExamples] = useState(false);
-  const closeExamples = useCallback(() => setExamples(false), []);
 
   useEffect(() => {
     const title = route.page === 'home' ? 'ParseLens' : `${route.stage?.title ?? route.chapter.title} · ${route.chapter.title} · ParseLens`;
@@ -90,13 +88,10 @@ export default function App() {
       <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
         <div className="app" data-page={route.page === 'home' ? 'home' : route.chapter.id}>
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-          <Rail inert={examples} route={route} onExamples={() => setExamples(true)} />
-          <main id="main" className="main" tabIndex={-1} key={routeKey} inert={examples}>
+          <Rail route={route} />
+          <main id="main" className="main" tabIndex={-1} key={routeKey}>
             {page}
           </main>
-          <Examples open={examples} onClose={closeExamples}
-            onGrammar={(s) => { opp.loadSample(s); setExamples(false); window.location.hash = hashFor('opp', 'grammar'); }}
-            onRegex={(s) => { regex.loadSample(s); setExamples(false); window.location.hash = hashFor('regex', 'tree'); }} />
         </div>
       </MotionConfig>
     </SettingsContext.Provider>

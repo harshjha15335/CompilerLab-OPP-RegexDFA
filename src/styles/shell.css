@@ -18,23 +18,6 @@
 .rail__link:hover { background: rgba(28, 30, 33, 0.06); }
 .rail__link.is-current::after { content: ''; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 2px; background: var(--ink); }
 
-/* ── Examples sheet ──────────────────────────────────── */
-.sheetwrap { position: fixed; inset: 0; z-index: 60; background: rgba(28, 30, 33, 0.22); display: flex; justify-content: flex-end; }
-.examples {
-  width: min(520px, 100%); height: 100%; overflow-y: auto; background: var(--plate); padding: 18px 22px 28px;
-  border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(40, 32, 16, 0.18); display: grid; align-content: start; gap: 12px;
-}
-.examples__head { display: flex; justify-content: space-between; align-items: center; }
-.examples__list { display: grid; gap: 0; border-top: 1px solid var(--rule); }
-.example {
-  width: 100%; text-align: left; display: grid; gap: 3px; padding: 10px 6px; border: 0; border-bottom: 1px solid var(--rule);
-  background: none; cursor: pointer;
-}
-.example:hover { background: var(--plate-2); }
-.example__title { font: var(--t-section); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.example__code { font-size: 0.875rem; color: var(--ink-2); overflow-wrap: anywhere; }
-.example__shows { font: var(--t-caption); color: var(--ink-3); }
-
 /* ── The plate ───────────────────────────────────────── */
 .plate {
   min-height: 0; min-width: 0; display: flex; flex-direction: column; position: relative;

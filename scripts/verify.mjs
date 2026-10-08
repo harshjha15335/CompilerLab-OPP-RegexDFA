@@ -196,7 +196,6 @@ const SCREENS = [
   { id: 'home', hash: '#/', wait: 1600 },
   { id: 'home-narrow-820', hash: '#/', viewports: [[820, 1000]], pageScrollOk: true },
   { id: 'home-narrow-390', hash: '#/', viewports: [[390, 844]], pageScrollOk: true },
-  { id: 'examples', hash: '#/opp/grammar', act: async (p) => { await clickText(p, 'Examples'); await sleep(300); } },
   { id: 'stage-drawer', hash: '#/opp/table', act: async (p) => { await p.click('.stages__toggle'); await sleep(250); } },
   { id: 'opp-grammar', hash: '#/opp/grammar' },
   { id: 'opp-grammar-adjacent', hash: '#/opp/grammar', act: (p) => clickText(p, 'Adjacent non-terminals', '.sample') },

@@ -10,8 +10,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 #root { height: 100%; }
-/* a modal sheet is open: the page behind it does not scroll */
-html.is-locked { overflow: hidden; }
 h1, h2, h3, h4, p, ol, ul, dl, dd, figure { margin: 0; }
 ol, ul { padding: 0; list-style: none; }
 button, input, textarea, select { font: inherit; color: inherit; }

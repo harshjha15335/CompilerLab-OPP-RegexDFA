@@ -2,11 +2,22 @@
 const EPS = new Set(['ε', 'eps', 'epsilon', 'λ']);
 export const END_MARKER = '$';
 
-/** Parse "E -> E + T | T" lines. Symbols are whitespace-separated (so "id" is one terminal). */
+// A symbol run: an identifier (letters, digits, _, ' for primes like E') or one other character.
+const RUNS = /[A-Za-z_][A-Za-z0-9_']*|[^A-Za-z0-9_'\s]/g;
+
+/** Parse "E -> E + T | T" lines. Symbols are whitespace-separated (so "id" is one terminal). A chunk written
+ *  without spaces that contains a non-terminal ("E+T", "(E)") is split into single symbols; a chunk that
+ *  contains no non-terminal ("id", "<=") stays one terminal, so multi-character operators need spaces. */
 export function parseGrammar(text) {
   const errors = [];
   const productions = [];
   const lines = text.split(/\r?\n/);
+  const lhsNames = new Set(lines.map((l) => l.split(/->|→/)).filter((m) => m.length === 2).map((m) => m[0].trim()));
+  const symbols = (chunk) => {
+    if (lhsNames.has(chunk)) return [chunk];
+    const runs = chunk.match(RUNS) ?? [chunk];
+    return runs.length > 1 && runs.some((r) => lhsNames.has(r)) ? runs : [chunk];
+  };
   lines.forEach((raw, ln) => {
     const line = raw.trim();
     if (!line || line.startsWith('//')) return;
@@ -21,7 +32,7 @@ export function parseGrammar(text) {
       return;
     }
     m[1].split('|').forEach((alt) => {
-      const toks = alt.trim().split(/\s+/).filter(Boolean);
+      const toks = alt.trim().split(/\s+/).filter(Boolean).flatMap(symbols);
       productions.push({ id: productions.length + 1, lhs, rhs: toks, line: ln + 1 });
     });
   });
@@ -57,7 +68,7 @@ export function validateOperatorGrammar(grammar) {
           message: `Production ${p.id} (${show(p)}) contains adjacent non-terminals: ${p.rhs[i]} ${p.rhs[i + 1]}.` });
       }
     }
-    if (p.rhs.includes(END_MARKER))
+    if (p.lhs === END_MARKER || p.rhs.includes(END_MARKER))
       errors.push({ code: 'RESERVED', productionId: p.id,
         message: `Production ${p.id} uses "$", which is reserved as the end marker.` });
   }

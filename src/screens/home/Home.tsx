@@ -1,31 +1,7 @@
-import { Component, useMemo, useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { CHAPTERS, hashFor, hashFlag } from '../../data/nav.ts';
-import { useSettings } from '../../replay/useReplay.ts';
+import { CHAPTERS, hashFor } from '../../data/nav.ts';
 import { cx, Tag } from '../../ui/kit.tsx';
-import { Specimen } from './Specimen.tsx';
-import { buildSpecimen, type Specimen as Spec } from './specimen.ts';
-
-class SpecimenBoundary extends Component<{ children: ReactNode; onExamples: () => void }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  render() {
-    if (!this.state.failed) return this.props.children;
-    return (
-      <section className="specimen specimen--failed" role="alert" aria-labelledby="specimen-title">
-        <h2 className="label" id="specimen-title">Live specimen</h2>
-        <p>The specimen couldn't run. Open Examples to load a grammar.</p>
-        <button type="button" className="btn" onClick={this.props.onExamples}>Open Examples</button>
-      </section>
-    );
-  }
-}
-
-function SpecimenSource({ render }: { render: (s: Spec) => ReactNode }) {
-  // building inside render lets the error boundary catch an algorithm failure
-  const spec = useMemo(() => buildSpecimen(undefined, undefined, hashFlag('fault') === 'specimen'), []);
-  return <>{render(spec)}</>;
-}
 
 /** A chapter entry. A planned chapter is set quieter than a working one: hierarchy follows what exists. */
 function Door({ id, numeral, title, pipeline, href, planned }: { id: string; numeral: string; title: string; pipeline: string[]; href: string; planned?: boolean }) {
@@ -50,10 +26,7 @@ function Door({ id, numeral, title, pipeline, href, planned }: { id: string; num
   );
 }
 
-export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () => void }) {
-  const { reduced } = useSettings();
-  const mode = reduced || hashFlag('specimen') === 'static' ? 'static' : 'live';
-
+export function Home() {
   return (
     <div className="home">
       <section className="home__lead" aria-labelledby="home-title">
@@ -75,13 +48,6 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
           ))}
         </ol>
       </nav>
-
-      <div className="home__specimen">
-        <SpecimenBoundary onExamples={onExamples}>
-          <SpecimenSource render={(spec) => <Specimen spec={spec} mode={mode} onUse={onUse} />} />
-        </SpecimenBoundary>
-      </div>
-
     </div>
   );
 }

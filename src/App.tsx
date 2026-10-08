@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { MotionConfig, motion } from 'motion/react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
-import { EXPR_SAMPLE } from './data/samples.ts';
 import { useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Lens, type Settings, type Speed } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
@@ -79,7 +78,7 @@ export default function App() {
 
   const page = (() => {
     if (route.page === 'home')
-      return <Home onUse={() => { opp.loadSample(EXPR_SAMPLE); window.location.hash = hashFor('opp', 'grammar'); }} onExamples={() => setExamples(true)} />;
+      return <Home />;
     const { chapter, stage } = route;
     if (chapter.id === 'lr' || !stage) return <LrStage chapter={chapter} />;
     if (chapter.id === 'opp') {

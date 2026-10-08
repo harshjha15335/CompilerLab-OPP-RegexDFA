@@ -17,8 +17,4 @@ import { initGlyphs } from './ui/glyphs.ts';
 import App from './App.tsx';
 
 initGlyphs();
-// Errors that an error boundary already handled (the homepage specimen's fallback) are reported
-// quietly; anything uncaught still reaches the console as an error.
-createRoot(document.getElementById('root')!, {
-  onCaughtError: (error) => console.warn('Recovered:', error instanceof Error ? error.message : error),
-}).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

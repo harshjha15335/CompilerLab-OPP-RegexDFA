@@ -17,8 +17,6 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { launch } from './lib/browser.mjs';
-import { buildSpecimen, specimenTable } from '../src/screens/home/specimen.ts';
-import { cellKey } from '../src/replay/selectors.ts';
 
 const argv = process.argv.slice(2);
 const PUBLISH = argv.includes('--publish');
@@ -166,12 +164,12 @@ function layoutProbe() {
       if (r.right - r.left <= 2 || r.bottom - r.top <= 2) continue;
       // text hidden under an opaque floating panel (drawer, popover, sheet) is not visible text
       const top = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
-      if (top && !el.contains(top) && !top.contains(el) && (top.closest('.drawer, .pop__panel, .sheetwrap, .specimen__prov') || (stickyDock(top) && !stickyDock(el)))) continue;
+      if (top && !el.contains(top) && !top.contains(el) && (top.closest('.drawer, .pop__panel, .sheetwrap') || (stickyDock(top) && !stickyDock(el)))) continue;
       texts.push({ el, r, t: n.textContent.trim().slice(0, 30) });
     }
   }
   const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2;
-  const floating = (e) => e.closest('.drawer, .pop__panel, .sheetwrap, .specimen__prov');
+  const floating = (e) => e.closest('.drawer, .pop__panel, .sheetwrap');
   for (const tx of texts)
     for (const b of boxes) {
       if (b.el.contains(tx.el) || tx.el.contains(b.el)) continue;
@@ -196,10 +194,6 @@ function layoutProbe() {
 const firstConflictStep = async (page) => { for (let i = 0; i < 80; i++) { if (await page.$('.ptable .pcell.is-conflict.is-changed')) return true; await keys(page, 'ArrowRight', 1, 5); } return false; };
 const SCREENS = [
   { id: 'home', hash: '#/', wait: 1600 },
-  { id: 'home-paused', hash: '#/', act: async (p) => { await keys(p, 'ArrowRight', 9); } },
-  { id: 'home-provenance', hash: '#/', act: async (p) => { await keys(p, 'End'); await sleep(100); await p.click('.specimen .pcell__btn:has(.rel)'); } },
-  { id: 'home-static', hash: '#/?specimen=static' },
-  { id: 'home-error', hash: '#/?fault=specimen' },
   { id: 'home-narrow-820', hash: '#/', viewports: [[820, 1000]], pageScrollOk: true },
   { id: 'home-narrow-390', hash: '#/', viewports: [[390, 844]], pageScrollOk: true },
   { id: 'examples', hash: '#/opp/grammar', act: async (p) => { await clickText(p, 'Examples'); await sleep(300); } },
@@ -286,14 +280,7 @@ if (want('home')) {
   const L = await page.evaluate(layoutProbe);
   check('home', '1. first view fits 1366×768: no page scroll, no clipped text, no overlaps',
     !L.scrollers.includes('the page itself') && L.clipped.length === 0 && L.overlaps.length === 0, JSON.stringify(L));
-  // 2. the specimen table equals buildPrecedenceTable (the unit test checks the data; this checks the DOM)
-  await keys(page, 'End'); await sleep(200);
-  const spec = buildSpecimen();
-  const expected = specimenTable(spec, spec.frames.length);
-  const dom = await page.$$eval('.specimen .ptable td', (tds) => tds.map((td) => [td.dataset.cell, [...td.querySelectorAll('.rel')].map((r) => r.dataset.rel).join('')]));
-  const mism = dom.filter(([k, v]) => { const [a, b] = k.split(' '); return (expected.get(cellKey(a, b))?.relations.join('') ?? '') !== v; });
-  check('home', `2. specimen table equals buildPrecedenceTable (${dom.length} cells compared)`, dom.length === spec.a.table.axes.length ** 2 && mism.length === 0, JSON.stringify(mism));
-  // 3. tab order: headline → doors → specimen controls; doors operable by keyboard.
+  // 3. tab order: headline → doors; doors operable by keyboard.
   //    The headline block has no links of its own (the doors are the single entry), so it may have no tab stops.
   await go(page, '#/');
   const order = [];
@@ -302,13 +289,16 @@ if (want('home')) {
     const where = await page.evaluate(() => {
       const a = document.activeElement;
       if (!a || a === document.body) return null;
-      return a.closest('.skip') ? 'skip' : a.closest('.rail') ? 'rail' : a.closest('.home__lead') ? 'headline' : a.closest('.doors') ? 'door' : a.closest('.specimen') ? 'specimen' : a.closest('.home__foot') ? 'footer' : 'other';
+      return a.closest('.skip') ? 'skip' : a.closest('.rail') ? 'rail' : a.closest('.home__lead') ? 'headline' : a.closest('.doors') ? 'door' : 'other';
     });
     if (where) order.push(where);
   }
+  // one pass through the page: stop where focus wraps back to the first stop
+  const wrap = order.indexOf(order[0], 1);
+  if (wrap > 0) order.length = wrap;
   const firstOf = (k) => order.indexOf(k), lastOf = (k) => order.lastIndexOf(k);
-  const okOrder = !order.includes('other') && firstOf('door') >= 0 && firstOf('door') > lastOf('headline') && firstOf('specimen') > lastOf('door') && order.filter((x) => x === 'door').length === 3;
-  check('home', `3a. Tab order is headline → doors (3) → specimen controls`, okOrder, order.join(' → '));
+  const okOrder = !order.includes('other') && firstOf('door') >= 0 && firstOf('door') > lastOf('headline') && order.filter((x) => x === 'door').length === 3;
+  check('home', `3a. Tab order is headline → doors (3)`, okOrder, order.join(' → '));
   const doors = [];
   for (const [idx, want] of [[0, '#/opp/grammar'], [1, '#/lr'], [2, '#/regex/tree']]) {
     await go(page, '#/');
@@ -326,10 +316,6 @@ if (want('home')) {
   await sleep(900);
   await page.screenshot({ path: join(SHOTS, 'home-without-logo.png') });
   check('home', '5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png)', true);
-  // the specimen error state renders and the doors stay usable
-  await go(page, '#/?fault=specimen');
-  const err = await page.$eval('.specimen--failed', (e) => e.textContent).catch(() => '');
-  check('home', 'specimen failure shows the fallback message and keeps the doors', err.includes("The specimen couldn't run. Open Examples to load a grammar.") && (await page.$$('.doors a')).length === 3, err);
   // the project title block is part of the first view, and there is no navigation-instructions note
   await go(page, '#/');
   const tb = await page.evaluate(() => {
@@ -467,9 +453,8 @@ if (want('reduced')) {
   const { ctx, page } = await open(browser, { reduced: true, init: () => {} });
   await go(page, '#/');
   await sleep(500);
-  const home = await page.evaluate(() => ({ intro: Boolean(document.querySelector('.intro')), count: document.querySelector('.specimen__count')?.textContent, key: document.querySelector('.specimen__controls .keycap')?.getAttribute('aria-label') }));
-  check('reduced', `prefers-reduced-motion: no intro, static specimen with a Replay keycap (${home.count}, "${home.key}")`,
-    !home.intro && /^(\d+) of \1$/.test(home.count ?? '') && home.key === 'Replay the specimen', JSON.stringify(home));
+  const homeAnims = await page.evaluate(() => document.getAnimations().length);
+  check('reduced', `prefers-reduced-motion: the homepage runs no animations (${homeAnims})`, homeAnims === 0);
   await go(page, '#/opp/table');
   const anims = [];
   for (let i = 0; i < 12; i++) { await page.keyboard.press('ArrowRight'); anims.push(await page.evaluate(() => document.getAnimations().length + (document.getElementById('fx-layer')?.childElementCount ?? 0))); }
@@ -528,7 +513,7 @@ if (want('fps')) {
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
     if (start) await start(page);
     const r = await page.evaluate(() => new Promise((resolve) => {
-      const target = document.querySelector('.dock__readout b, .specimen__count');
+      const target = document.querySelector('.dock__readout b');
       let changed = false;
       const mo = new MutationObserver(() => { changed = true; });
       if (target) mo.observe(target, { childList: true, characterData: true, subtree: true });
@@ -555,7 +540,6 @@ if (want('fps')) {
     check('fps', `${label}: median ${m.fps.toFixed(1)} fps; animation frames over 25 ms: ${share(m)} (runs: ${runs.map(share).join(', ')}); ${m.commits} step commits, worst ${m.worstCommit.toFixed(0)} ms`,
       m.fps >= 55 && m.longAnim / Math.max(1, m.anim) <= 0.05 && m.worstCommit < 120, JSON.stringify(runs));
   };
-  await measure('#/', 'homepage specimen running');
   await measure('#/opp/table', 'precedence table playing at 2× with motion', async (p) => { await p.keyboard.press(']'); await p.keyboard.press(']'); await p.keyboard.press(' '); });
   await measure('#/opp/parse', 'parse bench playing at 1× with motion', async (p) => { await p.keyboard.press(' '); });
   await measure('#/regex/sim', 'DFA simulation playing', async (p) => { await p.keyboard.press(' '); });
@@ -572,8 +556,9 @@ if (want('intro')) {
   p4.on('pageerror', (e) => allErrors.push(`pageerror (no WebGL) ${e.message}`));
   await p4.goto(BASE + '#/'); await sleep(800);
   const gl = await p4.evaluate(() => { const c = document.createElement('canvas'); return Boolean(c.getContext('webgl') || c.getContext('webgl2')); });
-  const ok = await p4.evaluate(() => Boolean(document.querySelector('.specimen .ptable') && document.querySelector('.doors')));
-  check('intro', `with WebGL disabled (${gl ? 'still available!' : 'disabled'}) the homepage and specimen render`, !gl && ok);
+  await p4.goto(BASE + '#/opp/table'); await sleep(600);
+  const ok = await p4.evaluate(() => Boolean(document.querySelector('.ptable td')));
+  check('intro', `with WebGL disabled (${gl ? 'still available!' : 'disabled'}) the precedence table renders`, !gl && ok);
   await noGl.close();
 }
 

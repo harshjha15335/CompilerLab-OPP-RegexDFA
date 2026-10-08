@@ -30,7 +30,6 @@
 }
 span.pcell__btn { cursor: default; }
 .pcell__btn:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
-.pcell__plate { position: absolute; inset: 2px; pointer-events: none; }
 .pcell__slash { color: var(--conflict); margin: 0 2px; font-weight: 600; }
 .pcell.is-changed { background: var(--changed); }
 .pcell.is-changed.is-dup { background: var(--plate); }

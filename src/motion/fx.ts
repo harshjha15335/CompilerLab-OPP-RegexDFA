@@ -28,9 +28,6 @@ export function cancelAllFx() {
   for (const stop of [...running]) stop();
 }
 
-/** Number of overlay effects alive right now (used by the verification script). */
-export const liveFxCount = () => running.size;
-
 function layer(): HTMLElement {
   let el = document.getElementById('fx-layer');
   if (!el) {

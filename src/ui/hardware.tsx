@@ -48,12 +48,13 @@ const GAP = 10;   // px of clear space required between two tick labels
 /** Places tick labels by their measured width: a label that would touch its neighbour or run off the track is hidden,
  *  and labels at the ends are anchored inward instead of centred. */
 function fitLabels(track: HTMLElement): Fit[] {
+  // every layout read happens first, in one batch; the placement below is pure arithmetic
   const w = track.clientWidth;
+  const marks = [...track.querySelectorAll<HTMLElement>('.timeline__ticklabel')].map((lab) => ({ at: Number(lab.dataset.at), lw: lab.offsetWidth }));
   const pad = 8;
   let lastRight = -Infinity;
-  return [...track.querySelectorAll<HTMLElement>('.timeline__ticklabel')].map((lab): Fit => {
-    const x = Number(lab.dataset.at) * w;
-    const lw = lab.offsetWidth;
+  return marks.map(({ at, lw }): Fit => {
+    const x = at * w;
     let fit: Fit = 'mid';
     let left = x - lw / 2;
     if (left < -pad) { fit = 'start'; left = x; }

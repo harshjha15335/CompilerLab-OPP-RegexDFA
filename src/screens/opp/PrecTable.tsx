@@ -84,7 +84,7 @@ export function RelationLegend() {
       <li><Rel r="≐" /><span>shift, same handle</span></li>
       <li><Rel r="⋗" /><span>reduce (takes)</span></li>
       <li><span className="legend__blank" aria-hidden="true" /><span>blank: error</span></li>
-      <li><span className="legend__conflict" aria-hidden="true" /><span>two relations: conflict</span></li>
+      <li><span className="legend__conflict" aria-hidden="true" /><span>more than one relation: conflict</span></li>
     </ul>
   );
 }

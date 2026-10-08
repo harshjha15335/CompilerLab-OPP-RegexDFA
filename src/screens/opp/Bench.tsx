@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { Mode, ParseStep, StackItem } from '../../core/index.ts';
 import { all, fly, gather, pop } from '../../motion/fx.ts';
-import { cx, Production, Rel, Verdict } from '../../ui/kit.tsx';
+import { cx, Production, Rel, REL_INFO, Verdict } from '../../ui/kit.tsx';
 
 const START: StackItem[] = [{ symbol: '$', kind: 'T' }];
 
@@ -109,7 +109,7 @@ export function Bench({ step, tokens, mode, title, compact, finished, fx }: {
       <div className="bench__relation">
         {step && !finished ? (
           <>
-            <span className="relbox" aria-label={step.relation ? `${step.top} ${step.relation} ${step.lookahead}` : `${step.top} and ${step.lookahead}: no relation`}>
+            <span className="relbox" role="img" aria-label={step.relation ? `${step.top} ${REL_INFO[step.relation].name} ${step.lookahead}` : `${step.top} and ${step.lookahead}: no relation`}>
               <span className="relbox__term">{step.top}</span>
               {step.relation ? <Rel r={step.relation} label={false} /> : <span className="relbox__none">{step.top === '$' && step.lookahead === '$' ? 'end' : 'blank'}</span>}
               <span className="relbox__term">{step.lookahead}</span>

@@ -22,6 +22,18 @@ export function nextStageOf(chapter: Chapter, stage: Stage | null) {
   return null;
 }
 
+/** Previous / next stage. At either end it is a real disabled button, not a link without a destination. */
+function StageArrow({ to, dir, chapter }: { to: Stage | undefined; dir: 'prev' | 'next'; chapter: Chapter }) {
+  const icon = <svg viewBox="0 0 12 12" aria-hidden="true"><path d={dir === 'prev' ? 'M7.5 2.5 4 6l3.5 3.5' : 'M4.5 2.5 8 6 4.5 9.5'} /></svg>;
+  const word = dir === 'prev' ? 'Previous' : 'Next';
+  if (!to) return <button type="button" className="stages__step is-off" disabled aria-label={`${word} stage: none, this is the ${dir === 'prev' ? 'first' : 'last'} stage`}>{icon}</button>;
+  return (
+    <a className="stages__step" href={hashFor(chapter.id, to.id)} aria-label={`${word} stage: ${to.title}`} aria-keyshortcuts={dir === 'prev' ? 'PageUp' : 'PageDown'}>
+      {icon}
+    </a>
+  );
+}
+
 function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
@@ -50,18 +62,12 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
   }, [chapter.id, prev, next]);
   return (
     <div className="stages" ref={wrap}>
-      <a className={cx('stages__step', !prev && 'is-off')} href={prev ? hashFor(chapter.id, prev.id) : undefined}
-        aria-disabled={!prev || undefined} aria-label={prev ? `Previous stage: ${prev.title}` : 'No previous stage'} aria-keyshortcuts={prev ? 'PageUp' : undefined}>
-        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 2.5 4 6l3.5 3.5" /></svg>
-      </a>
+      <StageArrow to={prev} dir="prev" chapter={chapter} />
       <button type="button" className="stages__toggle" aria-expanded={open} aria-controls="stage-drawer" onClick={() => setOpen((o) => !o)}>
         Stage {stage.no} of {chapter.stages.length}
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
       </button>
-      <a className={cx('stages__step', !next && 'is-off')} href={next ? hashFor(chapter.id, next.id) : undefined}
-        aria-disabled={!next || undefined} aria-label={next ? `Next stage: ${next.title}` : 'No next stage'} aria-keyshortcuts={next ? 'PageDown' : undefined}>
-        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" /></svg>
-      </a>
+      <StageArrow to={next} dir="next" chapter={chapter} />
       {open && (
         <nav id="stage-drawer" className="drawer" aria-label={`${chapter.title} stages`}>
           <ol>
@@ -83,11 +89,14 @@ function StageSwitch({ chapter, stage }: { chapter: Chapter; stage: Stage }) {
 
 /** Extra controls a chapter puts in every plate header (the OPP grammar picker on stages 2–4). */
 export const PlateTools = createContext<ReactNode>(null);
+/** A notice the app pins under every plate header of a chapter, e.g. "these results are for the last checked input". */
+export const PlateNotice = createContext<ReactNode>(null);
 
 export function Plate({ chapter, stage, title, aside, children, dock, controls, className }: {
   chapter: Chapter; stage: Stage | null; title?: string; aside?: ReactNode; children: ReactNode; dock?: ReactNode; controls?: ReactNode; className?: string;
 }) {
   const tools = useContext(PlateTools);
+  const notice = useContext(PlateNotice);
   return (
     <article className={cx('plate', className)} aria-labelledby="plate-title">
       <header className="plate__head">
@@ -99,6 +108,7 @@ export function Plate({ chapter, stage, title, aside, children, dock, controls, 
         <div className="plate__aside">{tools}{aside}</div>
         {stage && <StageSwitch chapter={chapter} stage={stage} />}
       </header>
+      {notice}
       {controls && <div className="plate__controls">{controls}</div>}
       <div className="plate__body">{children}</div>
       {dock}

@@ -1,6 +1,10 @@
 // Regex -> AST. Syntax: | union, implicit concatenation, * + ?, ( ), \x escapes. '#' is reserved (use \#);
 // an unescaped space is an error (it would silently become an input symbol).
-export function parseRegex(src) {
+// Positions are counted in characters (Unicode code points), so "😀" is one symbol and one position.
+export const MAX_REGEX_LENGTH = 400;     // characters; larger inputs overflow the recursive builders downstream
+export const MAX_REGEX_NESTING = 100;    // parenthesis depth; far beyond any textbook expression
+export function parseRegex(source) {
+  const src = [...source];
   let i = 0;
   const err = (message, pos = i) => { throw Object.assign(new Error(message), { pos }); };
   const SPECIAL = new Set(['|', '*', '+', '?', '(', ')', '\\']);
@@ -49,10 +53,21 @@ export function parseRegex(src) {
   }
   try {
     if (!src.length) err('Enter a regular expression.');
+    if (src.length > MAX_REGEX_LENGTH)
+      err(`The expression has ${src.length} characters; the limit is ${MAX_REGEX_LENGTH}. Shorten it or split it into parts.`, MAX_REGEX_LENGTH);
+    let depth = 0;
+    for (let k = 0; k < src.length; k++) {
+      if (src[k] === '\\') { k++; continue; }
+      if (src[k] === '(' && ++depth > MAX_REGEX_NESTING)
+        err(`Parentheses nest more than ${MAX_REGEX_NESTING} levels deep at position ${k + 1}. Flatten the expression.`, k);
+      if (src[k] === ')') depth--;
+    }
     const ast = expr();
     if (i < src.length) err(`Unexpected "${src[i]}" at position ${i + 1}.`);
     return { ok: true, ast };
   } catch (e) {
+    // never surface an engine message (e.g. RangeError: Maximum call stack size exceeded) as a syntax error
+    if (!('pos' in e)) return { ok: false, error: 'This expression is too complex to analyse. Shorten it or reduce the nesting.', position: 0 };
     return { ok: false, error: e.message, position: e.pos };
   }
 }

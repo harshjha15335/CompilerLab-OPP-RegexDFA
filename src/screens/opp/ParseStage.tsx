@@ -5,8 +5,9 @@ import type { OppModel } from '../../models.ts';
 import type { OkGrammar } from '../../replay/pipelines.ts';
 import { cellKey, tableAt } from '../../replay/selectors.ts';
 import { useReplay } from '../../replay/useReplay.ts';
+import { conflictSentence } from '../../replay/wording.ts';
 import { Dock } from '../../ui/hardware.tsx';
-import { cx, Empty, Rel, Tag, Verdict } from '../../ui/kit.tsx';
+import { cx, DirtyHint, Empty, Rel, Tag, Verdict } from '../../ui/kit.tsx';
 import { nextStageOf, Plate } from '../../ui/plate.tsx';
 import { Bench, ModeSwitch } from './Bench.tsx';
 import { PrecTable } from './PrecTable.tsx';
@@ -18,7 +19,7 @@ export function ConflictBlock({ chapter, stage, a }: { chapter: Chapter; stage: 
     <Plate chapter={chapter} stage={stage}>
       <Empty title="This grammar's table has a conflict, so there is nothing to parse with."
         action={<a className="btn" href={hashFor('opp', 'table')}>Open 3 Precedence table</a>}>
-        {a.table.conflicts.map((c) => `Cell (${c.left}, ${c.right})`).join(', ')} {a.table.conflicts.length === 1 ? 'holds' : 'each hold'} two relations.
+        {conflictSentence(a.table.conflicts.map((c) => ({ ...c, relations: a.table.get(c.left, c.right) })), 'Cell ')}
         A precedence parser needs exactly one relation per cell.
       </Empty>
     </Plate>
@@ -28,7 +29,7 @@ export function ConflictBlock({ chapter, stage, a }: { chapter: Chapter; stage: 
 function TraceTable({ steps, tokens, count, onJump }: { steps: ParseStep[]; tokens: string[]; count: number; onJump: (n: number) => void }) {
   const input = (s: ParseStep) => [...tokens.slice(s.type === 'SHIFT' ? s.pointer - 1 : s.pointer), '$'].join(' ');
   return (
-    <div className="scroll" tabIndex={0} aria-label="Parse trace, scrollable">
+    <div className="scroll" tabIndex={0} role="region" aria-label="Parse trace, scrollable">
       <table className="trace">
         <caption className="sr-only">Parse trace</caption>
         <colgroup><col className="trace__c-step" /><col /><col className="trace__c-input" /><col className="trace__c-act" /></colgroup>
@@ -52,7 +53,7 @@ function TraceTable({ steps, tokens, count, onJump }: { steps: ParseStep[]; toke
 }
 
 export function ParseStage({ chapter, stage, model, a }: { chapter: Chapter; stage: Stage; model: OppModel; a: OkGrammar }) {
-  const { run, parseDraft, setParseDraft, parseReq, parse, strings } = model;
+  const { run, parseDraft, setParseDraft, parseReq, parse, setMode, strings, parseDirty } = model;
   const steps = run?.steps ?? NONE;
   const markers = useMemo(() => { let k = 0; return steps.flatMap((s, i) => (s.type === 'REDUCE' ? [{ at: i + 1, label: `reduce ${++k}` }] : [])); }, [steps]);
   const replay = useReplay(steps, { markers });
@@ -70,7 +71,7 @@ export function ParseStage({ chapter, stage, model, a }: { chapter: Chapter; sta
           onChange={(e) => setParseDraft(e.target.value)} placeholder="id + id * id" />
       </label>
       <button type="submit" className="btn btn--primary">Parse</button>
-      <ModeSwitch mode={parseReq.mode} onChange={(m) => parse(parseDraft, m)} name="parse-mode" />
+      <ModeSwitch mode={parseReq.mode} onChange={setMode} name="parse-mode" />
       {strings.length > 0 && (
         <div className="chips" role="group" aria-label="Example strings">
           {strings.map((s) => (
@@ -78,6 +79,7 @@ export function ParseStage({ chapter, stage, model, a }: { chapter: Chapter; sta
           ))}
         </div>
       )}
+      {parseDirty && <DirtyHint shown={parseReq.input} action="Parse" what="string" />}
     </form>
   );
 

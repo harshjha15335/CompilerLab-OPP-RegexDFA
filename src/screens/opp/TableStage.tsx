@@ -4,6 +4,7 @@ import type { RelationStep, TableStep } from '../../core/index.ts';
 import type { OkGrammar } from '../../replay/pipelines.ts';
 import { cellKey, conflictsOf, phaseMarkers, tableAt, type Cell } from '../../replay/selectors.ts';
 import { useReplay } from '../../replay/useReplay.ts';
+import { conflictSentence, relationCount, verdictDetail } from '../../replay/wording.ts';
 import { all, beam, morph, nudge, pop } from '../../motion/fx.ts';
 import { Dock } from '../../ui/hardware.tsx';
 import { Production, Rel, Row, SetText, Tag, Tx } from '../../ui/kit.tsx';
@@ -113,7 +114,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
           {conflicts.length > 0 && (
             <p className="conflict-note" role="status">
               <Tag kind="conflict">Conflict</Tag>
-              {conflicts.map((c) => `(${c.left}, ${c.right})`).join(', ')} {conflicts.length === 1 ? 'holds' : 'each hold'} two relations.
+              {conflictSentence(conflicts)}
               A parser reaching {conflicts.length === 1 ? 'that cell' : 'those cells'} could not choose between shift and reduce, so this grammar has no precedence parser.
             </p>
           )}
@@ -134,7 +135,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
                   <Tag kind={kind === 'conflict' ? 'conflict' : kind === 'new' ? 'new' : 'dup'}>{kind === 'conflict' ? 'Conflict' : kind === 'new' ? 'New' : 'Already there'}</Tag>
                 </p>
                 {kind === 'conflict'
-                  ? <p className="note__warn">Cell ({add.left}, {add.right}) now holds {cells.get(cellKey(add.left, add.right))?.relations.length} different relations. The parser could not choose between shift and reduce here.</p>
+                  ? <p className="note__warn">Cell ({add.left}, {add.right}) now holds {relationCount(cells.get(cellKey(add.left, add.right))?.relations.length ?? 2)}. The parser could not choose between shift and reduce here.</p>
                   : <p><Tx>{add.message}</Tx></p>}
                 <Row label="From">
                   <span data-cause={v ? undefined : ''}>{prod ? <><span className="mono">{prod.id}.</span> <Production p={prod} active /></> : <>the end marker <span className="mono">$</span> around <span className="mono">{grammar.start}</span></>}</span>
@@ -152,7 +153,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
               <>
                 <p className="note__headline">{step.ok ? 'An operator-precedence grammar' : 'Not an operator-precedence grammar'}{' '}
                   <Tag kind={step.ok ? 'accept' : 'conflict'}>{step.ok ? 'Conflict-free' : 'Conflict'}</Tag></p>
-                <p><Tx>{step.message}</Tx></p>
+                <p><Tx>{verdictDetail(step.message, step.ok)}</Tx></p>
               </>
             )}
           </StepNote>

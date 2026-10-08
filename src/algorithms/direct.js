@@ -1,7 +1,14 @@
 // Direct RE -> DFA (followpos method). Emits replayable steps; knows nothing about rendering.
 const U = (...ss) => [...new Set(ss.flat())].sort((a, b) => a - b);
 
-export function buildDirect(ast) {
+// The subset construction can grow exponentially ((a|b)*a(a|b)^n needs 2^(n+1) states). Past this many
+// states construction stops with DfaLimitError instead of freezing the page; a partial DFA is never returned.
+export const MAX_DFA_STATES = 500;
+export class DfaLimitError extends Error {
+  constructor(limit) { super(`The DFA needs more than ${limit} states.`); this.name = 'DfaLimitError'; this.limit = limit; }
+}
+
+export function buildDirect(ast, { maxStates = MAX_DFA_STATES } = {}) {
   // augment with end marker
   // work on a copy: the caller's AST is never annotated, and every step record owns its arrays
   const root = { type: 'cat', children: [structuredClone(ast), { type: 'leaf', symbol: '#', isEnd: true }] };
@@ -63,6 +70,7 @@ export function buildDirect(ast) {
   const addState = (positions) => {
     let s = states.find((q) => same(q.positions, positions));
     if (s) return { s, isNew: false };
+    if (states.length >= maxStates) throw new DfaLimitError(maxStates);
     s = { name: name(states.length), positions, accepting: positions.includes(endPos) };
     states.push(s); return { s, isNew: true };
   };
@@ -87,9 +95,10 @@ export function buildDirect(ast) {
 
 export function simulateDfa(dfa, input) {
   const steps = []; let cur = dfa.start;
+  const chars = [...input];                // code points, matching the regex parser and the input tape
   steps.push({ phase: 'SIMULATION', type: 'SIM_START', state: cur, index: 0, message: `Start in ${cur}.` });
-  for (let i = 0; i < input.length; i++) {
-    const ch = input[i];
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
     const t = dfa.transitions.find((x) => x.from === cur && x.symbol === ch);
     if (!t) {
       steps.push({ phase: 'SIMULATION', type: 'REJECT', state: cur, index: i, symbol: ch, message: `No transition from ${cur} on "${ch}".` });
@@ -99,7 +108,7 @@ export function simulateDfa(dfa, input) {
     cur = t.to;
   }
   const ok = dfa.accepting.includes(cur);
-  steps.push({ phase: 'SIMULATION', type: ok ? 'ACCEPT' : 'REJECT', state: cur, index: input.length,
+  steps.push({ phase: 'SIMULATION', type: ok ? 'ACCEPT' : 'REJECT', state: cur, index: chars.length,
     message: ok ? `Input consumed in accepting state ${cur}.` : `Input consumed but ${cur} is not accepting.` });
   return { result: ok ? 'ACCEPT' : 'REJECT', steps };
 }

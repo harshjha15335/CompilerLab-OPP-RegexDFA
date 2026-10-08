@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { GRAMMAR_SAMPLES } from '../../data/samples.ts';
 import { hashFor, type Chapter, type Stage } from '../../data/nav.ts';
 import type { Grammar, GrammarError } from '../../core/index.ts';
 import type { OppModel } from '../../models.ts';
+import { grammarWarnings } from '../../replay/warnings.ts';
 import { cx, ProductionList, Tag } from '../../ui/kit.tsx';
 import { Plate } from '../../ui/plate.tsx';
 
@@ -53,8 +54,11 @@ function Result({ model }: { model: OppModel }) {
         <div><dt>Non-terminals</dt><dd className="mono">{g.nonterminals.join('  ')}</dd></div>
         <div><dt>Terminals</dt><dd className="mono">{g.terminals.join('  ')}</dd></div>
       </dl>
+      {grammarWarnings(g).map((w) => (
+        <p key={w.code} className="result__note"><Tag kind="plain">Note</Tag> {w.message}</p>
+      ))}
       {!analysis.conflictFree && (
-        <p className="result__warn"><Tag kind="conflict">Conflict</Tag> Its precedence table will have a cell with two relations. Stage 3 shows the exact step where that happens.</p>
+        <p className="result__warn"><Tag kind="conflict">Conflict</Tag> Its precedence table will have a cell with more than one relation. Stage 3 shows the exact step where that happens.</p>
       )}
       <a className="btn btn--primary" href={hashFor('opp', 'sets')}>Derive LEADING and TRAILING</a>
     </div>
@@ -62,8 +66,11 @@ function Result({ model }: { model: OppModel }) {
 }
 
 export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: OppModel }) {
-  const { draft, setDraft, commit, dirty, analysis, loadSample, committed } = model;
+  const { draft, setDraft, commit, dirty, analysis, loadSample, committed, custom, restoreCustom } = model;
   const gutter = useRef<HTMLDivElement>(null);
+  // Checking an unchanged grammar still gets a visible answer (the result itself would not change).
+  const [recheck, setRecheck] = useState(false);
+  const check = () => { setRecheck(!dirty); commit(); };
   const lines = draft.split('\n');
   const errorLines = new Set(dirty ? [] : analysis.errors.map((e) => lineOf(e, analysis.grammar)).filter((x): x is number => x !== null));
   return (
@@ -77,14 +84,15 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
             </div>
             <textarea id="grammar-text" className="editor__text" value={draft} spellCheck={false} wrap="off" rows={6}
               autoCapitalize="off" autoCorrect="off" aria-describedby="grammar-help"
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => { setRecheck(false); setDraft(e.target.value); }}
               onScroll={(e) => { if (gutter.current) gutter.current.scrollTop = e.currentTarget.scrollTop; }}
-              onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commit(); } }} />
+              onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); check(); } }} />
           </div>
           <p id="grammar-help" className="help">One rule per line. Separate symbols with spaces, so <code>id</code> is one terminal. The first rule's left side is the start symbol.</p>
           <div className="actions">
-            <button type="button" className="btn btn--primary" onClick={commit} aria-keyshortcuts="Control+Enter">Check grammar</button>
-            <span className="actions__state">{dirty ? 'Not checked yet' : 'Checked'}</span>
+            <button type="button" className="btn btn--primary" onClick={check} aria-keyshortcuts="Control+Enter">Check grammar</button>
+            <span className={cx('actions__state', dirty && 'is-dirty')} role="status">
+              {dirty ? 'Edited, not checked yet' : recheck ? 'Checked again: nothing changed since the last check' : 'Checked'}</span>
           </div>
         </section>
         <section className="pane pane--scroll" aria-label="Check result">
@@ -95,9 +103,18 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
           )}
           <h2 className="label label--gap" id="grammar-examples">Examples</h2>
           <ul className="samples">
+            {custom !== null && custom !== committed && (
+              <li>
+                <button type="button" className="sample" onClick={() => { setRecheck(false); void restoreCustom(); }}>
+                  <span className="sample__title">Your grammar</span>
+                  <Tag kind="plain">Saved</Tag>
+                  <span className="sample__shows">Bring back the grammar you wrote before loading an example.</span>
+                </button>
+              </li>
+            )}
             {GRAMMAR_SAMPLES.map((s) => (
               <li key={s.id}>
-                <button type="button" className={cx('sample', s.text === committed && !dirty && 'is-current')} onClick={() => loadSample(s)}
+                <button type="button" className={cx('sample', s.text === committed && !dirty && 'is-current')} onClick={() => { setRecheck(false); void loadSample(s); }}
                   aria-pressed={s.text === committed && !dirty}>
                   <span className="sample__title">{s.title}</span>
                   <Tag kind={KIND[s.kind].tag}>{KIND[s.kind].word}</Tag>
@@ -112,16 +129,24 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
   );
 }
 
+const CUSTOM = '__custom';
+
 /** Switch the analysed grammar from any later stage, so a viva never has to walk back to stage 1. */
 export function GrammarPicker({ model }: { model: OppModel }) {
-  const { committed, loadSample } = model;
+  const { committed, loadSample, custom, restoreCustom } = model;
   const current = GRAMMAR_SAMPLES.find((s) => s.text === committed);
+  // "Your grammar" is listed whenever there is one: the one on display, or one a sample replaced.
+  const hasCustom = !current || custom !== null;
   return (
     <label className="picker">
       <span className="picker__label">Grammar</span>
-      <select className="picker__select" value={current?.id ?? ''}
-        onChange={(e) => { const s = GRAMMAR_SAMPLES.find((x) => x.id === e.target.value); if (s) loadSample(s); }}>
-        {!current && <option value="">Your grammar (edit on stage 1)</option>}
+      <select className="picker__select" value={current?.id ?? CUSTOM}
+        onChange={(e) => {
+          if (e.target.value === CUSTOM) { void restoreCustom(); return; }
+          const s = GRAMMAR_SAMPLES.find((x) => x.id === e.target.value);
+          if (s) void loadSample(s);
+        }}>
+        {hasCustom && <option value={CUSTOM}>Your grammar</option>}
         {GRAMMAR_SAMPLES.map((s) => <option key={s.id} value={s.id}>{s.title} ({KIND[s.kind].word.toLowerCase()})</option>)}
       </select>
     </label>

@@ -79,7 +79,7 @@ export function DfaTable({ alphabet, states, transitions, start, hit, rowState, 
               const isHit = hit?.from === s.name && hit.symbol === x;
               return (
                 <td key={x} className={cx('dtable__cell', isHit && 'is-hit', to === undefined && 'is-blank')}>
-                  {to ?? <span aria-label="no transition">–</span>}
+                  {to ?? <><span aria-hidden="true">–</span><span className="sr-only">no transition</span></>}
                   {isHit && <Corners />}
                 </td>
               );

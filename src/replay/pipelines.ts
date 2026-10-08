@@ -1,7 +1,7 @@
 // Runs the algorithm core ONCE per input and packages result + steps[] for replay.
 // No algorithm logic lives here; this file only sequences the tested modules.
 import {
-  buildDirect, buildPrecedenceTable, compareModes, computeSets, parseGrammar, parseRegex, parseString,
+  buildDirect, buildPrecedenceTable, DfaLimitError, MAX_DFA_STATES, compareModes, computeSets, parseGrammar, parseRegex, parseString,
   simulateDfa, tokenize, validateOperatorGrammar,
 } from '../core/index.ts';
 import type { Comparison, CoreTable, Dfa, Grammar, GrammarError, Mode, ParseRun, SetStep, SimRun } from '../core/index.ts';
@@ -43,7 +43,7 @@ export function runCompare(analysis: OkGrammar, input: string): CompareResult {
 }
 
 export type RegexAnalysis =
-  | { status: 'empty' | 'error'; error: string; position: number; source: string }
+  | { status: 'empty' | 'error'; error: string; position: number | null; source: string }
   | ({ status: 'ok'; source: string } & ReturnType<typeof buildDirect> & {
       propSteps: Extract<ReturnType<typeof buildDirect>['steps'][number], { phase: 'PROPERTIES' }>[];
       followSteps: Extract<ReturnType<typeof buildDirect>['steps'][number], { phase: 'FOLLOWPOS' }>[];
@@ -54,7 +54,17 @@ export type OkRegex = Extract<RegexAnalysis, { status: 'ok' }>;
 export function analyzeRegex(source: string): RegexAnalysis {
   const parsed = parseRegex(source);
   if (!parsed.ok) return { status: source.length ? 'error' : 'empty', error: parsed.error, position: parsed.position ?? 0, source };
-  const direct = buildDirect(parsed.ast);
+  let direct: ReturnType<typeof buildDirect>;
+  try {
+    direct = buildDirect(parsed.ast);
+  } catch (e) {
+    // position null: the problem is the size of the automaton, not one character of the source
+    if (e instanceof DfaLimitError)
+      return { status: 'error', source, position: null,
+        error: `This expression's DFA needs more than ${MAX_DFA_STATES} states, so construction was stopped. `
+          + 'The direct method can grow exponentially: (a|b)*a(a|b)(a|b)… doubles the states with every extra (a|b). Use a shorter expression.' };
+    return { status: 'error', source, position: null, error: 'This expression is too complex to analyse. Shorten it or reduce the nesting.' };
+  }
   return {
     status: 'ok', source, ...direct,
     propSteps: direct.steps.filter((s) => s.phase === 'PROPERTIES'),

@@ -65,6 +65,7 @@ b, strong { font-weight: 600; }
 /* ── Fields ──────────────────────────────────────────── */
 .field { display: grid; gap: 4px; min-width: 180px; }
 .field--wide { min-width: 260px; flex: 1; }
+.field__input::placeholder, .editor__text::placeholder { color: var(--ink-3); opacity: 1; }   /* AA: browsers default to a pale grey */
 .field__input {
   height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--plate); font: var(--t-formal); min-width: 0;
@@ -125,3 +126,18 @@ b, strong { font-weight: 600; }
 .legend__blank { width: 16px; height: 16px; border: 1px solid var(--line); background: var(--plate); display: inline-block; }
 .legend__conflict { width: 16px; height: 16px; display: inline-block; border: 2px solid var(--conflict); background: linear-gradient(135deg, transparent 44%, var(--conflict) 45% 55%, transparent 56%), var(--conflict-wash); }
 .legend__sets { font-size: 0.85rem; color: var(--ink); }
+
+/* ── Confirmation dialog (native <dialog>, see src/ui/confirm.tsx) ── */
+.btn--danger { background: var(--reject); color: var(--plate); border-color: var(--reject); }
+.btn--danger:hover { background: #7d1a10; }
+.confirm {
+  width: min(440px, calc(100vw - 2 * var(--gutter))); padding: var(--s5); margin: auto;
+  background: var(--plate); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow-float);
+}
+.confirm::backdrop { background: rgba(28, 30, 33, 0.45); }
+.confirm__title { font: var(--t-section); margin: 0 0 var(--s3); }
+.confirm__body { font: var(--t-body); color: var(--ink-2); }
+.confirm__body p { margin: 0 0 var(--s2); }
+.confirm__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); margin-top: var(--s4); }
+.confirm__actions .btn { min-height: 44px; min-width: 96px; }

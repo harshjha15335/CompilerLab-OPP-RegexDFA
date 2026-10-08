@@ -61,6 +61,12 @@ const PAIRS: Pair[] = [
   ['focus', 'plate', 3, 'focus ring'],
   ['focus', 'desk', 3, 'focus ring on the desk'],
   ['focus', 'plate-2', 3, 'focus ring in wells'],
+  ['ink-3', 'plate', 4.5, 'placeholder text in fields (::placeholder, opacity 1)'],
+  ['ink-2', 'plate-2', 4.5, 'a set block that is still waiting (no opacity)'],
+  ['plate', 'reject', 4.5, 'the Replace button in the confirmation dialog'],
+  ['ink', 'band', 4.5, 'text in the out-of-date notice'],
+  ['read', 'band', 3, 'edge of the out-of-date notice'],
+  ['cap-edge', 'plate', 3, 'icon of a disabled stage arrow'],
 ];
 
 const rows = PAIRS.map(([fg, bg, min, role]) => {

@@ -6,9 +6,10 @@ import type { RegexModel } from '../../models.ts';
 import type { OkRegex } from '../../replay/pipelines.ts';
 import { dfaAt, followposAt, followposProvenance, nodePropsAt, phaseMarkers, simAt } from '../../replay/selectors.ts';
 import { useReplay } from '../../replay/useReplay.ts';
+import { errorPlace } from '../../replay/wording.ts';
 import { all, beam, drawOver, nudge, pop, reveal } from '../../motion/fx.ts';
 import { Dock } from '../../ui/hardware.tsx';
-import { cx, Empty, Row, SetText, Tag, Tx, Verdict } from '../../ui/kit.tsx';
+import { cx, DirtyHint, Empty, Row, SetText, Tag, Tx, Verdict } from '../../ui/kit.tsx';
 import { nextStageOf, Plate, StepNote, useStepFx } from '../../ui/plate.tsx';
 import { DfaGraph } from './DfaGraph.tsx';
 import { NODE_NAME, SyntaxTree, TreeLegend } from './SyntaxTree.tsx';
@@ -18,6 +19,7 @@ const SHORT: Record<string, string> = { or: 'union', cat: 'concat', star: 'star'
 const short = (n: RegexNode) => (n.type === 'leaf' ? `${n.symbol}${n.pos}` : SHORT[n.type]);
 const describe = (n: RegexNode) => (n.type === 'leaf' ? `${n.symbol}${n.pos}` : `${SHORT[n.type]}(${n.children!.map(short).join(', ')})`);
 const braces = (a: number[]) => `{${a.join(',')}}`;
+
 
 export function RegexBlocked({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: RegexModel }) {
   const an = model.analysis;
@@ -63,8 +65,8 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
           {!dirty && analysis.status === 'error' && (
             <div className="result result--bad" role="alert">
               <p className="result__head"><Tag kind="reject">Malformed</Tag> {analysis.error}</p>
-              <ErrorSource source={analysis.source} position={analysis.position} />
-              <p className="help">Character {analysis.position + 1} of {analysis.source.length}.</p>
+              {analysis.position !== null && <ErrorSource source={analysis.source} position={analysis.position} />}
+              {analysis.position !== null && <p className="help">{errorPlace(analysis.source, analysis.position)}</p>}
             </div>
           )}
           {!dirty && ok && (
@@ -256,7 +258,7 @@ export function DfaStage({ chapter, stage, r }: { chapter: Chapter; stage: Stage
         <div className="figure figure--dfa">
           <div className="figure__canvas figure__canvas--graph">
             <DfaGraph dfa={dfa} visibleStates={visibleStates} visibleTransitions={seen.transitions} activeEdge={activeEdge}
-              sourceState={move?.from ?? null} freshState={fresh} fx={replay.animate ? 'build' : null} />
+              sourceState={move?.from ?? null} freshState={fresh} fx={replay.animate ? 'build' : null} tableFallback={false} />
           </div>
           <div className="figure__row">
             <section className="block"><h2 className="label">Transition table</h2>
@@ -304,7 +306,7 @@ export function DfaStage({ chapter, stage, r }: { chapter: Chapter; stage: Stage
 
 /* ───────────── 5 Simulation ───────────── */
 export function SimStage({ chapter, stage, model, r }: { chapter: Chapter; stage: Stage; model: RegexModel; r: OkRegex }) {
-  const { sim, simDraft, setSimDraft, simInput, simulate, strings } = model;
+  const { sim, simDraft, setSimDraft, simInput, simulate, strings, simDirty } = model;
   const { dfa } = r;
   const steps = sim!.steps;
   const replay = useReplay(steps);
@@ -327,6 +329,7 @@ export function SimStage({ chapter, stage, model, r }: { chapter: Chapter; stage
           {strings.map((x) => <button key={x} type="button" className={cx('chip', x === simInput && 'is-on')} aria-pressed={x === simInput} onClick={() => simulate(x)}>{x === '' ? 'ε (empty)' : x}</button>)}
         </div>
       )}
+      {simDirty && <DirtyHint shown={simInput} action="Run" what="string" />}
     </form>
   );
   return (

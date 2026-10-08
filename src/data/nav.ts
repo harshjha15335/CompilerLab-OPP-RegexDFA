@@ -11,7 +11,7 @@ export const CHAPTERS: Chapter[] = [
       { id: 'sets', no: 2, title: 'LEADING and TRAILING', does: 'Derive the edge terminals of every non-terminal.' },
       { id: 'table', no: 3, title: 'Precedence table', does: 'Insert one relation at a time and catch conflicts.' },
       { id: 'parse', no: 4, title: 'Parse a string', does: 'Shift and reduce with the table, handle by handle.' },
-      { id: 'modes', no: 5, title: 'Classic vs Safeguarded', does: 'See where forgetting non-terminal names goes wrong.' },
+      { id: 'modes', no: 5, title: 'Classic N vs Safeguarded', does: 'See where forgetting non-terminal names goes wrong.' },
     ],
   },
   { id: 'lr', numeral: 'II', title: 'LR parsing', short: 'Bottom-up parsing', pipeline: ['items', 'table', 'parse'], stages: [] },

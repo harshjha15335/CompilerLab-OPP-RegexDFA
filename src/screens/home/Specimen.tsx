@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cellKey } from '../../replay/selectors.ts';
-import { useReplay } from '../../replay/useReplay.ts';
+import { isTyping, pressKeycap, useReplay } from '../../replay/useReplay.ts';
 import { all, beam, nudge, pop } from '../../motion/fx.ts';
 import { Icons, Keycap } from '../../ui/hardware.tsx';
 import { cx, Production, Rel, Verdict, Tx } from '../../ui/kit.tsx';
@@ -77,6 +77,25 @@ export function Specimen({ spec, mode, onUse }: {
     if (!playing && done) api.goto(0);
     setAuto(!playing);
   };
+  const toggleRef = useRef(toggle);
+  toggleRef.current = toggle;
+
+  // Space plays and pauses the specimen's own loop. It is claimed in the capture phase so the shared
+  // replay keyboard handler (which would start a second, independent playback) sees it as handled.
+  useEffect(() => {
+    const onSpace = (e: KeyboardEvent) => {
+      if (e.key !== ' ' || e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented) return;
+      const el = e.target as HTMLElement | null;
+      if (isTyping(el) || el?.closest?.('[data-own-keys]')) return;
+      const tag = el?.tagName;
+      if (tag === 'BUTTON' || tag === 'A' || tag === 'SUMMARY' || el?.getAttribute?.('role') === 'radio') return;
+      e.preventDefault();
+      pressKeycap('play');
+      toggleRef.current();
+    };
+    window.addEventListener('keydown', onSpace, true);
+    return () => window.removeEventListener('keydown', onSpace, true);
+  }, []);
   const keyLabel = playing ? 'Pause' : done ? 'Replay' : 'Play';
 
   return (
@@ -119,7 +138,7 @@ export function Specimen({ spec, mode, onUse }: {
           : ps ? (playing ? <p className="mono specimen__brief">{ps.type === 'SHIFT' ? 'shift' : ps.type === 'REDUCE' ? 'reduce' : ps.type.toLowerCase()} {ps.relation ? <>({ps.top} <Rel r={ps.relation} /> {ps.lookahead})</> : null}</p>
             : <p><Tx>{ps.message}</Tx></p>) : null}
       </div>
-      <div className="specimen__parse" aria-label={`Parsing ${SPECIMEN_STRING}`}>
+      <div className="specimen__parse" role="group" aria-label={`Parsing ${SPECIMEN_STRING}`}>
         <span className="label">Parse</span>
         <span className="specimen__tape" aria-hidden="true">
           {[...tokens, '$'].map((t, i) => <span key={i} className={cx('stok', ps && i < pointer && 'is-used', ps && i === pointer && !done && 'is-look')}>{t}</span>)}

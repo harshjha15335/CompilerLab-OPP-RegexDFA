@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
-import { EXPR_SAMPLE } from './data/samples.ts';
+import { EXPR_SAMPLE, type GrammarSample } from './data/samples.ts';
 import { useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Settings } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
@@ -14,8 +14,9 @@ import { GrammarPicker } from './screens/opp/GrammarStage.tsx';
 import { ModesStage } from './screens/opp/ModesStage.tsx';
 import { LrStage } from './screens/lr/LrStage.tsx';
 import { DfaStage, FollowStage, PropsStage, RegexBlocked, SimStage, TreeStage } from './screens/regex/RegexStages.tsx';
-import { Empty } from './ui/kit.tsx';
-import { Plate, PlateTools } from './ui/plate.tsx';
+import { useConfirm } from './ui/confirm.tsx';
+import { Empty, Tag } from './ui/kit.tsx';
+import { Plate, PlateNotice, PlateTools } from './ui/plate.tsx';
 import { KEYS, read, write } from './ui/store.ts';
 
 /** Hash routing: the hash is the route, so the build works from file:// and any folder. */
@@ -45,17 +46,40 @@ export default function App() {
   }, []);
 
   const route = useRoute();
-  const opp = useOppModel();
+  const rawOpp = useOppModel();
   const regex = useRegexModel();
+  const [confirm, confirmDialog] = useConfirm();
+  // Choosing a sample over unchecked edits asks first (Cancel keeps the editor exactly as it is).
+  // Checked custom grammars are kept as "Your grammar", so they need no question.
+  const { unsavedEdits, loadSample: load, restoreCustom: restore, draft, custom } = rawOpp;
+  const loadSample = useCallback(async (s: GrammarSample) => {
+    if (unsavedEdits && !(await confirm({
+      title: 'Replace your unchecked edits?',
+      body: <><p>The editor on stage 1 has changes that have not been checked yet. Loading “{s.title}” replaces them.</p>
+        <p>They stay available afterwards as “Your grammar” in the grammar menu.</p></>,
+      confirm: 'Replace',
+    }))) return false;
+    load(s);
+    return true;
+  }, [unsavedEdits, load, confirm]);
+  const restoreCustom = useCallback(async () => {
+    if (unsavedEdits && draft !== custom && !(await confirm({
+      title: 'Replace your unchecked edits?',
+      body: <p>The editor on stage 1 has changes that have not been checked yet. Bringing back your earlier grammar replaces them.</p>,
+      confirm: 'Replace',
+    }))) return;
+    restore();
+  }, [unsavedEdits, draft, custom, restore, confirm]);
+  const opp = useMemo(() => ({ ...rawOpp, loadSample, restoreCustom }), [rawOpp, loadSample, restoreCustom]);
 
   useEffect(() => {
-    const title = route.page === 'home' ? 'ParseLens' : `${route.stage?.title ?? route.chapter.title} · ${route.chapter.title} · ParseLens`;
+    const title = route.page === 'home' ? 'ParseLens' : (route.stage ? `${route.stage.title} · ${route.chapter.title} · ParseLens` : `${route.chapter.title} · ParseLens`);
     document.title = title;
   }, [route]);
 
   const page = (() => {
     if (route.page === 'home')
-      return <Home onUse={() => { opp.loadSample(EXPR_SAMPLE); window.location.hash = hashFor('opp', 'grammar'); }} />;
+      return <Home onUse={() => { void opp.loadSample(EXPR_SAMPLE).then((done) => { if (done) window.location.hash = hashFor('opp', 'grammar'); }); }} />;
     const { chapter, stage } = route;
     if (chapter.id === 'lr' || !stage) return <LrStage chapter={chapter} />;
     if (chapter.id === 'opp') {
@@ -83,6 +107,25 @@ export default function App() {
   })();
   const picker = route.page === 'chapter' && route.chapter.id === 'opp' && ['sets', 'table', 'parse'].includes(route.stage?.id ?? '')
     ? <GrammarPicker model={opp} /> : null;
+  // Results downstream of an edited-but-unchecked input are kept (they are still correct for the last
+  // checked input) but are labelled as such, with the one action that brings them up to date.
+  const stageId = route.page === 'chapter' ? route.stage?.id ?? '' : '';
+  const chapterId = route.page === 'chapter' ? route.chapter.id : '';
+  const stale = chapterId === 'opp' && ['sets', 'table', 'parse'].includes(stageId) && opp.dirty
+    ? { what: 'grammar', on: 'stage 1', action: 'Check grammar', run: opp.commit, href: hashFor('opp', 'grammar') }
+    : chapterId === 'regex' && stageId !== 'tree' && regex.dirty
+      ? { what: 'expression', on: 'stage 1', action: 'Build tree', run: regex.commit, href: hashFor('regex', 'tree') }
+      : null;
+  const notice = stale ? (
+    <div className="stale" role="status">
+      <p className="stale__text"><Tag kind="progress">Out of date</Tag> The {stale.what} on {stale.on} has edits that have not been checked.
+        This plate still shows the last checked {stale.what}.</p>
+      <div className="stale__actions">
+        <button type="button" className="btn btn--primary" onClick={stale.run}>{stale.action} now</button>
+        <a className="btn btn--quiet" href={stale.href}>Review the edits</a>
+      </div>
+    </div>
+  ) : null;
   const routeKey = route.page === 'home' ? 'home' : `${route.chapter.id}/${route.stage?.id ?? ''}`;
 
   return (
@@ -91,8 +134,9 @@ export default function App() {
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
           <Rail route={route} />
           <main id="main" className="main" tabIndex={-1} key={routeKey}>
-            <PlateTools.Provider value={picker}>{page}</PlateTools.Provider>
+            <PlateTools.Provider value={picker}><PlateNotice.Provider value={notice}>{page}</PlateNotice.Provider></PlateTools.Provider>
           </main>
+          {confirmDialog}
         </div>
     </SettingsContext.Provider>
   );

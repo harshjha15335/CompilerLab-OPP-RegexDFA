@@ -51,6 +51,6 @@ export const REGEX_SAMPLES: RegexSample[] = [
   { id: 'abplus', source: 'ab+', shows: 'One or more b after a.', strings: ['abbb', 'a'] },
   { id: 'opt', source: 'ab?c', shows: 'An optional middle symbol.', strings: ['ac', 'abc', 'abbc'] },
   { id: 'escape', source: 'a\\*b', shows: 'An escaped * is an ordinary character.', strings: ['a*b', 'ab'] },
-  { id: 'err-paren', source: 'ab(c|d', shows: 'Malformed: the parenthesis is never closed.', strings: [], error: true },
-  { id: 'err-hash', source: 'a#b', shows: 'Malformed: # is reserved for the end marker.', strings: [], error: true },
+  { id: 'err-paren', source: 'ab(c|d', shows: 'The parenthesis is never closed.', strings: [], error: true },
+  { id: 'err-hash', source: 'a#b', shows: '# is reserved for the end marker.', strings: [], error: true },
 ];

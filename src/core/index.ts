@@ -27,4 +27,8 @@ export const parseRegex = RX.parseRegex as (src: string) => { ok: true; ast: Reg
 export const buildDirect = DM.buildDirect as (ast: RegexNode) => {
   root: RegexNode; nodes: RegexNode[]; leaves: LeafNode[]; followpos: Record<string, number[]>; dfa: Dfa; steps: DirectStep[]; endPos: number;
 };
+export const MAX_REGEX_LENGTH = RX.MAX_REGEX_LENGTH as number;
+export const MAX_REGEX_NESTING = RX.MAX_REGEX_NESTING as number;
+export const MAX_DFA_STATES = DM.MAX_DFA_STATES as number;
+export const DfaLimitError = DM.DfaLimitError as unknown as { new (limit: number): Error & { limit: number } };
 export const simulateDfa = DM.simulateDfa as (dfa: Dfa, input: string) => SimRun;

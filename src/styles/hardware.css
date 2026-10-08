@@ -19,17 +19,17 @@
   background: linear-gradient(180deg, #ffffff 0%, var(--cap-top) 55%, #efeadd 100%);
   border: 1px solid #ddd6c5; box-shadow: 0 1px 0 #fff inset;
   transform: translateZ(6px) rotateX(9deg); transform-origin: 50% 100%;
-  transition: transform var(--press) var(--ease), margin var(--press) var(--ease);
+  transition: transform var(--press) var(--ease);   /* transform only: the press never triggers layout */
 }
 .keycap__icon { width: 12px; height: 12px; fill: currentColor; stroke: currentColor; stroke-width: 0; }
 .keycap__icon path[fill='none'] { stroke-width: 1.5; }
 .keycap__text { font: 600 0.875rem/1 var(--font-sans); }
 /* press travel: about 3px down, 120 ms, from a click OR the matching keyboard shortcut */
 .keycap:active:not(:disabled) .keycap__face, .keycap[data-down] .keycap__face {
-  transform: translateZ(1px) rotateX(0deg); margin-top: 5px;
+  transform: translateY(5px) translateZ(1px) rotateX(0deg);
 }
 .keycap:active:not(:disabled) .keycap__skirt, .keycap[data-down] .keycap__skirt { box-shadow: 0 1px 1px var(--cap-shadow); }
-.keycap[aria-pressed='true'] .keycap__face { background: linear-gradient(180deg, #f4efe2, #ebe4d4); margin-top: 4px; transform: translateZ(2px) rotateX(3deg); }
+.keycap[aria-pressed='true'] .keycap__face { background: linear-gradient(180deg, #f4efe2, #ebe4d4); transform: translateY(4px) translateZ(2px) rotateX(3deg); }
 .keycap:disabled { cursor: default; }
 .keycap:disabled .keycap__face { color: var(--ink-3); opacity: 0.55; }
 .keycap:disabled .keycap__skirt { opacity: 0.6; }

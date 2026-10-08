@@ -6,17 +6,27 @@ import type { OppModel } from '../../models.ts';
 import { safeguardedRejection } from '../../replay/selectors.ts';
 import { useReplay } from '../../replay/useReplay.ts';
 import { Dock } from '../../ui/hardware.tsx';
-import { cx, Empty, Production, Tag } from '../../ui/kit.tsx';
+import { cx, DirtyHint, Empty, Production, Tag } from '../../ui/kit.tsx';
 import { Plate } from '../../ui/plate.tsx';
 import { Bench } from './Bench.tsx';
 
 interface Pair { classic: ParseStep | null; safeguarded: ParseStep | null; message: string }
 const NONE: Pair[] = [];
-const Result = ({ r }: { r: 'ACCEPT' | 'REJECT' }) => <Tag kind={r === 'ACCEPT' ? 'accept' : 'reject'}>{r === 'ACCEPT' ? 'Accepts' : 'Rejects'}</Tag>;
+const Result = ({ r }: { r: 'ACCEPT' | 'REJECT' }) => <Tag kind={r === 'ACCEPT' ? 'accept' : 'reject'}>{r === 'ACCEPT' ? 'Accepted' : 'Rejected'}</Tag>;
 
 export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: OppModel }) {
-  const { cmp, cmpInput, setCmpInput, cmpRows, cmpAnalysis, cmpText, compareWith, committed, ok } = model;
+  const { cmp, cmpInput, setCmpInput, cmpRows, cmpAnalysis, cmpText, compareWith, committed, ok, stage1CompareString } = model;
   const [draft, setDraft] = useState(cmpInput);
+  const [noString, setNoString] = useState(false);
+  const dirty = draft !== cmpInput;
+  const comparable = cmpAnalysis.status === 'ok' && cmpAnalysis.conflictFree;
+  // Stage 1 → here: the checked grammar, plus a string it derives (never its terminal list).
+  const useStage1 = () => {
+    const s = stage1CompareString;
+    setNoString(s === '');
+    setDraft(s);
+    compareWith(committed, s);
+  };
   // pair the two existing step lists by step number; nothing is recomputed
   const steps = useMemo<Pair[]>(() => {
     if (!cmp) return NONE;
@@ -39,25 +49,30 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
 
   const controls = (
     <form className="controls" onSubmit={(e) => { e.preventDefault(); setCmpInput(draft); }}>
-      <div className="controls__grammar" aria-label="Grammar being compared">
+      <div className="controls__grammar" role="group" aria-label="Grammar being compared">
         <span className="label">Grammar</span>
         <span className="inline-prods">{grammar.productions.map((p) => <Production key={p.id} p={p} />)}</span>
       </div>
       <label className="field">
         <span className="label">String</span>
-        <input type="text" className="field__input" value={draft} spellCheck={false} autoComplete="off" autoCapitalize="off" onChange={(e) => setDraft(e.target.value)} />
+        <input type="text" className="field__input" value={draft} spellCheck={false} autoComplete="off" autoCapitalize="off" onChange={(e) => setDraft(e.target.value)} placeholder="a string the grammar derives" />
       </label>
       <button type="submit" className="btn btn--primary">Compare</button>
       {usingOwn
-        ? <button type="button" className="btn btn--quiet" onClick={() => { setDraft(MODES_SAMPLE.compare!); compareWith(MODES_SAMPLE.text, MODES_SAMPLE.compare!); }}>Back to S → A + B</button>
-        : ok?.conflictFree && committed !== MODES_SAMPLE.text && <button type="button" className="btn btn--quiet" onClick={() => { const s = ok.grammar.terminals.join(' '); setDraft(s); compareWith(committed, s); }}>Use the grammar from stage 1</button>}
+        ? <button type="button" className="btn btn--quiet" onClick={() => { setNoString(false); setDraft(MODES_SAMPLE.compare!); compareWith(MODES_SAMPLE.text, MODES_SAMPLE.compare!); }}>Back to S → A + B</button>
+        : ok?.conflictFree && committed !== MODES_SAMPLE.text && <button type="button" className="btn btn--quiet" onClick={useStage1}>Use the grammar from stage 1</button>}
+      {dirty && cmp && <DirtyHint shown={cmpInput} action="Compare" what="string" />}
     </form>
   );
 
   if (!cmp)
     return (
       <Plate chapter={chapter} stage={stage} controls={controls}>
-        <Empty title="This grammar cannot be compared.">It needs a conflict-free precedence table. Go back to S → A + B, or fix the grammar in stage 1.</Empty>
+        {comparable
+          ? <Empty title="Type a string to compare.">{noString
+              ? 'None of the example strings is derived by the grammar from stage 1, so no string was filled in. Type one it derives (terminals separated by spaces) and press Compare.'
+              : 'Type a string of this grammar\'s terminals, separated by spaces, and press Compare.'}</Empty>
+          : <Empty title="This grammar cannot be compared.">It needs a conflict-free precedence table. Go back to S → A + B, or fix the grammar in stage 1.</Empty>}
       </Plate>
     );
 
@@ -73,7 +88,7 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
       <div className="split split--figure">
         <div className="figure figure--duo">
           {(['classic', 'safeguarded'] as const).map((k) => (
-            <section key={k} className={cx('duo', `duo--${k}`)} aria-label={k === 'classic' ? 'Classic N' : 'Safeguarded'}>
+            <section key={k} className={cx('duo', `duo--${k}`)} aria-label={k === 'classic' ? 'Classic N' : 'Safeguarded'} tabIndex={0}>
               <Bench compact title={<>{k === 'classic' ? 'Classic N' : 'Safeguarded'} <Result r={cmp[k].result} /></>} mode={k} tokens={cmp.tokens}
                 fx={replay.animate && count <= cmp[k].steps.length ? (replay.rich ? 'rich' : 'fast') : null}
                 step={side(k)} finished={count > cmp[k].steps.length || Boolean(step && !step[k] && count > 0)} />
@@ -85,6 +100,9 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
             <h2 className="section-title">Why they can disagree</h2>
             <p><b>Classic N</b> forgets which non-terminal a reduction produced: every reduced handle becomes the same <span className="mono">N</span>.</p>
             <p><b>Safeguarded</b> keeps the set of non-terminals each reduced item could be, so it only accepts reductions the grammar allows.</p>
+            <p className="help">Limits that remain in both modes: a grammar with ε-productions or adjacent non-terminals cannot be used;
+              one symbol cannot have two precedences (unary and binary minus need separate tokens); and errors are found late,
+              only when a blank cell or an unmatched handle is reached. Classic N can also accept strings outside L(G), as above.</p>
           </section>
           {cmp.differ && rej && (
             <section className="block block--alert" role="status">

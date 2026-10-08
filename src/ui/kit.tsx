@@ -84,7 +84,7 @@ export function Production({ p, marks, active }: { p: Prod; marks?: Set<number>;
   return (
     <span className={cx('prod', active && 'is-active')}>
       <span className="prod__lhs">{p.lhs}</span>
-      <span className="prod__arrow" aria-label="derives">→</span>
+      <span className="prod__arrow" aria-hidden="true">→</span><span className="sr-only"> derives </span>
       {p.rhs.map((s, i) => <span key={i} className={cx('prod__sym', marks?.has(i) && 'is-marked')}>{s}</span>)}
     </span>
   );
@@ -127,5 +127,15 @@ export function Row({ label, children }: { label: string; children: ReactNode })
       <span className="label">{label}</span>
       <div>{children}</div>
     </div>
+  );
+}
+
+/** Under an input whose edits have not been run yet: says which input the results below belong to. */
+export function DirtyHint({ shown, action, what }: { shown: string; action: string; what: string }) {
+  return (
+    <p className="dirtyhint" role="status">
+      <Tag kind="progress">Not run yet</Tag>
+      <span>Results below are for {shown.trim() ? <code className="dirtyhint__shown">{shown}</code> : 'the empty string'}. Press <b>{action}</b> (Enter) to run the edited {what}.</span>
+    </p>
   );
 }

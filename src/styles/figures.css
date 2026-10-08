@@ -67,7 +67,8 @@ span.pcell__btn { cursor: default; }
 .rules li b { color: var(--ink); font-family: var(--font-mono); font-weight: 500; }
 .rules li.is-active { border: 1px dashed var(--read); color: var(--ink); background: var(--plate); }
 .setblock { display: grid; gap: 6px; padding: 10px 12px; background: var(--plate); border: 1px solid var(--rule); border-radius: var(--r-mark); }
-.setblock.is-waiting { opacity: 0.6; }
+.setblock.is-waiting { background: var(--plate-2); border-style: dashed; color: var(--ink-2); }   /* waiting reads as "not yet", without fading text below AA */
+.setblock.is-waiting .setline__name, .setblock.is-waiting .section-title { color: var(--ink-2); }
 .setblock__wait { font: var(--t-caption); color: var(--ink-3); }
 .setline { display: grid; grid-template-columns: max-content auto minmax(0, 1fr); gap: 10px; align-items: center; padding: 4px 6px; border-radius: var(--r-mark); border: 1px solid transparent; font: var(--t-formal); }
 .setline.is-target { background: var(--plate-2); }
@@ -136,11 +137,12 @@ span.pcell__btn { cursor: default; }
 .duo { flex: 1 1 0; min-width: 0; padding: 10px 12px; background: var(--plate); border: 1px solid var(--rule); border-radius: var(--r-mark); }
 .duo--safeguarded { border-color: var(--line); }
 
-.trace { width: 100%; border-collapse: collapse; font: var(--t-caption); table-layout: fixed; }
+.trace { width: 100%; border-collapse: separate; border-spacing: 0; font: var(--t-caption); table-layout: fixed; }
 .trace col.trace__c-step { width: 44px; }
 .trace col.trace__c-input { width: 92px; }
 .trace col.trace__c-act { width: 128px; }
-.trace th { position: sticky; top: 0; background: var(--plate); text-align: left; font: var(--t-label); padding: 6px 6px; border-bottom: 1px solid var(--line); z-index: 1; }
+.trace thead th { position: sticky; top: 0; z-index: 2; background: var(--plate); background-clip: padding-box; text-align: left; font: var(--t-label); padding: 6px 6px;
+  border-bottom: 1px solid var(--line); box-shadow: 0 -2px 0 var(--plate), 0 1px 0 var(--line); }   /* opaque, sealed above and below: no row shows through */
 .trace td { padding: 4px 6px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
 .trace td.mono { font-size: 0.8125rem; }
 .trace__stack { overflow-wrap: anywhere; }
@@ -197,8 +199,9 @@ span.pcell__btn { cursor: default; }
 .inputs { display: grid; gap: 4px; font: var(--t-caption); color: var(--ink-2); }
 
 /* ── DFA (SVG) ───────────────────────────────────────── */
-.figure--dfa { gap: 10px; }
-.figure__canvas--graph { min-height: 150px; }
+.figure--dfa { gap: 10px; overflow-y: auto; }
+/* the graph always gets a real drawing area; the transition table below scrolls with the figure */
+.figure__canvas--graph { min-height: 150px; flex: 1 0 clamp(260px, 48vh, 560px); }
 .dfa { display: flex; flex-direction: column; gap: 6px; width: 100%; min-height: 0; }
 .dfa__svg { flex: 1; width: 100%; min-height: 0; overflow: visible; }
 .dfa__arrowhead { fill: var(--ink); }
@@ -234,7 +237,7 @@ span.pcell__btn { cursor: default; }
 .ftable tr.is-active td.ftable__set { background: var(--changed); }
 .ftable tr.is-used th, .ftable tr.is-used td { outline: 2px dashed var(--read); outline-offset: -3px; }
 .ftable tr.is-selected td { box-shadow: inset 0 0 0 2px var(--ink); }
-.ftable__btn { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; text-align: left; }
+.ftable__btn { border: 0; background: none; padding: 0 2px; cursor: pointer; font: inherit; text-align: left; min-height: 24px; min-width: 24px; }   /* WCAG 2.5.8 */
 .ftable__end { font: var(--t-caption); color: var(--ink-3); }
 .ftable__tag { font: var(--t-tag); margin-left: 8px; padding: 2px 5px; border: 1px solid var(--changed-edge); border-radius: var(--r-mark); }
 .ftable__tag.is-dup { border-style: dashed; }
@@ -273,3 +276,25 @@ span.pcell__btn { cursor: default; }
   .figure__canvas--graph { display: block; }
   .dfa__svg { flex: none; height: auto; }
 }
+
+/* ── DFA camera: zoom, pan, fit (DfaGraph) ── */
+.dfa__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); }
+.toolbtn {
+  display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 var(--s2);
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--plate); color: var(--ink); cursor: pointer;
+  font: 500 0.8125rem/1 var(--font-sans);
+}
+.toolbtn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.toolbtn:hover:not(:disabled) { background: var(--plate-2); }
+.toolbtn:disabled { border-style: dashed; border-color: var(--rule); color: var(--ink-3); cursor: not-allowed; }
+.dfa__zoom { font: var(--t-caption); color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 6ch; }
+.dfa__hint { font: var(--t-caption); color: var(--ink-3); }
+.dfa__viewport { display: flex; flex: 1; min-height: 0; border-radius: var(--r-mark); }
+.dfa__viewport.is-zoomed { outline: 1px solid var(--rule); outline-offset: 2px; overflow: hidden; }
+.dfa__viewport.is-zoomed .dfa__svg { cursor: grab; touch-action: none; overflow: hidden; }
+.dfa__viewport.is-zoomed .dfa__svg:active { cursor: grabbing; }
+.dfa__viewport:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.dfa__notice { margin: 0; padding: var(--s2) var(--s3); font: var(--t-body); color: var(--ink); background: var(--band); border: 1px solid var(--read); border-radius: var(--r-mark); }
+.scroll--dfa { max-height: 60vh; }
+.legend--graph .lg-src { fill: none; stroke: var(--read); stroke-width: 2; stroke-dasharray: 4 2; }
+@media (max-width: 640px) { .toolbtn { min-width: 44px; height: 44px; } }

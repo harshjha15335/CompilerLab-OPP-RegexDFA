@@ -204,7 +204,6 @@ const SCREENS = [
   { id: 'opp-sets', hash: '#/opp/sets', act: (p) => keys(p, 'ArrowRight', 20) },
   { id: 'opp-sets-end', hash: '#/opp/sets', act: (p) => keys(p, 'End') },
   { id: 'opp-table', hash: '#/opp/table', act: (p) => keys(p, 'ArrowRight', 14) },
-  { id: 'opp-table-svg-glyphs', hash: '#/opp/table?glyphs=svg', act: (p) => keys(p, 'ArrowRight', 14) },
   { id: 'opp-table-end', hash: '#/opp/table', act: (p) => keys(p, 'End') },
   { id: 'opp-table-provenance', hash: '#/opp/table', act: async (p) => { await keys(p, 'End'); await p.click('[data-cell="+ *"] .pcell__btn'); await sleep(350); } },
   { id: 'opp-table-conflict', hash: '#/opp/grammar', act: async (p) => { await clickText(p, 'Ambiguous expressions', '.sample'); await p.evaluate(() => { location.hash = '#/opp/table'; }); await sleep(400); await firstConflictStep(p); await sleep(300); } },
@@ -565,18 +564,18 @@ console.log('\n— fonts —');
 if (want('fonts')) {
   const { ctx, page } = await open(browser);
   await go(page, '#/opp/table');
+  await keys(page, 'End');
   const f = await page.evaluate(async () => {
     await document.fonts.ready;
     return {
-      math: document.fonts.check('20px "IBM Plex Math"', '⋖⋗≐'),
       loaded: [...document.fonts].filter((x) => x.status === 'loaded').map((x) => x.family.replace(/"/g, '')),
-      mode: document.querySelector('.rel')?.classList.contains('rel--svg') ? 'svg' : 'font',
+      rels: document.querySelectorAll('.rel').length,
+      svgRels: document.querySelectorAll('.rel.rel--svg svg').length,
     };
   });
-  check('fonts', `IBM Plex Math loaded from the bundle and used for ⋖ ⋗ ≐ (${f.mode})`, f.math && f.loaded.includes('IBM Plex Math') && f.mode === 'font', JSON.stringify(f));
   check('fonts', 'IBM Plex Sans, Serif and Mono loaded from the bundle', ['IBM Plex Sans Variable', 'IBM Plex Serif', 'IBM Plex Mono'].every((n) => f.loaded.includes(n)), f.loaded.join(', '));
-  await go(page, '#/opp/table?glyphs=svg'); await keys(page, 'End');
-  check('fonts', 'inline-SVG fallback for the relation glyphs renders', (await page.$$('.rel--svg svg')).length > 10);
+  check('fonts', `every relation glyph ⋖ ⋗ ≐ is inline SVG, no glyph font needed (${f.svgRels}/${f.rels})`, f.rels > 10 && f.svgRels === f.rels, JSON.stringify(f));
+  check('fonts', 'no IBM Plex Math face is declared', ![...(await page.evaluate(() => [...document.fonts].map((x) => x.family)))].some((n) => /Math/.test(n) && /Plex/.test(n)));
   await ctx.close();
 }
 

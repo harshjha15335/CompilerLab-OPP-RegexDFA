@@ -96,7 +96,7 @@ b, strong { font-weight: 600; }
 .verdict--compact .verdict__glyph { width: 18px; height: 18px; }
 .verdict--compact .verdict__word { font-size: 1rem; }
 
-/* ── Relation glyphs: IBM Plex Math, inline-SVG fallback ── */
+/* ── Relation glyphs: inline SVG ── */
 .rel { font-family: var(--font-math); font-size: 1.3em; line-height: 1; display: inline-block; vertical-align: -0.1em; font-weight: 400; }
 .rel--yields { color: var(--rel-yields); }
 .rel--takes { color: var(--rel-takes); }

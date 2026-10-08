@@ -1,7 +1,6 @@
 // Shared, purely presentational pieces: relation glyphs, tags, verdict stamps, productions, sets.
 import { Fragment, useSyncExternalStore, type ReactNode } from 'react';
 import type { Production as Prod, Relation } from '../core/index.ts';
-import { useGlyphMode } from './glyphs.ts';
 
 export const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -21,14 +20,13 @@ export const REL_INFO: Record<Relation, { kind: 'yields' | 'takes' | 'equal'; na
 };
 export const isRel = (s: string): s is Relation => s in REL_INFO;
 
-/** A precedence relation. Typeset in IBM Plex Math; drawn as SVG if that face is unavailable. */
+/** A precedence relation, drawn as inline SVG: identical on every machine, no font to load or miss. */
 export function Rel({ r, className, label = true }: { r: Relation; className?: string; label?: boolean }) {
-  const mode = useGlyphMode();
   const info = REL_INFO[r];
   return (
-    <span className={cx('rel', `rel--${info.kind}`, mode === 'svg' && 'rel--svg', className)} data-rel={r}
+    <span className={cx('rel', `rel--${info.kind}`, 'rel--svg', className)} data-rel={r}
       role={label ? 'img' : undefined} aria-label={label ? `${r}, ${info.name}` : undefined} aria-hidden={label ? undefined : true}>
-      {mode === 'font' ? r : (
+      {(
         <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
           {r === '⋖' && <><polyline points="15.5,3.5 4.5,10 15.5,16.5" /><circle cx="12.4" cy="10" r="1.7" /></>}
           {r === '⋗' && <><polyline points="4.5,3.5 15.5,10 4.5,16.5" /><circle cx="7.6" cy="10" r="1.7" /></>}

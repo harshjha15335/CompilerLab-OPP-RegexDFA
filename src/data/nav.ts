@@ -42,7 +42,3 @@ export function parseHash(hash: string): Route {
 
 export const hashFor = (chapterId?: string, stageId?: string) =>
   chapterId ? `#/${chapterId}${stageId ? `/${stageId}` : ''}` : '#/';
-
-/** `?key=value` flags in the hash, e.g. #/opp/table?glyphs=svg (used by the verification script). */
-export const hashFlag = (name: string) =>
-  typeof window === 'undefined' ? null : new URLSearchParams(window.location.hash.split('?')[1] ?? '').get(name);

@@ -124,7 +124,6 @@ export function useReplay<S>(steps: readonly S[], { markers = [], active = true 
     if (!active) return undefined;
     const onKey = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented) return;
-      if ('routing' in document.documentElement.dataset) return;   // a page change is in flight (App.tsx useRoute)
       const el = e.target as HTMLElement | null;
       if (isTyping(el)) return;                                   // never steal keys from a text field
       const tag = el?.tagName;

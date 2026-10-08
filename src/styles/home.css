@@ -8,7 +8,7 @@
   grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(min-content, 1fr) auto;
 }
 .home__lead { display: flex; flex-direction: column; gap: 18px; justify-content: center; max-width: 34rem; }
-.home__title { font: var(--t-display); letter-spacing: -0.01em; view-transition-name: plate-title; }
+.home__title { font: var(--t-display); letter-spacing: -0.01em; }
 .home__sub { font: 400 1.0625rem/1.55 var(--font-sans); color: var(--ink-2); max-width: 30rem; }
 /* drafting-plate title block: who made this, set as part of the plate */
 .titleblock { display: grid; border: 1.5px solid var(--ink); background: var(--plate); max-width: 34rem; }

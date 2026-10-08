@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { flushSync } from 'react-dom';
-import { MotionConfig, motion } from 'motion/react';
+import { MotionConfig } from 'motion/react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Settings, type Speed } from './replay/useReplay.ts';
@@ -18,32 +17,14 @@ import { Empty } from './ui/kit.tsx';
 import { Plate } from './ui/plate.tsx';
 import { KEYS, read, write } from './ui/store.ts';
 
-const supportsVT = typeof document !== 'undefined' && 'startViewTransition' in document;
-
-/** Hash routing. Route changes run inside a View Transition when the browser has one (and motion
- *  is allowed); otherwise a short Motion fade on the new page is the fallback. */
-function useRoute(reduced: boolean) {
+/** Hash routing: the hash is the route, so the build works from file:// and any folder. */
+function useRoute() {
   const [hash, setHash] = useState(() => window.location.hash);
   useEffect(() => {
-    const onChange = () => {
-      const next = window.location.hash;
-      cancelAllFx();
-      if (supportsVT && !reduced && !document.hidden) {
-        // While the browser snapshots the old page the old page is still live; mark the route as in flight so
-        // replay keys are not sent to the page being left, and if the snapshot is slow (software rendering on a
-        // lab machine took 600+ ms) skip the cross-fade rather than leave the new page waiting.
-        const root = document.documentElement;
-        root.dataset.routing = '';
-        let done = false;
-        const vt = (document as Document & { startViewTransition: (cb: () => void) => { skipTransition(): void; updateCallbackDone: Promise<void> } })
-          .startViewTransition(() => { done = true; flushSync(() => setHash(next)); });
-        const slow = setTimeout(() => { if (!done) vt.skipTransition(); }, 120);
-        vt.updateCallbackDone.finally(() => { clearTimeout(slow); delete root.dataset.routing; });
-      } else setHash(next);
-    };
+    const onChange = () => { cancelAllFx(); setHash(window.location.hash); };
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
-  }, [reduced]);
+  }, []);
   return useMemo<Route>(() => parseHash(hash), [hash]);
 }
 
@@ -63,7 +44,7 @@ export default function App() {
     return () => mq?.removeEventListener?.('change', on);
   }, []);
 
-  const route = useRoute(reduced);
+  const route = useRoute();
   const opp = useOppModel();
   const regex = useRegexModel();
   const [examples, setExamples] = useState(false);
@@ -110,10 +91,9 @@ export default function App() {
         <div className="app" data-page={route.page === 'home' ? 'home' : route.chapter.id}>
           <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
           <Rail inert={examples} route={route} onExamples={() => setExamples(true)} />
-          <motion.main id="main" className="main" tabIndex={-1} key={routeKey} inert={examples}
-            initial={supportsVT || reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}>
+          <main id="main" className="main" tabIndex={-1} key={routeKey} inert={examples}>
             {page}
-          </motion.main>
+          </main>
           <Examples open={examples} onClose={closeExamples}
             onGrammar={(s) => { opp.loadSample(s); setExamples(false); window.location.hash = hashFor('opp', 'grammar'); }}
             onRegex={(s) => { regex.loadSample(s); setExamples(false); window.location.hash = hashFor('regex', 'tree'); }} />

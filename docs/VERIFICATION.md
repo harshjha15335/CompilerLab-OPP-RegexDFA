@@ -1,5 +1,9 @@
 # Verification report
 
+> **Historical (before the Review-1 audit, Oct 2026).** Several features described here were later removed (3D intro, homepage
+> specimen, loupe, View Transitions, Examples sheet, motion library, speed dial, IBM Plex Math). See
+> [audit/REVIEW1_REMOVE_AND_VERIFY.md](../audit/REVIEW1_REMOVE_AND_VERIFY.md) and [verification-results.md](verification-results.md) for the current state.
+
 Deliverable 7. Every result below comes from `node scripts/verify.mjs`, run against the **production build**. The script copies `dist/` into a renamed,
 nested folder (`…/compiler lab verify/nested/renamed build/`), opens it from `file://` in Chromium with the network switched off, and drives
 the real UI. The full list of checks is in [verification-results.md](verification-results.md), generated from the run's `report.json`.

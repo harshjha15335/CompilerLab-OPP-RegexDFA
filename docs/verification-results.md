@@ -3,9 +3,9 @@
 Generated from `artifacts/report.json` by `scripts/report-md.mjs`.
 Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a renamed, nested copy of `dist/`, opened from file:// with the network off).
 
-**733 passed, 0 failed.**
+**622 passed, 0 failed.**
 
-## layout (685/685)
+## layout (580/580)
 
 | Result | Check |
 | --- | --- |
@@ -24,66 +24,6 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | home @ 1920x1080: no text overlapping other text or a control |
 | pass | home @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | home @ 1920x1080: no horizontal page scroll |
-| pass | home-paused @ 1366x768: no clipped text |
-| pass | home-paused @ 1366x768: no overlapping interactive elements |
-| pass | home-paused @ 1366x768: no text overlapping other text or a control |
-| pass | home-paused @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | home-paused @ 1366x768: no horizontal page scroll |
-| pass | home-paused @ 1280x720: no clipped text |
-| pass | home-paused @ 1280x720: no overlapping interactive elements |
-| pass | home-paused @ 1280x720: no text overlapping other text or a control |
-| pass | home-paused @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | home-paused @ 1280x720: no horizontal page scroll |
-| pass | home-paused @ 1920x1080: no clipped text |
-| pass | home-paused @ 1920x1080: no overlapping interactive elements |
-| pass | home-paused @ 1920x1080: no text overlapping other text or a control |
-| pass | home-paused @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | home-paused @ 1920x1080: no horizontal page scroll |
-| pass | home-provenance @ 1366x768: no clipped text |
-| pass | home-provenance @ 1366x768: no overlapping interactive elements |
-| pass | home-provenance @ 1366x768: no text overlapping other text or a control |
-| pass | home-provenance @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | home-provenance @ 1366x768: no horizontal page scroll |
-| pass | home-provenance @ 1280x720: no clipped text |
-| pass | home-provenance @ 1280x720: no overlapping interactive elements |
-| pass | home-provenance @ 1280x720: no text overlapping other text or a control |
-| pass | home-provenance @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | home-provenance @ 1280x720: no horizontal page scroll |
-| pass | home-provenance @ 1920x1080: no clipped text |
-| pass | home-provenance @ 1920x1080: no overlapping interactive elements |
-| pass | home-provenance @ 1920x1080: no text overlapping other text or a control |
-| pass | home-provenance @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | home-provenance @ 1920x1080: no horizontal page scroll |
-| pass | home-static @ 1366x768: no clipped text |
-| pass | home-static @ 1366x768: no overlapping interactive elements |
-| pass | home-static @ 1366x768: no text overlapping other text or a control |
-| pass | home-static @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | home-static @ 1366x768: no horizontal page scroll |
-| pass | home-static @ 1280x720: no clipped text |
-| pass | home-static @ 1280x720: no overlapping interactive elements |
-| pass | home-static @ 1280x720: no text overlapping other text or a control |
-| pass | home-static @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | home-static @ 1280x720: no horizontal page scroll |
-| pass | home-static @ 1920x1080: no clipped text |
-| pass | home-static @ 1920x1080: no overlapping interactive elements |
-| pass | home-static @ 1920x1080: no text overlapping other text or a control |
-| pass | home-static @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | home-static @ 1920x1080: no horizontal page scroll |
-| pass | home-error @ 1366x768: no clipped text |
-| pass | home-error @ 1366x768: no overlapping interactive elements |
-| pass | home-error @ 1366x768: no text overlapping other text or a control |
-| pass | home-error @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | home-error @ 1366x768: no horizontal page scroll |
-| pass | home-error @ 1280x720: no clipped text |
-| pass | home-error @ 1280x720: no overlapping interactive elements |
-| pass | home-error @ 1280x720: no text overlapping other text or a control |
-| pass | home-error @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | home-error @ 1280x720: no horizontal page scroll |
-| pass | home-error @ 1920x1080: no clipped text |
-| pass | home-error @ 1920x1080: no overlapping interactive elements |
-| pass | home-error @ 1920x1080: no text overlapping other text or a control |
-| pass | home-error @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | home-error @ 1920x1080: no horizontal page scroll |
 | pass | home-narrow-820 @ 820x1000: no clipped text |
 | pass | home-narrow-820 @ 820x1000: no overlapping interactive elements |
 | pass | home-narrow-820 @ 820x1000: no text overlapping other text or a control |
@@ -94,21 +34,6 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | home-narrow-390 @ 390x844: no text overlapping other text or a control |
 | pass | home-narrow-390 @ 390x844: at most one vertical scrollbar |
 | pass | home-narrow-390 @ 390x844: no horizontal page scroll |
-| pass | examples @ 1366x768: no clipped text |
-| pass | examples @ 1366x768: no overlapping interactive elements |
-| pass | examples @ 1366x768: no text overlapping other text or a control |
-| pass | examples @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | examples @ 1366x768: no horizontal page scroll |
-| pass | examples @ 1280x720: no clipped text |
-| pass | examples @ 1280x720: no overlapping interactive elements |
-| pass | examples @ 1280x720: no text overlapping other text or a control |
-| pass | examples @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | examples @ 1280x720: no horizontal page scroll |
-| pass | examples @ 1920x1080: no clipped text |
-| pass | examples @ 1920x1080: no overlapping interactive elements |
-| pass | examples @ 1920x1080: no text overlapping other text or a control |
-| pass | examples @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | examples @ 1920x1080: no horizontal page scroll |
 | pass | stage-drawer @ 1366x768: no clipped text |
 | pass | stage-drawer @ 1366x768: no overlapping interactive elements |
 | pass | stage-drawer @ 1366x768: no text overlapping other text or a control |
@@ -229,36 +154,6 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | opp-table @ 1920x1080: no text overlapping other text or a control |
 | pass | opp-table @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | opp-table @ 1920x1080: no horizontal page scroll |
-| pass | opp-table-flat-lens @ 1366x768: no clipped text |
-| pass | opp-table-flat-lens @ 1366x768: no overlapping interactive elements |
-| pass | opp-table-flat-lens @ 1366x768: no text overlapping other text or a control |
-| pass | opp-table-flat-lens @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-flat-lens @ 1366x768: no horizontal page scroll |
-| pass | opp-table-flat-lens @ 1280x720: no clipped text |
-| pass | opp-table-flat-lens @ 1280x720: no overlapping interactive elements |
-| pass | opp-table-flat-lens @ 1280x720: no text overlapping other text or a control |
-| pass | opp-table-flat-lens @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-flat-lens @ 1280x720: no horizontal page scroll |
-| pass | opp-table-flat-lens @ 1920x1080: no clipped text |
-| pass | opp-table-flat-lens @ 1920x1080: no overlapping interactive elements |
-| pass | opp-table-flat-lens @ 1920x1080: no text overlapping other text or a control |
-| pass | opp-table-flat-lens @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-flat-lens @ 1920x1080: no horizontal page scroll |
-| pass | opp-table-svg-glyphs @ 1366x768: no clipped text |
-| pass | opp-table-svg-glyphs @ 1366x768: no overlapping interactive elements |
-| pass | opp-table-svg-glyphs @ 1366x768: no text overlapping other text or a control |
-| pass | opp-table-svg-glyphs @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-svg-glyphs @ 1366x768: no horizontal page scroll |
-| pass | opp-table-svg-glyphs @ 1280x720: no clipped text |
-| pass | opp-table-svg-glyphs @ 1280x720: no overlapping interactive elements |
-| pass | opp-table-svg-glyphs @ 1280x720: no text overlapping other text or a control |
-| pass | opp-table-svg-glyphs @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-svg-glyphs @ 1280x720: no horizontal page scroll |
-| pass | opp-table-svg-glyphs @ 1920x1080: no clipped text |
-| pass | opp-table-svg-glyphs @ 1920x1080: no overlapping interactive elements |
-| pass | opp-table-svg-glyphs @ 1920x1080: no text overlapping other text or a control |
-| pass | opp-table-svg-glyphs @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | opp-table-svg-glyphs @ 1920x1080: no horizontal page scroll |
 | pass | opp-table-end @ 1366x768: no clipped text |
 | pass | opp-table-end @ 1366x768: no overlapping interactive elements |
 | pass | opp-table-end @ 1366x768: no text overlapping other text or a control |
@@ -695,27 +590,27 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | regex-sim-reject @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | regex-sim-reject @ 1920x1080: no horizontal page scroll |
 
-## home (8/8)
+## home (6/6)
 
 | Result | Check |
 | --- | --- |
 | pass | 1. first view fits 1366×768: no page scroll, no clipped text, no overlaps |
-| pass | 2. specimen table equals buildPrecedenceTable (36 cells compared) |
-| pass | 3a. Tab order is headline → doors (3) → specimen controls |
+| pass | 3a. Tab order is headline → doors (3) |
 | pass | 3b. all three doors open their tool with Enter |
 | pass | 4. zero network requests so far |
 | pass | 5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png) |
-| pass | specimen failure shows the fallback message and keeps the doors |
 | pass | project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note |
 
-## keyboard (4/4)
+## keyboard (6/6)
 
 | Result | Check |
 | --- | --- |
 | pass | full Operator Precedence demo with the keyboard only |
 | pass | full RE→DFA demo with the keyboard only |
-| pass | speed dial and timeline are operable by keyboard (1.5× speed, step 2) |
-| pass | [ and ] change speed |
+| pass | timeline is operable by keyboard (step 2) |
+| pass | there is no speed dial (removed in the Review-1 audit) |
+| pass | PageDown / PageUp move between stages (#/opp/parse) |
+| pass | grammar picker on the table plate loads a conflicting grammar, an invalid one (picker stays), and back |
 
 ## replay (8/8)
 
@@ -734,7 +629,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | prefers-reduced-motion: no intro, static specimen with a Replay keycap (40 of 40, "Replay the specimen") |
+| pass | prefers-reduced-motion: the homepage runs no animations (0) |
 | pass | stepping forward runs no animations and draws no overlays |
 | pass | every step is still explained without motion (corner brackets + note) |
 | pass | a stored reduced-motion preference (cl.reduced) also stops all motion |
@@ -747,33 +642,27 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | the three relations are told apart by glyph shape, not colour (⋗ ⋖ ≐) |
 | pass | conflict cells carry structure, not just colour: fracture marks, ×2 count, slash between glyphs (4 cells) |
 
-## fps (4/4)
+## fps (3/3)
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 2/232 (runs: 1/235, 2/232, 3/232); 5 step commits, worst 17 ms |
-| pass | precedence table playing at 2× with motion: median 59.9 fps; animation frames over 25 ms: 3/228 (runs: 3/229, 3/228, 5/226); 6 step commits, worst 17 ms |
-| pass | parse bench playing at 1× with motion: median 59.9 fps; animation frames over 25 ms: 3/231 (runs: 2/236, 3/231, 4/231); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/236 (runs: 2/236, 2/236, 2/235); 3 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 1/235, 1/234, 2/233); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/236, 2/234, 3/233); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 0/237 (runs: 0/237, 0/237, 1/236); 3 step commits, worst 17 ms |
 
-## intro (6/6)
+## intro (1/1)
 
 | Result | Check |
 | --- | --- |
-| pass | first visit with WebGL plays the 3D intro (3d) and hands off in under 4 s (2.08 s from load; slow-frame jump: no) |
-| pass | after the hand-off the real DOM table is visible and the intro is remembered |
-| pass | a return visit skips straight to the specimen |
-| pass | Esc skips the intro (737 ms) |
-| pass | the CSS hand-off runs and finishes |
-| pass | without WebGL (disabled): CSS hand-off, then a static specimen with Replay (40 of 40) |
+| pass | with WebGL disabled (disabled) the precedence table renders |
 
 ## fonts (3/3)
 
 | Result | Check |
 | --- | --- |
-| pass | IBM Plex Math loaded from the bundle and used for ⋖ ⋗ ≐ (font) |
 | pass | IBM Plex Sans, Serif and Mono loaded from the bundle |
-| pass | inline-SVG fallback for the relation glyphs renders |
+| pass | every relation glyph ⋖ ⋗ ≐ is inline SVG, no glyph font needed (32/32) |
+| pass | no IBM Plex Math face is declared |
 
 ## bundle (6/6)
 
@@ -784,7 +673,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-CdzmdNKu.js 563 KB, intro.js 541 KB |
+| pass | bundle sizes: index-BkDzBBwd.js 386 KB |
 
 ## offline (2/2)
 

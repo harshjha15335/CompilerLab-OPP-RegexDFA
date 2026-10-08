@@ -1,5 +1,9 @@
 # Audit log
 
+> **Historical (before the Review-1 audit, Oct 2026).** Several features described here were later removed (3D intro, homepage
+> specimen, loupe, View Transitions, Examples sheet, motion library, speed dial, IBM Plex Math). See
+> [audit/REVIEW1_REMOVE_AND_VERIFY.md](../audit/REVIEW1_REMOVE_AND_VERIFY.md) and [verification-results.md](verification-results.md) for the current state.
+
 Deliverable 8: what changed, why, and what the verification loop caught. This covers the work on branch
 `claude/practical-johnson-s2bqni`, starting from `main` at `3d7915d` ("Regenerate screenshots").
 

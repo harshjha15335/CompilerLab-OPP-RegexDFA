@@ -4,7 +4,7 @@
 Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · 2026
 
 A step-by-step teaching instrument. Every screen replays the `steps[]` emitted by a tested algorithm
-core (`src/algorithms`, unchanged), one step at a time or all at once. At each step it shows what changed, why,
+core (`src/algorithms`), one step at a time or all at once. At each step it shows what changed, why,
 which rule caused it, and what happens next.
 
 | Chapter | Plates |
@@ -13,15 +13,19 @@ which rule caused it, and what happens next.
 | II LR parsing | Placeholder, honestly labelled *in progress* (nothing on it runs) |
 | III Regex → DFA | Syntax tree · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
 
-The homepage is a live specimen: the real algorithm builds the precedence table for `E → E + T | T …` and then
-parses `id + id * id`, in a loop. Click any cell to see where its relation came from.
+The homepage shows the project title block and the three chapters. On the precedence table, click any cell to see
+which rule and which production put its relation there.
+
+The Review-1 audit ([audit/REVIEW1_REMOVE_AND_VERIFY.md](audit/REVIEW1_REMOVE_AND_VERIFY.md)) removed decorative features:
+the 3D intro, homepage specimen, loupe, View Transitions, Examples sheet, the motion library, the speed dial and the
+IBM Plex Math font. It also fixed ten logic bugs in the core, each with a regression test.
 
 ## Run
 
 ```bash
 npm ci --ignore-scripts   # exact versions from package-lock.json; no install scripts run
 npm run dev               # development server
-npm test                  # 31 tests: algorithm core, step schema, replay selectors, DFA layout, specimen
+npm test                  # 39 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout
 npm run typecheck         # TypeScript, strict
 npm run check:contrast    # WCAG contrast of every meaning-bearing colour pair
 npm run audit:deps        # npm audit, fails on high severity
@@ -30,7 +34,7 @@ npm run audit:deps        # npm audit, fails on high severity
 ## Build and open offline
 
 ```bash
-npm run build             # dist/: index.html + assets/ (app script, fonts, and the separate 3D intro script)
+npm run build             # dist/: index.html + assets/ (one app script, five Latin font files; about 0.5 MB)
 ```
 
 - **Double-click `dist/index.html`**: it opens from `file://` in Chrome or Edge with no server and no network. The folder
@@ -58,8 +62,7 @@ screenshots every screen and mode at 1366×768, 1280×720 and 1920×1080, and fa
 - motion running under reduced motion;
 - a grayscale contrast problem;
 - frame drops at 4× CPU throttling;
-- a failed homepage acceptance check;
-- intro or WebGL-fallback problems;
+- a failed homepage check, or the app needing WebGL;
 - network requests, console errors, or `fetch`/`eval`/camera code in the bundle.
 
 The results are in [docs/VERIFICATION.md](docs/VERIFICATION.md). It needs a local Chromium, Chrome or Edge (`CHROME_PATH` overrides).
@@ -72,11 +75,13 @@ The results are in [docs/VERIFICATION.md](docs/VERIFICATION.md). It needs a loca
 | `Space` | play / pause |
 | `Home` `End` | first step / all at once |
 | `Shift` + `←` `→` | previous / next phase marker |
-| `[` `]` | slower / faster (the brass dial turns) |
+| `PageUp` `PageDown` | previous / next stage |
 | `Ctrl` + `Enter` | check the grammar (in the editor) |
-| `Esc` | close a sheet, skip the intro |
+| `Esc` | close the stage list or a provenance sheet |
 
-Shortcuts are ignored while you type in a text field. The speed dial and timeline also take arrow keys when focused.
+Shortcuts are ignored while you type in a text field. The timeline also takes arrow keys when focused.
+On stages 2–4 of Operator precedence, the **Grammar** menu in the plate header loads any sample grammar without
+going back to stage 1.
 
 ## Design and decisions
 
@@ -84,22 +89,25 @@ Shortcuts are ignored while you type in a text field. The speed dial and timelin
   verdict each, licenses, and step-state patterns from Python Tutor, VisuAlgo and JFLAP.
 - [docs/design/DESIGN.md](docs/design/DESIGN.md): direction, stack decision with measured evidence, tokens with computed
   contrast, wireframes, motion map, risks with Plan B/C, scope ladder.
-- [docs/VERIFICATION.md](docs/VERIFICATION.md): verification report with screenshots.
+- [audit/REVIEW1_REMOVE_AND_VERIFY.md](audit/REVIEW1_REMOVE_AND_VERIFY.md): Review-1 audit: ground truth from the notes,
+  logic findings, UI results, removal inventory and a viva sheet.
+- [docs/verification-results.md](docs/verification-results.md): every check from the latest verifier run.
+- [docs/VERIFICATION.md](docs/VERIFICATION.md): the original verification report (before Review-1).
 - [docs/AUDIT-LOG.md](docs/AUDIT-LOG.md): what changed and why, including supply-chain notes.
 
 ## Architecture
 
 ```
-src/algorithms/*.js     tested core (plain JS, unchanged): result + steps[]
+src/algorithms/*.js     tested core (plain JS): result + steps[]
 src/core/               typed facade + step schema types over the core
 src/replay/             pipelines (run each algorithm once), selectors (pure folds of steps[]), useReplay
 src/motion/fx.ts        one-shot WAAPI effects for a single forward step; cancelled on any other move
-src/ui/                 kit (glyphs, tags, verdicts), hardware (keycaps, dial, timeline), plate, loupe
-src/screens/            home (specimen, intro), opp (5 plates), regex (5 plates), lr (placeholder)
-src/intro/three-intro.ts  the 3D intro, built separately into dist/assets/intro.js
+src/ui/                 kit (SVG relation glyphs, tags, verdicts), hardware (keycaps, timeline), plate
+src/screens/            home, opp (5 plates), regex (5 plates), lr (placeholder)
 src/styles/             tokens, base, shell, hardware, figures, home, motion
-scripts/                verify.mjs, check-contrast.ts, gen-lens-map.mjs, serve-dist.mjs
-test/                   partA, partB (core), schema, replay, specimen
+scripts/                verify.mjs, report-md.mjs, check-contrast.ts, serve-dist.mjs
+test/                   partA, partB (core), audit-regressions, schema, replay
+audit/review1/          Review-1 probes (fuzz, differential, UI) and their outputs
 ```
 
 React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA states: every view is a pure function of
@@ -114,6 +122,7 @@ React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA st
   (the app adds the end marker). The DFA is partial: a missing transition means reject.
 - DFAs with up to 7 states are drawn in a row and larger ones on a ring. The layout test covers automata up to 8 states;
   the transition table is the canonical view.
-- Designed for 1280 px wide and up. Below 1000 px the plates stack and the page scrolls. The homepage has a dedicated
-  narrow layout (verified at 820 and 390 px).
+- Grammar symbols may also be typed without spaces (`E->E+T`): a chunk is split around the non-terminals the grammar defines.
+- Designed for 1280 px wide and up. Below 1000 px or 720 px tall the plates stack and the page scrolls
+  (verified at 768, 390 and 360 px wide and at 1265×590).
 - Verified in Chromium. Other browsers were not tested.

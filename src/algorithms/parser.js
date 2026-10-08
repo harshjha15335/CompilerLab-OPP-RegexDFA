@@ -64,7 +64,7 @@ export function parseString(grammar, table, input, mode = MODES.SAFEGUARDED) {
   const steps = [];
   let ip = 0;
   const finish = (result, reason, extra = {}) => {
-    steps.push({ type: result, mode, action: steps.length + 1, message: reason, reason, stack: view(stack, mode), pointer: ip, ...extra });
+    steps.push({ phase: 'PARSE', type: result, mode, action: steps.length + 1, message: reason, reason, stack: view(stack, mode), pointer: ip, ...extra });
     return { result, reason, steps };
   };
   const topTerminalIndex = () => { for (let i = stack.length - 1; i >= 0; i--) if (stack[i].kind === 'T') return i; return -1; };
@@ -90,7 +90,7 @@ export function parseString(grammar, table, input, mode = MODES.SAFEGUARDED) {
     if (rel === REL.YIELDS || rel === REL.EQUAL) {
       const before = view(stack, mode);
       stack.push({ kind: 'T', symbol: b }); ip++;
-      steps.push({ type: 'SHIFT', mode, action: steps.length + 1, top: a, lookahead: b, relation: rel,
+      steps.push({ phase: 'PARSE', type: 'SHIFT', mode, action: steps.length + 1, top: a, lookahead: b, relation: rel,
         message: `${a} ${rel} ${b}, so shift ${b}.`, stackBefore: before, stack: view(stack, mode), pointer: ip });
       continue;
     }
@@ -125,8 +125,8 @@ export function parseString(grammar, table, input, mode = MODES.SAFEGUARDED) {
       ? { kind: 'N' }
       : { kind: 'N', set: [...closure(new Set(matches.map((p) => p.lhs)), grammar)].sort() };
     stack.splice(from, handle.length, produced);
-    steps.push({ type: 'REDUCE', mode, action: steps.length + 1, top: a, lookahead: b, relation: rel,
-      handle: { from, to: from + handle.length - 1, symbols: handleView }, production: matches[0],
+    steps.push({ phase: 'PARSE', type: 'REDUCE', mode, action: steps.length + 1, top: a, lookahead: b, relation: rel,
+      handle: { from, to: from + handle.length - 1, symbols: handleView }, production: { ...matches[0], rhs: [...matches[0].rhs] },
       message: `${a} ${rel} ${b}: reduce handle ${handleView.map((h) => h.symbol).join(' ')} using ${matches[0].lhs} → ${matches[0].rhs.join(' ')}.`,
       stackBefore: before, stack: view(stack, mode), pointer: ip, semanticId });
   }

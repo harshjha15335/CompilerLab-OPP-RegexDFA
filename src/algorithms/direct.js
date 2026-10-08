@@ -3,7 +3,8 @@ const U = (...ss) => [...new Set(ss.flat())].sort((a, b) => a - b);
 
 export function buildDirect(ast) {
   // augment with end marker
-  const root = { type: 'cat', children: [ast, { type: 'leaf', symbol: '#', isEnd: true }] };
+  // work on a copy: the caller's AST is never annotated, and every step record owns its arrays
+  const root = { type: 'cat', children: [structuredClone(ast), { type: 'leaf', symbol: '#', isEnd: true }] };
   let nid = 0, pos = 0;
   const nodes = [];
   (function number(n) {
@@ -30,7 +31,7 @@ export function buildDirect(ast) {
     }
     Object.assign(n, { nullable, first, last });
     steps.push({ phase: 'PROPERTIES', type: 'NODE_PROPS', nodeId: n.id, nodeLabel: label(n),
-      nullable, firstpos: first, lastpos: last, rule,
+      nullable, firstpos: [...first], lastpos: [...last], rule,
       message: `${label(n)}: nullable=${nullable}, firstpos={${first}}, lastpos={${last}}` });
   }
   const leaves = nodes.filter((n) => n.type === 'leaf').sort((x, y) => x.pos - y.pos);
@@ -42,7 +43,7 @@ export function buildDirect(ast) {
     const merged = U(before, set);
     const changed = merged.length !== before.length;
     follow[p] = merged;
-    steps.push({ phase: 'FOLLOWPOS', type: 'ADD_FOLLOWPOS', position: p, added: set, nodeId: n.id, rule, changed,
+    steps.push({ phase: 'FOLLOWPOS', type: 'ADD_FOLLOWPOS', position: p, added: [...set], nodeId: n.id, rule, changed,
       snapshot: Object.fromEntries(Object.entries(follow).map(([k, v]) => [k, [...v]])),
       message: `${rule}: followpos(${p}) gains {${set}}${changed ? '' : ' (no change)'}.` });
   };
@@ -66,7 +67,7 @@ export function buildDirect(ast) {
     states.push(s); return { s, isNew: true };
   };
   const start = addState(root.first).s;
-  steps.push({ phase: 'DFA', type: 'DFA_START', state: start.name, positions: start.positions, accepting: start.accepting,
+  steps.push({ phase: 'DFA', type: 'DFA_START', state: start.name, positions: [...start.positions], accepting: start.accepting,
     message: `Start state ${start.name} = firstpos(root) = {${start.positions}}.` });
   for (let qi = 0; qi < states.length; qi++) {
     const q = states[qi];
@@ -75,7 +76,7 @@ export function buildDirect(ast) {
       if (!target.length) continue;
       const { s, isNew } = addState(target);
       transitions.push({ from: q.name, symbol: a, to: s.name });
-      steps.push({ phase: 'DFA', type: 'DFA_TRANSITION', from: q.name, symbol: a, to: s.name, positions: target, isNew, accepting: s.accepting,
+      steps.push({ phase: 'DFA', type: 'DFA_TRANSITION', from: q.name, symbol: a, to: s.name, positions: [...target], isNew, accepting: s.accepting,
         message: `${q.name} on ${a}: union of followpos over positions in {${q.positions}} labelled ${a} = {${target}}${isNew ? ` → new state ${s.name}` : ` → existing state ${s.name}`}.` });
     }
   }
@@ -86,19 +87,19 @@ export function buildDirect(ast) {
 
 export function simulateDfa(dfa, input) {
   const steps = []; let cur = dfa.start;
-  steps.push({ type: 'SIM_START', state: cur, index: 0, message: `Start in ${cur}.` });
+  steps.push({ phase: 'SIMULATION', type: 'SIM_START', state: cur, index: 0, message: `Start in ${cur}.` });
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
     const t = dfa.transitions.find((x) => x.from === cur && x.symbol === ch);
     if (!t) {
-      steps.push({ type: 'REJECT', state: cur, index: i, symbol: ch, message: `No transition from ${cur} on "${ch}".` });
+      steps.push({ phase: 'SIMULATION', type: 'REJECT', state: cur, index: i, symbol: ch, message: `No transition from ${cur} on "${ch}".` });
       return { result: 'REJECT', steps };
     }
-    steps.push({ type: 'MOVE', from: cur, to: t.to, symbol: ch, index: i + 1, message: `${cur} --${ch}--> ${t.to}` });
+    steps.push({ phase: 'SIMULATION', type: 'MOVE', from: cur, to: t.to, symbol: ch, index: i + 1, message: `${cur} --${ch}--> ${t.to}` });
     cur = t.to;
   }
   const ok = dfa.accepting.includes(cur);
-  steps.push({ type: ok ? 'ACCEPT' : 'REJECT', state: cur, index: input.length,
+  steps.push({ phase: 'SIMULATION', type: ok ? 'ACCEPT' : 'REJECT', state: cur, index: input.length,
     message: ok ? `Input consumed in accepting state ${cur}.` : `Input consumed but ${cur} is not accepting.` });
   return { result: ok ? 'ACCEPT' : 'REJECT', steps };
 }

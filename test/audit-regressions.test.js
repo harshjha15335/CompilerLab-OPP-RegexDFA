@@ -62,6 +62,30 @@ test('B7: an unescaped space in a regex is an error, not a hidden input symbol',
   assert.equal(parseRegex('a\\ b').ok, true);   // an escaped space is still allowed
 });
 
+test('B8: parse and simulation steps carry a phase like every other step log', () => {
+  const { g, t } = analyse(EXPR);
+  assert.ok(parseString(g, t, 'id+id').steps.every((s) => s.phase === 'PARSE'));
+  const d = buildDirect(parseRegex('(a|b)*abb').ast);
+  assert.ok(simulateDfa(d.dfa, 'abb').steps.every((s) => s.phase === 'SIMULATION'));
+});
+
+test('B9: step records share no mutable objects, and buildDirect leaves its input AST untouched', () => {
+  const owner = new Map();
+  const shared = (steps) => {
+    let n = 0;
+    const walk = (v, i) => { if (!v || typeof v !== 'object') return; if (owner.has(v) && owner.get(v) !== i) { n++; return; } owner.set(v, i); Object.values(v).forEach((x) => walk(x, i)); };
+    steps.forEach((s, i) => walk(s, i));
+    return n;
+  };
+  const { g, t } = analyse(EXPR);
+  assert.equal(shared(parseString(g, t, 'id+id*id').steps), 0);
+  owner.clear();
+  const ast = parseRegex('(a|b)*abb').ast;
+  const before = JSON.stringify(ast);
+  assert.equal(shared(buildDirect(ast).steps), 0);
+  assert.equal(JSON.stringify(ast), before);
+});
+
 test('B10: every node of (a|b)*abb# matches the hand derivation (notes fixture)', () => {
   const d = buildDirect(parseRegex('(a|b)*abb').ast);
   const rows = d.nodes.map((n) => `${n.type === 'leaf' ? n.symbol + n.pos : n.type}:${n.nullable ? 'T' : 'F'}:{${n.first}}:{${n.last}}`);

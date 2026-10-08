@@ -1,7 +1,6 @@
 import { Fragment, memo, type CSSProperties } from 'react';
 import { cellKey, type Cell } from '../../replay/selectors.ts';
 import { cx, Rel, REL_INFO } from '../../ui/kit.tsx';
-import { Loupe } from '../../ui/Loupe.tsx';
 
 export type CellMark = { left: string; right: string };
 export type ChangeKind = 'new' | 'dup' | 'conflict';
@@ -46,11 +45,10 @@ const PCell = memo(function PCell({ a, b, cell, isChanged, changeKind, isRead, s
 
 /** Operator-precedence relation table. Rows: topmost stack terminal. Columns: lookahead.
  *  `cells` is tableAt(steps, count); this component only draws it. */
-export function PrecTable({ axes, cells, changed, changeKind, read, selected, onSelect, loupe, idPrefix, caption, compact }: {
+export function PrecTable({ axes, cells, changed, changeKind, read, selected, onSelect, idPrefix, caption, compact }: {
   axes: string[]; cells: Map<string, Cell>; changed?: CellMark | null; changeKind?: ChangeKind | null; read?: CellMark | null;
-  selected?: CellMark | null; onSelect?: (c: CellMark) => void; loupe?: boolean; idPrefix: string; caption: string; compact?: boolean;
+  selected?: CellMark | null; onSelect?: (c: CellMark) => void; idPrefix: string; caption: string; compact?: boolean;
 }) {
-  const ri = changed ? axes.indexOf(changed.left) : -1, ci = changed ? axes.indexOf(changed.right) : -1;
   const isSel = (a: string, b: string) => selected?.left === a && selected?.right === b;
   return (
     <div className={cx('ptable-wrap', compact && 'ptable-wrap--compact')} style={{ '--n': axes.length } as CSSProperties}>
@@ -75,26 +73,6 @@ export function PrecTable({ axes, cells, changed, changeKind, read, selected, on
           ))}
         </tbody>
       </table>
-      {loupe && changed && ri >= 0 && ci >= 0 && (
-        <div className="loupe-pos" style={{ '--r': ri, '--c': ci } as CSSProperties}>
-          <Loupe id={idPrefix}>
-            <div className="loupe__grid" style={{ '--r': ri, '--c': ci } as CSSProperties}>
-              {[-1, 0, 1].map((dr) => [-1, 0, 1].map((dc) => {
-                const r = ri + dr, c = ci + dc;
-                const head = r === -1 || c === -1;
-                const out = r < -1 || c < -1 || r >= axes.length || c >= axes.length;
-                const cell = !head && !out ? cells.get(cellKey(axes[r], axes[c])) : undefined;
-                return (
-                  <span key={`${dr}${dc}`} className={cx('loupe__cell', head && 'is-head', out && 'is-out', dr === 0 && dc === 0 && 'is-center',
-                    cell?.conflict && 'is-conflict', dr === 0 && dc === 0 && changeKind && `is-${changeKind}`)}>
-                    {out ? null : r === -1 && c === -1 ? '' : r === -1 ? axes[c] : c === -1 ? axes[r] : cell ? <Glyphs cell={cell} /> : null}
-                  </span>
-                );
-              }))}
-            </div>
-          </Loupe>
-        </div>
-      )}
     </div>
   );
 }

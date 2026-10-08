@@ -10,14 +10,12 @@ export const SPEEDS = [0.5, 1, 1.5, 2, 4] as const;
 export type Speed = (typeof SPEEDS)[number];
 const BASE_MS = 1100;
 
-export type Lens = 'glass' | 'flat';
 export interface Settings {
   speed: Speed; setSpeed: (s: Speed) => void;
   reduced: boolean; setReduced: (r: boolean) => void;
-  lens: Lens; setLens: (l: Lens) => void;
 }
 export const SettingsContext = createContext<Settings>({
-  speed: 1, setSpeed: () => {}, reduced: false, setReduced: () => {}, lens: 'glass', setLens: () => {},
+  speed: 1, setSpeed: () => {}, reduced: false, setReduced: () => {},
 });
 export const useSettings = () => useContext(SettingsContext);
 

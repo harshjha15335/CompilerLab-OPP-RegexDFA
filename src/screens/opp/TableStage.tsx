@@ -108,8 +108,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
       <div className="split split--figure" ref={body}>
         <div className="figure figure--table">
           <PrecTable axes={table.axes} cells={cells} changed={add ? { left: add.left, right: add.right } : null} changeKind={kind}
-            selected={shown} onSelect={onSelect}
-            loupe={kind !== 'conflict'} idPrefix="tbl" caption="Precedence relations. Row: topmost terminal on the stack. Column: lookahead terminal." />
+            selected={shown} onSelect={onSelect} idPrefix="tbl" caption="Precedence relations. Row: topmost terminal on the stack. Column: lookahead terminal." />
           <RelationLegend />
           {conflicts.length > 0 && (
             <p className="conflict-note" role="status">

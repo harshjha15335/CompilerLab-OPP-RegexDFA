@@ -59,38 +59,6 @@ span.pcell__btn { cursor: default; }
 
 .conflict-note { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; color: var(--conflict); max-width: 70ch; }
 
-/* ── The loupe (hardware: a brass-bezelled lens over the active cell) ── */
-.loupe-pos {
-  position: absolute; z-index: 5; pointer-events: none;
-  left: calc(1px + (var(--c) + 1.5) * var(--cell)); top: calc(1px + (var(--r) + 1.5) * var(--cell));
-  transform: translate(-50%, -50%);
-  will-change: transform;          /* own compositing layer: the filtered lens is rastered once per step, not per frame */
-}
-.loupe { position: relative; width: calc(var(--cell) * 1.9); height: calc(var(--cell) * 1.9); border-radius: 50%; clip-path: circle(50%); }
-.loupe__defs { position: absolute; }
-.loupe__view { position: absolute; inset: 0; background: var(--plate); border-radius: 50%; }
-.loupe__grid {
-  --lc: calc(var(--cell) * 1.5);
-  position: absolute; left: 50%; top: 50%; width: calc(var(--lc) * 3); height: calc(var(--lc) * 3); transform: translate(-50%, -50%);
-  display: grid; grid-template-columns: repeat(3, var(--lc)); grid-auto-rows: var(--lc);
-}
-.loupe__cell {
-  display: grid; place-items: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  font: 500 calc(var(--cell) * 0.5) / 1 var(--font-mono); background: var(--plate); white-space: nowrap;
-}
-.loupe__cell .rel { font-size: calc(var(--cell) * 0.62); }
-.loupe__cell.is-head { background: var(--plate-2); }
-.loupe__cell.is-out { background: var(--plate); border: 0; }
-.loupe__cell.is-center { background: var(--changed); }
-.loupe__cell.is-center.is-dup { background: var(--plate); }
-.loupe__cell.is-conflict, .loupe__cell.is-center.is-conflict { background: var(--conflict-wash); }
-.loupe__rim {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 3px solid var(--brass);
-  box-shadow: 0 0 0 1px var(--brass-lo), inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -8px 14px rgba(60, 45, 15, 0.16), inset 0 6px 10px rgba(255, 255, 255, 0.35);
-}
-.loupe--flat .loupe__rim { box-shadow: 0 0 0 1px var(--brass-lo), inset 0 0 0 1px rgba(255, 255, 255, 0.55); }
-
 /* ── LEADING / TRAILING ──────────────────────────────── */
 .figure--sets { flex-direction: row; gap: 24px; align-items: flex-start; }
 .figure__col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }

@@ -147,7 +147,7 @@ function layoutProbe() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
     const el = n.parentElement;
-    if (!n.textContent.trim() || !el || decorative(el) || !shown(el) || el.closest('#fx-layer, .loupe, svg')) continue;
+    if (!n.textContent.trim() || !el || decorative(el) || !shown(el) || el.closest('#fx-layer, svg')) continue;
     const rg = document.createRange(); rg.selectNodeContents(n);
     for (const q of rg.getClientRects()) {
       if (q.width <= 2 || q.height <= 2) continue;
@@ -205,7 +205,6 @@ const SCREENS = [
   { id: 'opp-sets', hash: '#/opp/sets', act: (p) => keys(p, 'ArrowRight', 20) },
   { id: 'opp-sets-end', hash: '#/opp/sets', act: (p) => keys(p, 'End') },
   { id: 'opp-table', hash: '#/opp/table', act: (p) => keys(p, 'ArrowRight', 14) },
-  { id: 'opp-table-flat-lens', hash: '#/opp/table', storage: { 'cl.lens': 'flat' }, act: (p) => keys(p, 'ArrowRight', 14) },
   { id: 'opp-table-svg-glyphs', hash: '#/opp/table?glyphs=svg', act: (p) => keys(p, 'ArrowRight', 14) },
   { id: 'opp-table-end', hash: '#/opp/table', act: (p) => keys(p, 'End') },
   { id: 'opp-table-provenance', hash: '#/opp/table', act: async (p) => { await keys(p, 'End'); await p.click('[data-cell="+ *"] .pcell__btn'); await sleep(350); } },

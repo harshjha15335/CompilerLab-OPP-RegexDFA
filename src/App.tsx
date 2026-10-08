@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import { MotionConfig, motion } from 'motion/react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { useOppModel, useRegexModel } from './models.ts';
-import { SettingsContext, type Lens, type Settings, type Speed } from './replay/useReplay.ts';
+import { SettingsContext, type Settings, type Speed } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
 import { Examples, Rail } from './shell/Shell.tsx';
 import { Home } from './screens/home/Home.tsx';
@@ -53,10 +53,8 @@ export default function App() {
     const saved = read(KEYS.reduced);
     return saved !== null ? saved === '1' : window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   });
-  const [lens, setLensState] = useState<Lens>(() => (read(KEYS.lens) === 'flat' ? 'flat' : 'glass'));
   const setReduced = useCallback((r: boolean) => { write(KEYS.reduced, r ? '1' : '0'); setReducedState(r); }, []);
-  const setLens = useCallback((l: Lens) => { write(KEYS.lens, l); setLensState(l); }, []);
-  const settings = useMemo<Settings>(() => ({ speed, setSpeed, reduced, setReduced, lens, setLens }), [speed, reduced, setReduced, lens, setLens]);
+  const settings = useMemo<Settings>(() => ({ speed, setSpeed, reduced, setReduced }), [speed, reduced, setReduced]);
   useEffect(() => { document.documentElement.dataset.motion = reduced ? 'reduced' : 'full'; if (reduced) cancelAllFx(); }, [reduced]);
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');

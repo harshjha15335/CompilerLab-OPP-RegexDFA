@@ -1,4 +1,5 @@
-// Regex -> AST. Syntax: | union, implicit concatenation, * + ?, ( ), \x escapes. '#' is reserved (use \#).
+// Regex -> AST. Syntax: | union, implicit concatenation, * + ?, ( ), \x escapes. '#' is reserved (use \#);
+// an unescaped space is an error (it would silently become an input symbol).
 export function parseRegex(src) {
   let i = 0;
   const err = (message, pos = i) => { throw Object.assign(new Error(message), { pos }); };
@@ -39,6 +40,7 @@ export function parseRegex(src) {
     if (c === '*' || c === '+' || c === '?') err(`"${c}" at position ${i + 1} has nothing to repeat.`);
     if (c === '|') err(`Nothing before "|" at position ${i + 1}.`);
     if (c === '#') err(`"#" is reserved for direct-method augmentation. Write \\# for a literal "#".`);
+    if (/\s/.test(c)) err(`Space at position ${i + 1}: spaces are not part of the expression. Remove it, or write "\\ " for a literal space.`);
     if (c === '\\') {
       if (i + 1 >= src.length) err('Trailing "\\" has nothing to escape.');
       const lit = src[i + 1]; i += 2; return { type: 'leaf', symbol: lit };

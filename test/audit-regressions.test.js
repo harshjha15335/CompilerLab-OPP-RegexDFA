@@ -54,6 +54,14 @@ test('B6: parsing with a conflicting table returns REJECT instead of throwing', 
   assert.match(r.reason, /conflict/i);
 });
 
+test('B7: an unescaped space in a regex is an error, not a hidden input symbol', () => {
+  const r = parseRegex('a b');
+  assert.equal(r.ok, false);
+  assert.equal(r.position, 1);
+  assert.match(r.error, /position 2/);
+  assert.equal(parseRegex('a\\ b').ok, true);   // an escaped space is still allowed
+});
+
 test('B10: every node of (a|b)*abb# matches the hand derivation (notes fixture)', () => {
   const d = buildDirect(parseRegex('(a|b)*abb').ast);
   const rows = d.nodes.map((n) => `${n.type === 'leaf' ? n.symbol + n.pos : n.type}:${n.nullable ? 'T' : 'F'}:{${n.first}}:{${n.last}}`);

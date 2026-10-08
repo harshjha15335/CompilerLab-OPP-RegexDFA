@@ -9,4 +9,8 @@ import './styles/home.css';
 import './styles/motion.css';
 import App from './App.tsx';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+// Errors that an error boundary already handled (the homepage specimen's fallback) are reported
+// quietly; anything uncaught still reaches the console as an error.
+createRoot(document.getElementById('root')!, {
+  onCaughtError: (error) => console.warn('Recovered:', error instanceof Error ? error.message : error),
+}).render(<StrictMode><App /></StrictMode>);

@@ -110,7 +110,8 @@
 .sheet {
   display: grid; gap: 10px; padding: 12px 14px; background: var(--plate); border: 1px solid var(--line); border-radius: var(--radius);
 }
-/* an inline sheet lies flat in the inspector */
+/* an inline sheet lies flat in the inspector; only the homepage's floating provenance sheet casts a shadow */
+.specimen__prov .sheet { box-shadow: var(--shadow-float); }
 .sheet--prov { border-color: var(--ink); }
 .sheet__head { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .provlist { display: grid; gap: 10px; }

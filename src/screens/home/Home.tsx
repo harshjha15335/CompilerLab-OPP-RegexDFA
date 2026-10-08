@@ -1,6 +1,30 @@
-import { useState } from 'react';
+import { Component, useMemo, useState, type ReactNode } from 'react';
 import { CHAPTERS, hashFor } from '../../data/nav.ts';
+import { useSettings } from '../../replay/useReplay.ts';
 import { cx, Tag } from '../../ui/kit.tsx';
+import { Specimen } from './Specimen.tsx';
+import { buildSpecimen, type Specimen as Spec } from './specimen.ts';
+
+class SpecimenBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <section className="specimen specimen--failed" role="alert" aria-labelledby="specimen-title">
+        <h2 className="label" id="specimen-title">Live specimen</h2>
+        <p>The specimen couldn't run. Open the grammar stage to load one.</p>
+        <a className="btn" href={hashFor('opp', 'grammar')}>Open 1 Grammar</a>
+      </section>
+    );
+  }
+}
+
+function SpecimenSource({ render }: { render: (s: Spec) => ReactNode }) {
+  // building inside render lets the error boundary catch an algorithm failure
+  const spec = useMemo(() => buildSpecimen(), []);
+  return <>{render(spec)}</>;
+}
 
 /** A chapter entry. A planned chapter is set quieter than a working one: hierarchy follows what exists. */
 function Door({ id, numeral, title, pipeline, href, planned }: { id: string; numeral: string; title: string; pipeline: string[]; href: string; planned?: boolean }) {
@@ -25,7 +49,8 @@ function Door({ id, numeral, title, pipeline, href, planned }: { id: string; num
   );
 }
 
-export function Home() {
+export function Home({ onUse }: { onUse: () => void }) {
+  const { reduced } = useSettings();
   return (
     <div className="home">
       <section className="home__lead" aria-labelledby="home-title">
@@ -47,6 +72,12 @@ export function Home() {
           ))}
         </ol>
       </nav>
+
+      <div className="home__specimen">
+        <SpecimenBoundary>
+          <SpecimenSource render={(spec) => <Specimen spec={spec} mode={reduced ? 'static' : 'live'} onUse={onUse} />} />
+        </SpecimenBoundary>
+      </div>
     </div>
   );
 }

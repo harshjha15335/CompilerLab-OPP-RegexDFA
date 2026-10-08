@@ -41,8 +41,11 @@ ok 36 - safeguarded mode shows the unit-production closure: id reduces to {E,F,T
 ok 37 - compareModes result shape and the spaced divergence fixtures
 ok 38 - direct-method steps: NODE_PROPS, ADD_FOLLOWPOS, DFA_* fields
 ok 39 - regex errors expose message and source position; simulation steps expose state/index
-# tests 39
-# pass 39
+ok 40 - specimen table equals buildPrecedenceTable for the sample grammar, cell by cell
+ok 41 - specimen frames: table first, then the parse of id + id * id, which is accepted
+ok 42 - a grammar the specimen cannot run throws (the page shows a fallback instead of crashing)
+# tests 42
+# pass 42
 # fail 0
 $ npm run check:contrast
 ok    6.21:1 (needs 3)  --focus on --desk  focus ring on the desk

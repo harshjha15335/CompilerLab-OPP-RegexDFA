@@ -13,19 +13,20 @@ which rule caused it, and what happens next.
 | II LR parsing | Placeholder, honestly labelled *in progress* (nothing on it runs) |
 | III Regex → DFA | Syntax tree · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
 
-The homepage shows the project title block and the three chapters. On the precedence table, click any cell to see
-which rule and which production put its relation there.
+The homepage shows the project title block, the three chapters and a live specimen: the real algorithm builds the
+precedence table for `E → E + T | T …` and then parses `id + id * id`, in a loop. Click any cell (on the homepage or on
+stage 3) to see which rule and which production put its relation there.
 
 The Review-1 audit ([audit/REVIEW1_REMOVE_AND_VERIFY.md](audit/REVIEW1_REMOVE_AND_VERIFY.md)) removed decorative features:
-the 3D intro, homepage specimen, loupe, View Transitions, Examples sheet, the motion library, the speed dial and the
-IBM Plex Math font. It also fixed ten logic bugs in the core, each with a regression test.
+the 3D intro, loupe, View Transitions, Examples sheet, the motion library, the speed dial and the IBM Plex Math font
+(the homepage specimen was removed and then restored at the team's request). It also fixed nine logic bugs in the core, each with a regression test.
 
 ## Run
 
 ```bash
 npm ci --ignore-scripts   # exact versions from package-lock.json; no install scripts run
 npm run dev               # development server
-npm test                  # 39 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout
+npm test                  # 42 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout, specimen
 npm run typecheck         # TypeScript, strict
 npm run check:contrast    # WCAG contrast of every meaning-bearing colour pair
 npm run audit:deps        # npm audit, fails on high severity
@@ -34,7 +35,7 @@ npm run audit:deps        # npm audit, fails on high severity
 ## Build and open offline
 
 ```bash
-npm run build             # dist/: index.html + assets/ (one app script, five Latin font files; about 0.5 MB)
+npm run build             # dist/: index.html + assets/ (one app script, five Latin font files; about 0.52 MB)
 ```
 
 - **Double-click `dist/index.html`**: it opens from `file://` in Chrome or Edge with no server and no network. The folder

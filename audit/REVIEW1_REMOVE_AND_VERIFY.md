@@ -10,7 +10,7 @@ Anything not run is marked **UNVERIFIED**.
 1. **Demo-ready for Part A (A1–A6) and Part B.**
    - Every fixture derived from the notes passes: OPP 17/17, Classic/Safeguarded 8/8, direct method 17/17.
    - The direct-method DFAs had 0 mismatches against JS `RegExp` and an independent Thompson NFA (50,000 strings).
-   - Final verifier run: 622/0. Unit tests: 39/39.
+   - Final verifier run: 654/0. Unit tests: 42/42.
 2. **Nine real bugs were found and fixed in the core**, each with a regression test that fails on the old code. Three would have shown in a viva:
    - `E->E+T` typed without spaces;
    - `id + id*id` with mixed spacing;
@@ -20,8 +20,8 @@ Anything not run is marked **UNVERIFIED**.
    - Be ready to say why, and to show that the unambiguous grammar reproduces the p. 58 table exactly.
 4. **Viva risk 2:** LR parsing (the chapter next to OPP in the spec) is only a placeholder, labelled *Planned*.
    - The notes' OPP limitations (p. 57: L(G) ≠ L(parser), unary minus, error detection) are not stated in the UI, apart from the Classic-vs-Safeguarded demonstration.
-5. **Removed as decoration:** 3D intro (three.js), homepage specimen loop, glass loupe, View Transitions, Examples drawer, the `motion` library, speed dial, IBM Plex Math.
-   - `dist/` went from **2.12 MB / 50 files to 0.51 MB / 7 files**.
+5. **Removed as decoration:** 3D intro (three.js), glass loupe, View Transitions, Examples drawer, the `motion` library, speed dial, IBM Plex Math.
+   - `dist/` went from **2.12 MB / 50 files to 0.52 MB / 7 files**.
    - Runtime dependencies went from 7 to 5, and installed packages from 46 to 32.
 
 ## 2. Ground truth from the notes
@@ -124,7 +124,7 @@ All 8 match. For `id/id+id*id`, the first state divergence is at action 4 and th
 
 Bug tests B1–B9 fail on `5121d44` (before the fixes) and pass now:
 - [regressions-before-fix.txt](review1/output/regressions-before-fix.txt): `# pass 1, # fail 9`. The one pass is B10, a fixture that was never a bug.
-- [tests-after.txt](review1/output/tests-after.txt): 39/39.
+- [tests-after.txt](review1/output/tests-after.txt): 42/42.
 
 | ID | Severity | Area | Evidence | Fix | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -165,7 +165,7 @@ Bug tests B1–B9 fail on `5121d44` (before the fixes) and pass now:
 
 ## 5. UI/UX results
 
-**Automated:** `node scripts/verify.mjs` gives **622 passed, 0 failed** ([verify-full.txt](review1/output/verify-full.txt), every check listed in [docs/verification-results.md](../docs/verification-results.md)). The audit viewports, 1440×900, 1280×800, 1265×590, 768×1024, 390×844 and 360×800, give **1152/0**. The run covers:
+**Automated:** `node scripts/verify.mjs` gives **654 passed, 0 failed** ([verify-full.txt](review1/output/verify-full.txt), every check listed in [docs/verification-results.md](../docs/verification-results.md)). The audit viewports, 1440×900, 1280×800, 1265×590, 768×1024, 390×844 and 360×800, give **1212/0**. The run covers:
 - screens at 1366×768, 1280×720 and 1920×1080;
 - keyboard-only demos;
 - Back exactness;
@@ -204,7 +204,7 @@ Bug tests B1–B9 fail on `5121d44` (before the fixes) and pass now:
 **"Generic AI look", what remains:**
 - The machined keycaps, the brass timeline thumb and the grid-paper plate are a deliberate visual language and are KEEP, because the keycaps are the replay controls.
 - No fake stats, no feature grid, no gradient call-to-action and no filler copy were found.
-- The decorative items (3D intro, loupe, specimen loop, page cross-fade) are removed.
+- The decorative items (3D intro, loupe, page cross-fade) are removed. The homepage specimen loop was removed and then restored at the team's request (see §6).
 
 **Deliberate deviation:** the brief lists `[ ]` among the shortcuts to test. They were the speed controls, and they are removed along with the speed dial. Play now advances at a fixed 1.1 s per step.
 
@@ -223,7 +223,7 @@ Bug tests B1–B9 fail on `5121d44` (before the fixes) and pass now:
 | Hand-written SVG DFA graph | B "DFA graph" | `DfaGraph.tsx`; layout test up to 8 states | KEEP (Cytoscape was never a dependency) | | |
 | LR placeholder | Spec "next to LR" | Labelled *Planned* | KEEP, honest | | |
 | 3D intro, `three`, `@types/three` | none | First-visit only; 554 KB separate script | **REMOVED** | none: verifier proves no WebGL is needed | 26b78b9 |
-| Homepage specimen loop | none (duplicated stage 3) | Homepage | **REMOVED** | none | ab43972 |
+| Homepage specimen loop | none (duplicates stage 3); kept as the landing demo | Homepage; table equals the core (unit test + 36-cell DOM check), 59.9 fps, static under reduced motion | **KEEP** (removed in ab43972, restored at the team's request) | adds ~9 KB to the app script | restore commit |
 | Glass loupe (+ lens map, generator, MIT-credited liquid-glass code) | none | Table stage | **REMOVED** | none; the fps check improved | 6dc5cc6 |
 | View Transitions | none | Route change; caused the key-routing bug fixed earlier | **REMOVED** | none | c5bb92a |
 | Examples drawer | duplicated the per-stage sample lists | Shell | **REMOVED** | none | f9bd13c |
@@ -244,8 +244,8 @@ Bug tests B1–B9 fail on `5121d44` (before the fixes) and pass now:
 
 | | Before (5121d44) | After |
 | --- | --- | --- |
-| `dist/` | 2,122,549 B, 50 files | 511,280 B, 7 files |
-| App script | 577,703 B (179,241 gzip) | 395,305 B (115,333 gzip) |
+| `dist/` | 2,122,549 B, 50 files | 520,566 B, 7 files |
+| App script | 577,703 B (179,241 gzip) | 404,591 B (117,560 gzip) |
 | Intro script | 554,315 B | none |
 | Fonts | 47 files, 989,752 B | 5 files, 115,196 B |
 | Direct deps | 7 runtime + 8 dev | 5 runtime + 7 dev |

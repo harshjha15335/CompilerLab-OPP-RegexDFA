@@ -3,9 +3,9 @@
 Generated from `artifacts/report.json` by `scripts/report-md.mjs`.
 Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a renamed, nested copy of `dist/`, opened from file:// with the network off).
 
-**622 passed, 0 failed.**
+**654 passed, 0 failed.**
 
-## layout (580/580)
+## layout (610/610)
 
 | Result | Check |
 | --- | --- |
@@ -24,6 +24,36 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | home @ 1920x1080: no text overlapping other text or a control |
 | pass | home @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | home @ 1920x1080: no horizontal page scroll |
+| pass | home-paused @ 1366x768: no clipped text |
+| pass | home-paused @ 1366x768: no overlapping interactive elements |
+| pass | home-paused @ 1366x768: no text overlapping other text or a control |
+| pass | home-paused @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | home-paused @ 1366x768: no horizontal page scroll |
+| pass | home-paused @ 1280x720: no clipped text |
+| pass | home-paused @ 1280x720: no overlapping interactive elements |
+| pass | home-paused @ 1280x720: no text overlapping other text or a control |
+| pass | home-paused @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | home-paused @ 1280x720: no horizontal page scroll |
+| pass | home-paused @ 1920x1080: no clipped text |
+| pass | home-paused @ 1920x1080: no overlapping interactive elements |
+| pass | home-paused @ 1920x1080: no text overlapping other text or a control |
+| pass | home-paused @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | home-paused @ 1920x1080: no horizontal page scroll |
+| pass | home-provenance @ 1366x768: no clipped text |
+| pass | home-provenance @ 1366x768: no overlapping interactive elements |
+| pass | home-provenance @ 1366x768: no text overlapping other text or a control |
+| pass | home-provenance @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | home-provenance @ 1366x768: no horizontal page scroll |
+| pass | home-provenance @ 1280x720: no clipped text |
+| pass | home-provenance @ 1280x720: no overlapping interactive elements |
+| pass | home-provenance @ 1280x720: no text overlapping other text or a control |
+| pass | home-provenance @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | home-provenance @ 1280x720: no horizontal page scroll |
+| pass | home-provenance @ 1920x1080: no clipped text |
+| pass | home-provenance @ 1920x1080: no overlapping interactive elements |
+| pass | home-provenance @ 1920x1080: no text overlapping other text or a control |
+| pass | home-provenance @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | home-provenance @ 1920x1080: no horizontal page scroll |
 | pass | home-narrow-820 @ 820x1000: no clipped text |
 | pass | home-narrow-820 @ 820x1000: no overlapping interactive elements |
 | pass | home-narrow-820 @ 820x1000: no text overlapping other text or a control |
@@ -590,12 +620,13 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | regex-sim-reject @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | regex-sim-reject @ 1920x1080: no horizontal page scroll |
 
-## home (6/6)
+## home (7/7)
 
 | Result | Check |
 | --- | --- |
 | pass | 1. first view fits 1366×768: no page scroll, no clipped text, no overlaps |
-| pass | 3a. Tab order is headline → doors (3) |
+| pass | 2. specimen table equals buildPrecedenceTable (36 cells compared) |
+| pass | 3a. Tab order is headline → doors (3) → specimen controls |
 | pass | 3b. all three doors open their tool with Enter |
 | pass | 4. zero network requests so far |
 | pass | 5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png) |
@@ -629,7 +660,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | prefers-reduced-motion: the homepage runs no animations (0) |
+| pass | prefers-reduced-motion: static, finished specimen with a Replay keycap and no animations (40 of 40, "Replay the specimen") |
 | pass | stepping forward runs no animations and draws no overlays |
 | pass | every step is still explained without motion (corner brackets + note) |
 | pass | a stored reduced-motion preference (cl.reduced) also stops all motion |
@@ -642,13 +673,14 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | the three relations are told apart by glyph shape, not colour (⋗ ⋖ ≐) |
 | pass | conflict cells carry structure, not just colour: fracture marks, ×2 count, slash between glyphs (4 cells) |
 
-## fps (3/3)
+## fps (4/4)
 
 | Result | Check |
 | --- | --- |
-| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 1/235, 1/234, 2/233); 3 step commits, worst 17 ms |
-| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/236, 2/234, 3/233); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 0/237 (runs: 0/237, 0/237, 1/236); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/235, 1/235, 2/232); 5 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 3/232 (runs: 1/235, 3/232, 3/231); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 3/230 (runs: 2/233, 3/230, 4/230); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/237, 2/235, 3/234); 3 step commits, worst 17 ms |
 
 ## intro (1/1)
 
@@ -673,7 +705,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-BkDzBBwd.js 386 KB |
+| pass | bundle sizes: index-BEM32yeg.js 395 KB |
 
 ## offline (2/2)
 

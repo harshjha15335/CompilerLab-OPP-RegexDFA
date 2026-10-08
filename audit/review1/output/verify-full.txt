@@ -16,6 +16,36 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
   ok   home @ 1920x1080: no text overlapping other text or a control
   ok   home @ 1920x1080: at most one vertical scrollbar, no page scroll
   ok   home @ 1920x1080: no horizontal page scroll
+  ok   home-paused @ 1366x768: no clipped text
+  ok   home-paused @ 1366x768: no overlapping interactive elements
+  ok   home-paused @ 1366x768: no text overlapping other text or a control
+  ok   home-paused @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   home-paused @ 1366x768: no horizontal page scroll
+  ok   home-paused @ 1280x720: no clipped text
+  ok   home-paused @ 1280x720: no overlapping interactive elements
+  ok   home-paused @ 1280x720: no text overlapping other text or a control
+  ok   home-paused @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   home-paused @ 1280x720: no horizontal page scroll
+  ok   home-paused @ 1920x1080: no clipped text
+  ok   home-paused @ 1920x1080: no overlapping interactive elements
+  ok   home-paused @ 1920x1080: no text overlapping other text or a control
+  ok   home-paused @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   home-paused @ 1920x1080: no horizontal page scroll
+  ok   home-provenance @ 1366x768: no clipped text
+  ok   home-provenance @ 1366x768: no overlapping interactive elements
+  ok   home-provenance @ 1366x768: no text overlapping other text or a control
+  ok   home-provenance @ 1366x768: at most one vertical scrollbar, no page scroll
+  ok   home-provenance @ 1366x768: no horizontal page scroll
+  ok   home-provenance @ 1280x720: no clipped text
+  ok   home-provenance @ 1280x720: no overlapping interactive elements
+  ok   home-provenance @ 1280x720: no text overlapping other text or a control
+  ok   home-provenance @ 1280x720: at most one vertical scrollbar, no page scroll
+  ok   home-provenance @ 1280x720: no horizontal page scroll
+  ok   home-provenance @ 1920x1080: no clipped text
+  ok   home-provenance @ 1920x1080: no overlapping interactive elements
+  ok   home-provenance @ 1920x1080: no text overlapping other text or a control
+  ok   home-provenance @ 1920x1080: at most one vertical scrollbar, no page scroll
+  ok   home-provenance @ 1920x1080: no horizontal page scroll
   ok   home-narrow-820 @ 820x1000: no clipped text
   ok   home-narrow-820 @ 820x1000: no overlapping interactive elements
   ok   home-narrow-820 @ 820x1000: no text overlapping other text or a control
@@ -584,7 +614,8 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
 
 — homepage acceptance —
   ok   1. first view fits 1366×768: no page scroll, no clipped text, no overlaps
-  ok   3a. Tab order is headline → doors (3)
+  ok   2. specimen table equals buildPrecedenceTable (36 cells compared)
+  ok   3a. Tab order is headline → doors (3) → specimen controls
   ok   3b. all three doors open their tool with Enter
   ok   4. zero network requests so far
   ok   5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png)
@@ -609,7 +640,7 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
   ok   #/regex/sim: Back restores the exact DOM at all 5 steps (incl. mid-animation)
 
 — reduced motion —
-  ok   prefers-reduced-motion: the homepage runs no animations (0)
+  ok   prefers-reduced-motion: static, finished specimen with a Replay keycap and no animations (40 of 40, "Replay the specimen")
   ok   stepping forward runs no animations and draws no overlays
   ok   every step is still explained without motion (corner brackets + note)
   ok   a stored reduced-motion preference (cl.reduced) also stops all motion
@@ -620,9 +651,10 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
   ok   conflict cells carry structure, not just colour: fracture marks, ×2 count, slash between glyphs (4 cells)
 
 — frame rate with 4× CPU throttling (Chrome software compositing) —
-  ok   precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 1/235, 1/234, 2/233); 3 step commits, worst 17 ms
-  ok   parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/236, 2/234, 3/233); 3 step commits, worst 17 ms
-  ok   DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 0/237 (runs: 0/237, 0/237, 1/236); 3 step commits, worst 17 ms
+  ok   homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/235, 1/235, 2/232); 5 step commits, worst 17 ms
+  ok   precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 3/232 (runs: 1/235, 3/232, 3/231); 3 step commits, worst 17 ms
+  ok   parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 3/230 (runs: 2/233, 3/230, 4/230); 3 step commits, worst 17 ms
+  ok   DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/237, 2/235, 3/234); 3 step commits, worst 17 ms
 
 — runs without WebGL —
   ok   with WebGL disabled (disabled) the precedence table renders
@@ -638,7 +670,7 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
   ok   no eval / new Function
   ok   no dangerouslySetInnerHTML in our source
   ok   no analytics hosts
-  ok   bundle sizes: index-BkDzBBwd.js 386 KB
+  ok   bundle sizes: index-BEM32yeg.js 395 KB
 
 — network and console —
   ok   zero network requests across the whole run
@@ -646,4 +678,4 @@ Verifying file:///tmp/compiler%20lab%20verify/nested/renamed%20build/index.html
 
 Published screenshots to docs/screenshots/
 
-622 passed, 0 failed  (report: artifacts/report.json, screenshots: artifacts/screenshots/)
+654 passed, 0 failed  (report: artifacts/report.json, screenshots: artifacts/screenshots/)

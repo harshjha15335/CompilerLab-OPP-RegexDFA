@@ -1,11 +1,8 @@
 import { Component, useMemo, useState, type ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { CHAPTERS, hashFor, hashFlag } from '../../data/nav.ts';
-import { hasWebGL } from '../../intro/protocol.ts';
 import { useSettings } from '../../replay/useReplay.ts';
 import { cx, Tag } from '../../ui/kit.tsx';
-import { KEYS, read, write } from '../../ui/store.ts';
-import { Intro } from './Intro.tsx';
 import { Specimen } from './Specimen.tsx';
 import { buildSpecimen, type Specimen as Spec } from './specimen.ts';
 
@@ -55,17 +52,7 @@ function Door({ id, numeral, title, pipeline, href, planned }: { id: string; num
 
 export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () => void }) {
   const { reduced } = useSettings();
-  const webgl = useMemo(() => hasWebGL(), []);
-  const forced = hashFlag('intro');                                  // verification hook: ?intro=3d|css|off
-  // on narrow screens the specimen (the intro's landing target) is below the fold, so the flight would land off-screen
-  const narrow = useMemo(() => window.matchMedia?.('(max-width: 899px)').matches ?? false, []);
-  const [introSeen, setIntroSeen] = useState(() => read(KEYS.intro) === '1');
-  const intro: '3d' | 'css' | null = forced === 'off' ? null
-    : forced === '3d' || forced === 'css' ? forced
-    : reduced || introSeen || narrow ? null : webgl ? '3d' : 'css';
-  const [introDone, setIntroDone] = useState(intro === null);
-  const staticSpecimen = reduced || !webgl || hashFlag('specimen') === 'static';
-  const mode = !introDone ? 'hidden' : staticSpecimen ? 'static' : 'live';
+  const mode = reduced || hashFlag('specimen') === 'static' ? 'static' : 'live';
 
   return (
     <div className="home">
@@ -95,10 +82,6 @@ export function Home({ onUse, onExamples }: { onUse: () => void; onExamples: () 
         </SpecimenBoundary>
       </div>
 
-
-      {intro && !introDone && (
-        <Intro kind={intro} onDone={() => { write(KEYS.intro, '1'); setIntroSeen(true); setIntroDone(true); }} />
-      )}
     </div>
   );
 }

@@ -56,10 +56,6 @@
   background-size: 24px 24px; background-position: -1px -1px;
   border: 1px solid var(--rule); border-radius: var(--r-mark); box-shadow: var(--shadow-paper);
 }
-/* during the intro the empty grid stays as the landing target; glyphs and the live readouts wait for the hand-off */
-.specimen.is-intro .ptable .rel, .specimen.is-intro .pcell__slash { opacity: 0; }
-.specimen.is-intro .specimen__caption, .specimen.is-intro .specimen__parse, .specimen.is-intro .specimen__controls,
-.specimen.is-intro .specimen__state { visibility: hidden; }
 .specimen--failed { align-content: center; justify-items: start; gap: 12px; }
 .specimen__head { display: flex; justify-content: space-between; align-items: baseline; }
 .specimen__state { font: var(--t-caption); color: var(--ink-3); }
@@ -84,19 +80,6 @@
 .specimen__wait { font: var(--t-caption); color: var(--ink-3); }
 .specimen__controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 4px; }
 .specimen__count { font: var(--t-caption); color: var(--ink-3); margin-right: auto; padding-left: 6px; }
-
-/* ── Intro overlay ───────────────────────────────────── */
-.intro { position: fixed; inset: 0; z-index: 80; pointer-events: none; transition: opacity 260ms var(--ease); }
-.intro.is-leaving { opacity: 0; }
-.intro__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.intro__css { position: absolute; inset: 0; perspective: 900px; }
-.intro__glyph {
-  position: absolute; left: 0; top: 0; font-family: var(--font-math); line-height: 1; transform-style: preserve-3d; will-change: transform;
-  text-shadow: 1px 1px 0 rgba(40, 30, 10, 0.55), 2px 2px 0 rgba(40, 30, 10, 0.45), 3px 3px 0 rgba(40, 30, 10, 0.35), 4px 4px 2px rgba(40, 30, 10, 0.2);
-}
-.intro__caption { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); font: var(--t-body); color: var(--ink-2); background: var(--plate); padding: 6px 12px; border: 1px solid var(--rule); border-radius: var(--r-mark); width: max-content; max-width: calc(100vw - 2 * var(--gutter)); text-align: center; }
-.intro__caption b { font-family: var(--font-math); font-weight: 400; font-size: 1.2em; }
-.intro__skip { position: absolute; right: 24px; bottom: 24px; pointer-events: auto; }
 
 /* ── Narrow: the specimen stacks under the headline, doors become a vertical ruled list ── */
 @media (max-width: 899px) {

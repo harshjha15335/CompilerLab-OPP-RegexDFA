@@ -5,7 +5,7 @@
 //    on overlapping interactive elements, and on more than one vertical scrollbar
 //  - drives a full Operator Precedence demo and a full RE→DFA demo with the keyboard only
 //  - checks reduced motion, grayscale legibility of ⋖ ⋗ ≐ and conflict cells, frame rate under 4× CPU
-//    throttling, the five homepage acceptance checks, the intro (3D, CSS fallback, no-WebGL),
+//    throttling, the five homepage acceptance checks, a WebGL-free run,
 //    forward-then-Back DOM identity on every replay stage, and scans the bundle for network/eval/camera code.
 // Usage: npm run build && node scripts/verify.mjs [--publish] [--quick]
 //   --publish  also writes a curated set of screenshots to docs/screenshots/
@@ -563,52 +563,17 @@ if (want('fps')) {
   await swBrowser.close();
 }
 
-/* ── intro: 3D, CSS fallback, no WebGL ─────────────────── */
-console.log('\n— intro —');
+/* ── no WebGL needed ───────────────────────────────────── */
+console.log('\n— runs without WebGL —');
 if (want('intro')) {
-  const { ctx, page } = await open(browser, { init: () => {} });
-  const t0 = Date.now();
-  await page.goto(BASE + '#/');
-  await page.waitForSelector('.intro', { timeout: 3000 }).catch(() => {});
-  const mode = await page.$eval('.intro', (e) => e.dataset.intro).catch(() => 'none');
-  await sleep(700);
-  const skipped = await page.$eval('.intro__canvas', (c) => c.dataset.skipped ?? 'no').catch(() => 'unknown');
-  await page.screenshot({ path: join(SHOTS, 'intro-3d-frame.png') });
-  await page.waitForSelector('.intro', { state: 'detached', timeout: 6000 }).catch(() => {});
-  const dt = Date.now() - t0;
-  check('intro', `first visit with WebGL plays the 3D intro (${mode}) and hands off in under 4 s (${(dt / 1000).toFixed(2)} s from load; slow-frame jump: ${skipped})`, mode === '3d' && dt < 4000 + 600, `mode ${mode}, ${dt} ms`);
-  const after = await page.evaluate(() => ({ visible: getComputedStyle(document.querySelector('.specimen .ptable .rel')).opacity, seen: localStorage.getItem('cl.intro.seen.v2') }));
-  check('intro', 'after the hand-off the real DOM table is visible and the intro is remembered', after.visible === '1' && after.seen === '1', JSON.stringify(after));
-  await page.goto('about:blank'); await page.goto(BASE + '#/'); await sleep(600);
-  check('intro', 'a return visit skips straight to the specimen', !(await page.$('.intro')));
-  await ctx.close();
-  const { ctx: c2, page: p2 } = await open(browser, { init: () => {} });
-  await p2.goto(BASE + '#/'); await p2.waitForSelector('.intro');
-  const t1 = Date.now();
-  await p2.keyboard.press('Escape');
-  await p2.waitForSelector('.intro', { state: 'detached', timeout: 2000 }).catch(() => {});
-  check('intro', `Esc skips the intro (${Date.now() - t1} ms)`, !(await p2.$('.intro')));
-  await c2.close();
-  const { ctx: c3, page: p3 } = await open(browser, { init: () => {} });
-  await p3.goto(BASE + '#/?intro=css'); await sleep(700);
-  await p3.screenshot({ path: join(SHOTS, 'intro-css-frame.png') });
-  const cssMode = await p3.$eval('.intro', (e) => e.dataset.intro).catch(() => 'none');
-  await p3.waitForSelector('.intro', { state: 'detached', timeout: 5000 }).catch(() => {});
-  check('intro', 'the CSS hand-off runs and finishes', cssMode === 'css' && !(await p3.$('.intro')), cssMode);
-  await c3.close();
   const noGl = await launch({ webgl: false });
   const c4 = await noGl.newContext({ viewport: { width: 1366, height: 768 }, offline: true });
   const p4 = await c4.newPage();
   p4.on('pageerror', (e) => allErrors.push(`pageerror (no WebGL) ${e.message}`));
-  await p4.goto(BASE + '#/'); await sleep(500);
+  await p4.goto(BASE + '#/'); await sleep(800);
   const gl = await p4.evaluate(() => { const c = document.createElement('canvas'); return Boolean(c.getContext('webgl') || c.getContext('webgl2')); });
-  const m4 = await p4.$eval('.intro', (e) => e.dataset.intro).catch(() => 'none');
-  await p4.waitForSelector('.intro', { state: 'detached', timeout: 5000 }).catch(() => {});
-  await sleep(300);
-  const st4 = await p4.evaluate(() => ({ count: document.querySelector('.specimen__count')?.textContent, key: document.querySelector('.specimen__controls .keycap')?.getAttribute('aria-label') }));
-  await p4.screenshot({ path: join(SHOTS, 'no-webgl-home.png') });
-  check('intro', `without WebGL (${gl ? 'still available!' : 'disabled'}): CSS hand-off, then a static specimen with Replay (${st4.count})`,
-    !gl && m4 === 'css' && st4.key === 'Replay the specimen' && /^(\d+) of \1$/.test(st4.count ?? ''), JSON.stringify({ gl, m4, st4 }));
+  const ok = await p4.evaluate(() => Boolean(document.querySelector('.specimen .ptable') && document.querySelector('.doors')));
+  check('intro', `with WebGL disabled (${gl ? 'still available!' : 'disabled'}) the homepage and specimen render`, !gl && ok);
   await noGl.close();
 }
 
@@ -673,7 +638,7 @@ if (PUBLISH) {
     if (s.vp !== '1366x768' && !['home', 'opp-table', 'opp-modes-open', 'regex-dfa-end', 'home-narrow-390', 'home-narrow-820'].includes(s.id)) continue;
     copyFileSync(s.file, join(pub, `${s.vp}--${s.id}.png`));
   }
-  for (const f of ['home-without-logo.png', 'grayscale-conflict-table.png', 'intro-3d-frame.png', 'intro-css-frame.png', 'no-webgl-home.png'])
+  for (const f of ['home-without-logo.png', 'grayscale-conflict-table.png'])
     if (existsSync(join(SHOTS, f))) copyFileSync(join(SHOTS, f), join(pub, f));
   console.log(`\nPublished screenshots to docs/screenshots/`);
 }

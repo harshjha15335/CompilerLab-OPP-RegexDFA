@@ -15,29 +15,28 @@ const TABLE_MS = 700, PARSE_MS = 900, HOLD_MS = 2600;
  *  It pauses when focus enters it or the tab is hidden, and never autoplays under reduced motion. */
 export function Specimen({ spec, mode, onUse }: {
   spec: Spec;
-  /** live: loops. static: fully built and accepted, with a Replay keycap. hidden: laid out but invisible (intro running). */
-  mode: 'live' | 'static' | 'hidden';
+  /** live: loops. static: fully built and accepted, with a Replay keycap. */
+  mode: 'live' | 'static';
   onUse: () => void;
 }) {
   const { speed } = useSettings();
   const total = spec.frames.length;
-  const replay = useReplay<Frame>(spec.frames, { active: mode !== 'hidden' });
+  const replay = useReplay<Frame>(spec.frames);
   const { count, step, api } = replay;
   const [auto, setAuto] = useState(mode === 'live');
   const [picked, setPicked] = useState<CellMark | null>(null);
   const root = useRef<HTMLElement>(null);
   const onSelect = useCallback((c: CellMark) => { setAuto(false); setPicked((p) => (p && p.left === c.left && p.right === c.right ? null : c)); }, []);
 
-  // initial position: static and intro hand-off show the finished table
+  // initial position: the static specimen shows the finished table
   useEffect(() => {
     if (mode === 'static') { setAuto(false); api.goto(total); }
-    if (mode === 'hidden') { setAuto(false); api.goto(spec.tableFrames); }
     if (mode === 'live') setAuto(true);
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // the loop: table, parse, hold on ACCEPT, start again
   useEffect(() => {
-    if (!auto || mode === 'hidden') return undefined;
+    if (!auto) return undefined;
     const atEnd = count >= total;
     const wait = atEnd ? HOLD_MS : (count < spec.tableFrames ? TABLE_MS : PARSE_MS) / speed;
     const t = setTimeout(() => (atEnd ? api.goto(0) : api.next()), wait);
@@ -74,7 +73,7 @@ export function Specimen({ spec, mode, onUse }: {
     return rich ? all(beam(r?.querySelector('.specimen__grammar li.is-active .prod'), cell, { duration: 280 }), pop(glyph, { delay: 240 })) : pop(glyph);
   });
 
-  const playing = auto && mode !== 'hidden';
+  const playing = auto;
   const toggle = () => {
     if (!playing && done) api.goto(0);
     setAuto(!playing);
@@ -82,7 +81,7 @@ export function Specimen({ spec, mode, onUse }: {
   const keyLabel = playing ? 'Pause' : done ? 'Replay' : 'Play';
 
   return (
-    <section ref={root} className={cx('specimen', mode === 'hidden' && 'is-intro')} aria-labelledby="specimen-title"
+    <section ref={root} className="specimen" aria-labelledby="specimen-title"
       onFocusCapture={(e) => { if ((e.target as HTMLElement).closest('.specimen__table')) setAuto(false); }}>
       <header className="specimen__head">
         <h2 className="label" id="specimen-title">Live specimen</h2>

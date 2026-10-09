@@ -125,7 +125,7 @@
 
 /* tabs */
 .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--rule); }
-.tabs__tab { border: 0; background: none; padding: 8px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs__tab { border: 0; background: none; padding: var(--pad-control); cursor: pointer; font: 500 0.875rem/1 var(--font-sans); color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .tabs__tab:hover { color: var(--ink); }
 .tabs__tab.is-on { color: var(--ink); border-bottom-color: var(--ink); }
 .tabs__panel { min-height: 0; flex: 1; display: flex; flex-direction: column; }
@@ -138,12 +138,12 @@
 .controls__grammar { display: grid; gap: 4px; }
 .inline-prods { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: 0.95rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.chip { font: 0.875rem/1 var(--font-mono); padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--r-mark); background: var(--plate); cursor: pointer; }
+.chip { font: 0.875rem/1 var(--font-mono); padding: var(--pad-control); border: 1px solid var(--line); border-radius: var(--r-mark); background: var(--plate); cursor: pointer; }
 .chip:hover { background: var(--plate-2); }
 .chip.is-on { background: var(--ink); color: var(--plate); border-color: var(--ink); }
 .modes { display: grid; gap: 4px; }
 .modes__row { display: flex; border: 1px solid var(--line); border-radius: var(--radius); padding: 2px; background: var(--plate); }
-.modes__opt { position: relative; border: 0; background: none; padding: 7px 12px; cursor: pointer; font: 500 0.875rem/1 var(--font-sans); border-radius: calc(var(--radius) - 2px); }
+.modes__opt { position: relative; border: 0; background: none; padding: var(--pad-control); cursor: pointer; font: 500 0.875rem/1 var(--font-sans); border-radius: calc(var(--radius) - 2px); }
 .modes__opt.is-on { color: var(--plate); background: var(--ink); }
 
 /* grammar stage */
@@ -206,8 +206,17 @@
 /* ── Short desktop windows (under 720 px tall, e.g. a laptop at 150% scaling) ──
    The plate cannot fit one screen, so instead of clipping its figure the page scrolls and the plate grows to
    its content. The dock stays pinned to the bottom of the window so the replay keys are always in reach. */
-@media (min-width: 1000px) and (max-height: 719px) {
+/* also small laptops and tablets in landscape (1000–1199 px wide, under 860 px tall), where the figure would be squeezed */
+@media (min-width: 1000px) and (max-height: 719px), (min-width: 1000px) and (max-width: 1199px) and (max-height: 859px) {
   .app { height: auto; min-height: 100dvh; overflow: visible; }
+/* 1000–1199 px: the header wraps like a tablet's (the grammar menu and the stage switch get their own row),
+   and the stage drawer opens in the flow instead of over the figure */
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .plate__head { grid-template-columns: minmax(0, 1fr) auto; }
+  .plate__does { grid-column: 1 / -1; }
+  .stages { flex-wrap: wrap; justify-self: end; }
+  .drawer { position: static; flex-basis: 100%; width: auto; margin-top: 6px; box-shadow: none; }
+}
   .plate { min-height: calc(100dvh - var(--rail-h) - 18px); }
   .inspector, .inspector--tabs, .pane--scroll, .scroll, .lookup { overflow: visible; }
   .tabs__panel, .scroll { flex: none; }

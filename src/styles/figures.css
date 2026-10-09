@@ -95,6 +95,8 @@ span.pcell__btn { cursor: default; }
 .slot--nt { border-style: solid; border-width: 2px; border-radius: 12px; }
 .slot.is-top { box-shadow: inset 0 -3px 0 var(--ink); }
 .slot__mark, .tcell__mark { position: absolute; bottom: calc(100% + 2px); left: 0; white-space: nowrap; font: var(--t-caption); color: var(--ink-3); }
+/* the last cell's label grows leftward, so it never runs past the tape's right edge */
+.tape > .tcell:last-child .tcell__mark { left: auto; right: 0; }
 .slot.is-fresh { background: var(--changed); border-color: var(--changed-edge); }
 .handle { position: relative; display: inline-flex; flex-direction: column; align-items: stretch; padding: 0 3px 0; }
 .handle__cells { display: flex; gap: 4px; }
@@ -133,6 +135,12 @@ span.pcell__btn { cursor: default; }
 .bench--compact .decision { min-height: 0; gap: 4px; }
 .bench--compact .slot, .bench--compact .tcell { min-width: 34px; height: 34px; padding: 0 6px; font-size: 0.95rem; }
 .bench--compact .stackrow, .bench--compact .tape { min-height: 48px; }
+/* the two compact benches side by side must fit a 720–800 px tall window without an inner scroll */
+@media (max-height: 800px) {
+  .bench--compact .stackrow, .bench--compact .tape { min-height: 40px; padding-top: 12px; }
+  .bench--compact .slot, .bench--compact .tcell { height: 30px; }
+  .bench--compact .bench__zone { gap: 2px; }
+}
 .figure--duo { flex-direction: row; gap: 14px; align-items: stretch; }
 .duo { flex: 1 1 0; min-width: 0; padding: 10px 12px; background: var(--plate); border: 1px solid var(--rule); border-radius: var(--r-mark); }
 .duo--safeguarded { border-color: var(--line); }
@@ -141,6 +149,7 @@ span.pcell__btn { cursor: default; }
 .trace col.trace__c-step { width: 44px; }
 .trace col.trace__c-input { width: 92px; }
 .trace col.trace__c-act { width: 128px; }
+@media (max-width: 1199px) { .trace col.trace__c-step { width: 36px; } .trace col.trace__c-input { width: 76px; } .trace col.trace__c-act { width: 104px; } }
 .trace thead th { position: sticky; top: 0; z-index: 2; background: var(--plate); background-clip: padding-box; text-align: left; font: var(--t-label); padding: 6px 6px;
   border-bottom: 1px solid var(--line); box-shadow: 0 -2px 0 var(--plate), 0 1px 0 var(--line); }   /* opaque, sealed above and below: no row shows through */
 .trace td { padding: 4px 6px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
@@ -189,7 +198,7 @@ span.pcell__btn { cursor: default; }
 .tnode__nullable { font: 500 11px/1 var(--font-sans); text-anchor: middle; fill: var(--accept); }
 .tnode.is-active .tnode__first, .tnode.is-active .tnode__last { fill: var(--ink); font-weight: 600; }
 .augmented { display: flex; gap: 8px; align-items: baseline; }
-.errsrc { font: 1.125rem/1.4 var(--font-mono); margin: 0; }
+.errsrc { font: 1.125rem/1.4 var(--font-mono); margin: 0; max-width: 100%; overflow-x: auto; }
 .errsrc .is-bad { background: var(--reject-wash); color: var(--reject); border-bottom: 2px solid var(--reject); }
 .errsrc__caret { color: var(--reject); font-weight: 700; }
 .propgrid { display: grid; grid-template-columns: repeat(3, auto); gap: 4px 14px; justify-content: start; }
@@ -201,7 +210,7 @@ span.pcell__btn { cursor: default; }
 /* ── DFA (SVG) ───────────────────────────────────────── */
 .figure--dfa { gap: 10px; overflow-y: auto; }
 /* the graph always gets a real drawing area; the transition table below scrolls with the figure */
-.figure__canvas--graph { min-height: 150px; flex: 1 0 clamp(260px, 48vh, 560px); }
+.figure__canvas--graph { min-height: 150px; flex: 1 1 clamp(260px, 48vh, 560px); }   /* grows into free space, shrinks to 150 px before anything scrolls */
 .dfa { display: flex; flex-direction: column; gap: 6px; width: 100%; min-height: 0; }
 .dfa__svg { flex: 1; width: 100%; min-height: 0; overflow: visible; }
 .dfa__arrowhead { fill: var(--ink); }
@@ -262,10 +271,14 @@ span.pcell__btn { cursor: default; }
 /* ── Phones: stacked figure panels, a precedence table sized from the screen width ── */
 @media (max-width: 999px) {
   .figure--duo { flex-direction: column; }      /* two full benches never fit side by side below desktop width */
+  .figure--dfa { overflow: visible; }           /* the page is the one scroller here */
+  .figure__canvas--graph { flex: 1 1 auto; }    /* sized by the drawing itself, as before */
 }
 @media (max-width: 640px) {
   .figure--sets { flex-direction: column; }
-  .ptable-wrap, .ptable-wrap--compact { --cell: clamp(30px, calc((100vw - 64px) / 7.6), 46px); }
+  .ptable-wrap, .ptable-wrap--compact { --cell: clamp(28px, calc((100vw - 80px) / 7.8), 46px); }
+  /* phones: the table sizes from the screen width alone, down to 28 px cells at 320 px */
+  .figure--table .ptable-wrap { --cell: clamp(28px, calc((var(--fig-w) - 24px) / (var(--n) + 1.2)), 46px); }
   .bench__why { flex-basis: 100%; }
   .trace col.trace__c-step { width: 36px; }
   .trace col.trace__c-input { width: 76px; }
@@ -275,6 +288,13 @@ span.pcell__btn { cursor: default; }
   /* the DFA is drawn as a column here (DfaGraph): its height follows its own aspect ratio, the page scrolls */
   .figure__canvas--graph { display: block; }
   .dfa__svg { flex: none; height: auto; }
+  /* zoomed in, the drawing gets a fixed window of the screen to pan inside */
+  .dfa__viewport.is-zoomed { display: block; height: min(64vh, 520px); }
+  .dfa__viewport.is-zoomed .dfa__svg { width: 100%; height: 100%; }
+  /* long position sets wrap inside their cell instead of pushing the table past the screen */
+  .figure--dfa .dtable th, .figure--dfa .dtable td { padding: 2px 4px; }
+  .dtable__pos { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+  .figure__row > .block { min-width: 0; max-width: 100%; }
 }
 
 /* ── DFA camera: zoom, pan, fit (DfaGraph) ── */

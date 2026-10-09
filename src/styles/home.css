@@ -107,3 +107,8 @@
   .specimen__caption { min-height: 2.2em; }
   .door__link { padding: 8px 16px; }
 }
+/* 900–1199 px: no room beside the table, so the provenance sheet opens below it instead of off the screen */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .specimen__table { flex-direction: column; }
+  .specimen__prov { position: static; width: 100%; }
+}

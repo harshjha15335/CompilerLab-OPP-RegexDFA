@@ -47,8 +47,8 @@ b, strong { font-weight: 600; }
 }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 34px; padding: 6px 14px; border-radius: var(--radius);
-  font: 500 0.875rem/1.2 var(--font-sans); text-decoration: none; cursor: pointer;
+  min-height: 36px; padding: var(--pad-button); border-radius: var(--radius);
+  font: var(--type-button); text-decoration: none; cursor: pointer;
   background: var(--plate); color: var(--ink); border: 1px solid var(--line);
 }
 .btn:hover { background: var(--plate-2); }
@@ -67,7 +67,7 @@ b, strong { font-weight: 600; }
 .field--wide { min-width: 260px; flex: 1; }
 .field__input::placeholder, .editor__text::placeholder { color: var(--ink-3); opacity: 1; }   /* AA: browsers default to a pale grey */
 .field__input {
-  height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius);
+  height: 36px; padding: 0 var(--s3); border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--plate); font: var(--t-formal); min-width: 0;
 }
 .field__input--regex { font-size: 1.05rem; }
@@ -133,10 +133,10 @@ b, strong { font-weight: 600; }
 .confirm {
   width: min(440px, calc(100vw - 2 * var(--gutter))); padding: var(--s5); margin: auto;
   background: var(--plate); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius);
-  box-shadow: var(--shadow-float);
+  box-shadow: var(--shadow-dialog);
 }
 .confirm::backdrop { background: rgba(28, 30, 33, 0.45); }
-.confirm__title { font: var(--t-section); margin: 0 0 var(--s3); }
+.confirm__title { font: var(--type-section); margin: 0 0 var(--s3); }
 .confirm__body { font: var(--t-body); color: var(--ink-2); }
 .confirm__body p { margin: 0 0 var(--s2); }
 .confirm__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); margin-top: var(--s4); }

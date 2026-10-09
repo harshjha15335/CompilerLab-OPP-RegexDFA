@@ -88,6 +88,34 @@
   /* elevation: paper lies flat on the desk; only floating things (menus, sheets) cast a real shadow */
   --shadow-paper: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 2px 0 rgba(60, 50, 30, 0.06), 0 10px 24px -12px rgba(60, 50, 30, 0.35);
   --shadow-float: 0 12px 30px rgba(40, 32, 16, 0.2);
+  --shadow-dialog: 0 18px 48px rgba(40, 32, 16, 0.28);   /* the one modal surface */
+
+  /* ── Roles (D-32): every component picks from these names, never from raw values ──
+     Typography by role. Page heading = plate title; section = inspector/figure section; card = a block heading. */
+  --type-page: var(--t-title);
+  --type-section: var(--t-section);
+  --type-card: 600 0.9375rem/1.3 var(--font-sans);
+  --type-body: var(--t-body);
+  --type-support: 400 0.875rem/1.45 var(--font-sans);   /* help text under a field, notes */
+  --type-caption: var(--t-caption);
+  --type-button: 500 0.875rem/1.2 var(--font-sans);
+  --type-code: var(--t-formal);
+  --type-math: 400 1rem/1.35 var(--font-math);
+  --type-production: var(--t-formal);
+  /* Semantic colour. Each state also carries a non-colour signal (border style, glyph, word). */
+  --c-primary: var(--ink);             /* primary action fill */
+  --c-secondary: var(--plate);         /* secondary action fill (outlined) */
+  --c-success: var(--accept);
+  --c-warning: var(--read);            /* "out of date", "not run yet": brass, with a left rule and a tag */
+  --c-error: var(--reject);
+  --c-disabled: var(--cap-edge);       /* dashed outline, not-allowed cursor; never opacity on text */
+  --c-selected: var(--ink);            /* inset 2 px ring */
+  --c-current: var(--changed);         /* the current state / row / cell: highlighter fill + corner brackets */
+  --c-transition: var(--changed);      /* the transition just taken: thick stroke + highlighted label */
+  --c-conflict: var(--conflict);
+  /* Spacing scale (4 px grid) and control padding: two sizes only. */
+  --pad-control: var(--s2) var(--s3);  /* chips, segmented options, tabs, tool buttons */
+  --pad-button: var(--s2) var(--s4);   /* buttons */
   --rail-h: 60px;
   --dock-h: 76px;
   --ease: cubic-bezier(.2, .7, .2, 1);

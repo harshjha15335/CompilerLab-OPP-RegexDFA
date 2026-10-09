@@ -60,8 +60,10 @@ export function DfaGraph({ dfa, visibleStates, visibleTransitions, activeState, 
   const [view, setView] = useState<View>(initial);
   useEffect(() => { setView(initial()); }, [initial]);
   const cam = camera(view, box, size, fitScale, maxScale);
-  const viewBox = size.w ? `${cam.x} ${cam.y} ${cam.w} ${cam.h}` : `${box.x} ${box.y} ${box.w} ${box.h}`;
   const zoomed = cam.s > fitScale * 1.01;
+  // Whole graph: the drawing's own box, centred by preserveAspectRatio, so the markup does not depend on
+  // the measured frame (stepping Back restores the identical DOM). Zoomed: the camera's window.
+  const viewBox = zoomed && size.w ? `${r1(cam.x)} ${r1(cam.y)} ${r1(cam.w)} ${r1(cam.h)}` : `${box.x} ${box.y} ${box.w} ${box.h}`;
 
   const zoomBy = useCallback((f: number, at?: { x: number; y: number }) => setView((v) => {
     const c = camera(v, box, size, fitScale, maxScale);
@@ -227,6 +229,8 @@ export function DfaGraph({ dfa, visibleStates, visibleTransitions, activeState, 
 }
 
 /** The viewBox actually shown: the requested view at a legal scale, kept over the drawing. */
+const r1 = (v: number) => Math.round(v * 10) / 10;
+
 function camera(v: View, box: Box, size: { w: number; h: number }, fitScale: number, maxScale: number) {
   if (v.s === AUTO) v = fitScale >= LEGIBLE ? { cx: box.x + box.w / 2, cy: box.y + box.h / 2, s: 0 } : { ...v, s: READABLE_SCALE };
   const s = v.s === 0 ? fitScale : Math.min(maxScale, Math.max(fitScale, v.s));

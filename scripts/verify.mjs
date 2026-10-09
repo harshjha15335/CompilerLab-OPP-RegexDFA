@@ -11,7 +11,7 @@
 //   --publish  also writes a curated set of screenshots to docs/screenshots/
 //   --quick    one viewport only (1366×768)
 //   --viewports=1280x720,…  override the screen viewports
-//   --only=a,b  run only these groups: screens home keyboard replay reduced grayscale fps intro fonts bundle
+//   --only=a,b  run only these groups: screens home keyboard replay reduced grayscale fps intro fonts repair bundle
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -259,7 +259,7 @@ if (want('screens')) for (const s of SCREENS) {
       const scrollers = L.scrollers;
       // the desktop rule (no page scroll) applies at >= 1000 x 720; in narrower or shorter windows the page is
       // the one allowed scroller (see the narrow and short-window layouts in shell.css)
-      const pageOk = s.pageScrollOk || vp[0] < 1000 || vp[1] < 720;
+      const pageOk = s.pageScrollOk || vp[0] < 1000 || vp[1] < 720 || (vp[0] < 1200 && vp[1] < 860);   // matches the short-window CSS in shell.css
       check('layout', `${s.id} @ ${tag}: no clipped text`, L.clipped.length === 0, L.clipped.join('\n'));
       check('layout', `${s.id} @ ${tag}: no overlapping interactive elements`, L.overlaps.length === 0, L.overlaps.join('\n'));
       check('layout', `${s.id} @ ${tag}: no text overlapping other text or a control`, L.textOverlaps.length === 0, L.textOverlaps.slice(0, 12).join('\n'));
@@ -383,7 +383,8 @@ if (want('keyboard')) {
   log('Parse: End reaches ACCEPT for id + id * id', await page.$eval('.decision', (e) => e.textContent.includes('ACCEPT')));
   ok = await tabTo(page, () => document.activeElement?.getAttribute('aria-label')?.startsWith('Next stage'));
   await page.keyboard.press('Enter'); await arrive(page, '#/opp/modes');
-  const opening = await page.evaluate(() => ({ g: document.querySelector('.controls__grammar')?.textContent.replace(/\s+/g, ' '), s: document.querySelector('.controls .field__input')?.value }));
+  // visible text only: productions carry a screen-reader-only "derives" between the sides
+  const opening = await page.evaluate(() => { const g = document.querySelector('.controls__grammar')?.cloneNode(true); g?.querySelectorAll('.sr-only').forEach((n) => n.remove()); return { g: g?.textContent.replace(/\s+/g, ' '), s: document.querySelector('.controls .field__input')?.value }; });
   log(`Classic vs Safeguarded opens on S → A + B with ${opening.s}`, ok && opening.g?.replace(/\s/g, '').includes('S→A+B') && opening.s === 'id/id+id*id');
   await page.keyboard.press('End'); await sleep(200);
   const verdicts = await page.$$eval('.duo .verdict__word', (v) => v.map((x) => x.textContent));
@@ -602,9 +603,126 @@ if (want('fonts')) {
   await ctx.close();
 }
 
-await browser.close();
 
 /* ── static scan of the built bundle ───────────────────── */
+/* ── repairs from COMPILER_LAB_AUDIT (D-xx) ───────────── */
+console.log('\n— audit repairs (D-01 … D-35) —');
+if (want('repair')) {
+  const { ctx, page } = await open(browser);
+  // D-01: the specimen's Space pauses the one loop that runs; Space again resumes it from the same frame
+  await go(page, '#/');
+  await page.evaluate(() => document.activeElement?.blur());
+  const specCount = () => page.$eval('.specimen__count', (e) => Number(e.textContent.split(' ')[0]));
+  const specState = () => page.$eval('.specimen__state', (e) => e.textContent);
+  await sleep(900);
+  await page.keyboard.press(' '); await sleep(100);
+  const p0 = await specCount(), s0 = await specState();
+  await sleep(2200);
+  const p1 = await specCount();
+  await page.keyboard.press(' '); await sleep(1600);
+  const p2 = await specCount(), s2 = await specState();
+  await page.keyboard.press(' '); await sleep(100);
+  const p3 = await specCount(); await sleep(1500);
+  const p4 = await specCount();
+  check('repair', `D-01 specimen: Space pauses (${s0}, frame ${p0} → ${p1}), resumes (${s2}, → ${p2}), pauses again (${p3} → ${p4})`,
+    s0 === 'Paused' && p1 === p0 && /Running/.test(s2) && p2 > p0 && p4 === p3);
+  // D-06: the disabled stage arrow is a real disabled button with a name
+  await go(page, '#/opp/grammar');
+  const arrow = await page.$eval('.stages__step.is-off', (e) => ({ tag: e.tagName, disabled: e.disabled, name: e.getAttribute('aria-label') }));
+  check('repair', `D-06 first-stage "previous" arrow is <${arrow.tag.toLowerCase()} disabled> named "${arrow.name}"`, arrow.tag === 'BUTTON' && arrow.disabled && /Previous stage/.test(arrow.name));
+  // D-04: a sample over unchecked edits asks first; Cancel keeps the text and returns focus; Replace loads it
+  const mine = 'E -> E - T | T\nT -> id';
+  await page.fill('#grammar-text', mine);
+  await page.click('.samples .sample >> nth=1');
+  await sleep(150);
+  const dlg = await page.evaluate(() => { const d = document.querySelector('dialog.confirm'); return { open: Boolean(d?.open), focus: document.activeElement?.textContent }; });
+  await page.keyboard.press('Escape'); await sleep(150);
+  const kept = await page.$eval('#grammar-text', (e) => e.value);
+  const back = await page.evaluate(() => document.activeElement?.classList.contains('sample'));
+  const gone = await page.evaluate(() => !document.querySelector('dialog.confirm'));
+  await page.click('.samples .sample >> nth=1'); await sleep(150);
+  await page.getByRole('button', { name: 'Replace', exact: true }).click(); await sleep(200);
+  const replaced = await page.$eval('#grammar-text', (e) => e.value);
+  check('repair', 'D-04 unchecked edits: a dialog asks (focus on Cancel); Escape keeps the text and restores focus; Replace loads the sample',
+    dlg.open && dlg.focus === 'Cancel' && kept === mine && back && gone && replaced !== mine, JSON.stringify({ dlg, kept, back, gone }));
+  // … and the user's text is still one choice away
+  await page.click('.samples .sample >> text=Your grammar'); await sleep(200);
+  check('repair', 'D-04 "Your grammar" brings the replaced text back', (await page.$eval('#grammar-text', (e) => e.value)) === mine);
+  // D-34: checking an unchanged grammar is acknowledged
+  await page.click('text=Check grammar'); await sleep(100); await page.click('text=Check grammar'); await sleep(100);
+  check('repair', 'D-34 re-checking an unchanged grammar says so', /nothing changed/.test(await page.$eval('.actions__state', (e) => e.textContent)));
+  // D-03: later stages flag unchecked grammar edits and offer the check
+  await page.fill('#grammar-text', 'E -> E + T | T\nT -> id\nZ -> z');
+  await page.goto(BASE + '#/opp/table'); await sleep(300);
+  const stale = await page.$('.stale');
+  await page.click('.stale >> text=Check grammar now'); await sleep(300);
+  const after = await page.$('.stale');
+  const axes = await page.$$eval('.plate__body .ptable thead th', (t) => t.map((x) => x.textContent.trim()).filter(Boolean));
+  check('repair', `D-03 stage 3 marks results "Out of date" while stage 1 is unchecked; "Check grammar now" updates them (axes ${axes.join(' ')})`,
+    Boolean(stale) && !after && axes.includes('z'));
+  // D-02: an edited parse string is flagged; switching the mode re-runs the shown string, not the draft
+  await go(page, '#/opp/grammar');
+  await page.click('.samples .sample >> nth=0'); await sleep(200);
+  await page.goto(BASE + '#/opp/parse'); await sleep(300);
+  const input = '.plate__controls .field__input';
+  await page.fill(input, 'id * id');
+  const hint = await page.$eval('.dirtyhint', (e) => e.textContent).catch(() => '');
+  await page.click('.modes__opt >> text=Classic N'); await sleep(200);
+  const traceInput = await page.$eval('.trace tbody tr td.trace__input', (e) => e.textContent);
+  check('repair', `D-02 parse: "Not run yet" names the shown string; the mode switch keeps it (${traceInput})`,
+    /Not run yet/.test(hint) && /id \+ id \* id/.test(hint) && traceInput.startsWith('id + id * id'), hint);
+  await page.click('.modes__opt >> text=Safeguarded'); await sleep(100);
+  // D-05: stage 1 → stage 5 hands over a sentence the grammar derives
+  await page.goto(BASE + '#/opp/modes'); await sleep(300);
+  await page.click('text=Use the grammar from stage 1'); await sleep(300);
+  const handed = await page.$eval('.controls .field__input', (e) => e.value);
+  const safe = await page.$$eval('.duo .bench__title .tag', (t) => t.map((x) => x.textContent));
+  check('repair', `D-05 stage 5 receives "${handed}" (a sentence, not the terminal list) and Safeguarded accepts it`, handed !== '+ * ( ) id' && safe[1] === 'Accepted', JSON.stringify(safe));
+  // D-22: a refresh keeps the inputs (sessionStorage)
+  await page.goto(BASE + '#/opp/grammar'); await sleep(200);
+  await page.fill('#grammar-text', 'S -> a + S | a');
+  await page.reload(); await sleep(400);
+  check('repair', 'D-22 a refresh keeps the unchecked grammar', (await page.$eval('#grammar-text', (e) => e.value)) === 'S -> a + S | a');
+  await page.evaluate(() => sessionStorage.clear());
+  // D-17: the LR placeholder's title names the chapter once
+  await go(page, '#/lr');
+  check('repair', `D-17 title "${await page.title()}"`, (await page.title()) === 'LR parsing · ParseLens');
+  // D-35: the DFA's accessible summary at step 2 does not reveal the finished automaton
+  await go(page, '#/regex/dfa');
+  await keys(page, 'ArrowRight', 2); await sleep(200);
+  const label = await page.$eval('.dfa__svg', (e) => e.getAttribute('aria-label'));
+  check('repair', 'D-35 DFA summary at step 2 lists only what is drawn', /so far/.test(label) && !/Accepting: D/.test(label), label);
+  // D-25 / D-26: a 32-state DFA opens readable and zooms, fits and resets; a 1,024-state one stops with a message
+  await go(page, '#/regex/tree');
+  await page.fill('.field__input--regex', '(a|b)*a(a|b)(a|b)(a|b)(a|b)'); await page.keyboard.press('Enter');
+  await page.goto(BASE + '#/regex/dfa'); await sleep(400); await keys(page, 'End'); await sleep(300);
+  const z0 = await page.$eval('.dfa__zoom', (e) => e.textContent);
+  await page.click('button[aria-label="Zoom in"]'); await sleep(100);
+  const z1 = await page.$eval('.dfa__zoom', (e) => e.textContent);
+  await page.click('.toolbtn >> text=Fit'); await sleep(100);
+  const z2 = await page.$eval('.dfa__zoom', (e) => e.textContent);
+  await page.click('.toolbtn >> text=Reset'); await sleep(100);
+  const z3 = await page.$eval('.dfa__zoom', (e) => e.textContent);
+  check('repair', `D-25 32-state DFA: opens at "${z0}", zoom in "${z1}", Fit "${z2}", Reset "${z3}"`, /%/.test(z0) && z1 !== z0 && z2 === 'Whole graph' && z3 === z0);
+  await go(page, '#/regex/tree');
+  const t0 = Date.now();
+  await page.fill('.field__input--regex', '(a|b)*a(a|b)(a|b)(a|b)(a|b)(a|b)(a|b)(a|b)(a|b)(a|b)'); await page.keyboard.press('Enter'); await sleep(200);
+  const msg = await page.$eval('.result--bad', (e) => e.textContent).catch(() => '');
+  check('repair', `D-26 a 1,024-state DFA stops in ${Date.now() - t0} ms with a plain message`, /more than 500 states/.test(msg) && Date.now() - t0 < 4000, msg);
+  // D-11: a deeply nested expression is a diagnostic, not a crash
+  await page.fill('.field__input--regex', '('.repeat(150) + 'a' + ')'.repeat(150)); await page.keyboard.press('Enter'); await sleep(200);
+  const deep = await page.$eval('.result--bad', (e) => e.textContent).catch(() => '');
+  await page.fill('.field__input--regex', '('.repeat(3000) + 'a' + ')'.repeat(3000)); await page.keyboard.press('Enter'); await sleep(200);
+  const huge = await page.$eval('.result--bad', (e) => e.textContent).catch(() => '');
+  const wide = await page.evaluate(() => document.scrollingElement.scrollWidth > innerWidth + 1);
+  check('repair', 'D-11 150 nested parentheses and a 6,001-character expression give friendly diagnostics, no page overflow',
+    /more than 100 levels/.test(deep) && /limit is 400/.test(huge) && !/call stack/i.test(deep + huge) && !wide, deep.slice(0, 200));
+  await page.evaluate(() => sessionStorage.clear());
+  await ctx.close();
+}
+
+await browser.close();
+
 console.log('\n— bundle scan —');
 if (want('bundle')) {
   const files = readdirSync('dist/assets').filter((f) => f.endsWith('.js')).map((f) => join('dist/assets', f));

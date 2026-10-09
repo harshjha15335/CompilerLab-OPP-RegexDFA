@@ -33,12 +33,19 @@ export function RegexBlocked({ chapter, stage, model }: { chapter: Chapter; stag
 }
 
 /* ───────────── 1 Syntax tree ───────────── */
+const ERR_WINDOW = 36;   // characters shown either side of the error in a long expression
 function ErrorSource({ source, position }: { source: string; position: number }) {
-  const chars = [...source, ' '];
+  const all = [...source, ' '];
+  // a long expression shows a window around the error, marked with … at the cut ends
+  const from = all.length > ERR_WINDOW * 2 + 1 ? Math.max(0, position - ERR_WINDOW) : 0;
+  const to = Math.min(all.length, from + ERR_WINDOW * 2 + 1);
+  const chars = all.slice(from, to);
+  const lead = from > 0 ? '…' : '';
+  const at = position - from + lead.length;
   return (
     <pre className="errsrc" aria-hidden="true">
-      {chars.map((c, i) => <span key={i} className={cx(i === position && 'is-bad')}>{c}</span>)}
-      {'\n'}{' '.repeat(Math.max(0, position))}<span className="errsrc__caret">^</span>
+      {lead}{chars.map((c, i) => <span key={i} className={cx(i + from === position && 'is-bad')}>{c}</span>)}{to < all.length ? '…' : ''}
+      {'\n'}{' '.repeat(Math.max(0, at))}<span className="errsrc__caret">^</span>
     </pre>
   );
 }

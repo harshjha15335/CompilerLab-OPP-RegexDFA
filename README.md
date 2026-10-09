@@ -10,7 +10,7 @@ which rule caused it, and what happens next.
 | Chapter | Plates |
 | --- | --- |
 | I Operator precedence | Grammar check · LEADING and TRAILING · precedence table (with provenance and conflicts) · shift/reduce parse · Classic N vs Safeguarded |
-| II LR parsing | Placeholder, honestly labelled *in progress* (nothing on it runs) |
+| II LR parsing | Placeholder, honestly labelled *Planned* (nothing on it runs) |
 | III Regex → DFA | Syntax tree · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
 
 The homepage shows the project title block, the three chapters and a live specimen: the real algorithm builds the
@@ -43,7 +43,9 @@ npm run build             # dist/: index.html + assets/ (one app script, five La
 - If a machine blocks scripts on `file://` pages, run `npm run serve` (zero-dependency Node server) and open
   `http://127.0.0.1:4173/`.
 
-Navigation uses the URL hash (`#/opp/table`, `#/regex/dfa`, …), so refresh and Back/Forward work everywhere.
+Navigation uses the URL hash (`#/opp/table`, `#/regex/dfa`, …), so refresh and Back/Forward work everywhere. The
+grammar, regex and input strings (checked and unchecked) are kept in `sessionStorage` for the tab, so a refresh keeps
+them; closing the tab starts fresh. If storage is blocked the app still works and simply starts from the examples.
 
 ## Verify
 
@@ -66,7 +68,7 @@ screenshots every screen and mode at 1366×768, 1280×720 and 1920×1080, and fa
 - a failed homepage check, or the app needing WebGL;
 - network requests, console errors, or `fetch`/`eval`/camera code in the bundle.
 
-The results are in [docs/VERIFICATION.md](docs/VERIFICATION.md). It needs a local Chromium, Chrome or Edge (`CHROME_PATH` overrides).
+The results are in [docs/verification-results.md](docs/verification-results.md) ([docs/VERIFICATION.md](docs/VERIFICATION.md) is the historical first report). It needs a local Chromium, Chrome or Edge (`CHROME_PATH` overrides).
 
 ## Keyboard
 
@@ -107,7 +109,7 @@ src/ui/                 kit (SVG relation glyphs, tags, verdicts), hardware (key
 src/screens/            home, opp (5 plates), regex (5 plates), lr (placeholder)
 src/styles/             tokens, base, shell, hardware, figures, home, motion
 scripts/                verify.mjs, report-md.mjs, check-contrast.ts, serve-dist.mjs
-test/                   partA, partB (core), audit-regressions, schema, replay
+test/                   partA, partB (core), audit-regressions, schema, replay, specimen, repair (audit defects D-xx)
 audit/review1/          Review-1 probes (fuzz, differential, UI) and their outputs
 ```
 
@@ -121,8 +123,14 @@ React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA st
 - Input strings may omit spaces (`id/id+id*id`); the core splits them by longest match.
 - Regex syntax: `|`, concatenation, `*`, `+`, `?`, `( )`, `\` escapes. No ε, classes or ranges. An unescaped `#` is reserved
   (the app adds the end marker). The DFA is partial: a missing transition means reject.
-- DFAs with up to 7 states are drawn in a row and larger ones on a ring. The layout test covers automata up to 8 states;
-  the transition table is the canonical view.
+- DFAs with up to 7 states are drawn in a row; larger ones in layered columns (breadth-first from the start state), with
+  every edge routed around the states and every label placed where it collides with nothing. Zoom (buttons, Ctrl + wheel,
+  + and −), pan (drag, or arrow keys when the drawing has focus), Fit and Reset are on the graph; a graph that would be
+  shrunk below legibility opens at a readable scale on its start state. The layout tests cover up to 64 states with no
+  overlap and no edge through a state. Above 120 states the transition table replaces the drawing.
+- Limits, each with a plain message instead of a freeze or a crash: a regex of at most 400 characters and 100 levels of
+  parentheses, and a DFA of at most 500 states (the direct method can grow exponentially). Positions and the simulation
+  count characters (Unicode code points), so `😀` is one symbol.
 - Grammar symbols may also be typed without spaces (`E->E+T`): a chunk is split around the non-terminals the grammar defines.
 - Designed for 1280 px wide and up. Below 1000 px or 720 px tall the plates stack and the page scrolls
   (verified at 768, 390 and 360 px wide and at 1265×590).

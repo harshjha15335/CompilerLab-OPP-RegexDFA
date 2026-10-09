@@ -68,7 +68,7 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
     <Plate chapter={chapter} stage={stage} controls={controls}>
       <div className="split split--figure">
         <div className="figure figure--tree">
-          {!built && <div className="result" role="status"><p className="result__head">Not built yet.</p><p>Press <b>Build tree</b> (Enter) to parse the expression and number its positions.</p></div>}
+          {!built && <div className="result" role="status"><p className="result__head">Not built yet.</p></div>}
           {built && dirty && <p className="result">Edited. Press <b>Build tree</b> (Enter) to read it again.</p>}
           {shown && analysis.status === 'empty' && <Empty title="The expression is empty.">Try <code>(a|b)*abb</code>, or pick an example.</Empty>}
           {shown && analysis.status === 'error' && (

@@ -94,6 +94,7 @@ going back to stage 1.
   contrast, wireframes, motion map, risks with Plan B/C, scope ladder.
 - [audit/REVIEW1_REMOVE_AND_VERIFY.md](audit/REVIEW1_REMOVE_AND_VERIFY.md): Review-1 audit: ground truth from the notes,
   logic findings, UI results, removal inventory and a viva sheet.
+- [docs/AUDIT_REPAIR.md](docs/AUDIT_REPAIR.md): the October 2026 audit repair (35 defects): what changed, what did not, and how it is tested.
 - [docs/verification-results.md](docs/verification-results.md): every check from the latest verifier run.
 - [docs/VERIFICATION.md](docs/VERIFICATION.md): the original verification report (before Review-1).
 - [docs/AUDIT-LOG.md](docs/AUDIT-LOG.md): what changed and why, including supply-chain notes.

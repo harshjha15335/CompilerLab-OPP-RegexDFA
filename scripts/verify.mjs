@@ -346,6 +346,8 @@ async function arrive(page, hash) {
 async function tabTo(page, pred, max = 120) {
   for (let i = 0; i < max; i++) {
     await page.keyboard.press('Tab');
+    // a scroll region made focusable (src/ui/scrollFocus.ts) contains its controls' text; it is a stop, not the target
+    if (await page.evaluate(() => document.activeElement?.dataset?.scrollFocus === '1')) continue;
     if (await page.evaluate(pred)) return true;
   }
   return false;

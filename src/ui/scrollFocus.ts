@@ -6,7 +6,7 @@ const SCROLLERS = '.inspector, .pane--scroll, .scroll, .lookup, .duo, .figure--d
 export function watchScrollRegions(root: HTMLElement): () => void {
   let frame = 0;
   const sync = () => {
-    frame = 0;
+    if (frame) { cancelAnimationFrame(frame); frame = 0; }
     for (const el of root.querySelectorAll<HTMLElement>(SCROLLERS)) {
       const oy = getComputedStyle(el).overflowY;
       const scrolls = (oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 1;
@@ -18,8 +18,10 @@ export function watchScrollRegions(root: HTMLElement): () => void {
   const later = () => { if (!frame) frame = requestAnimationFrame(sync); };
   const ro = new ResizeObserver(later);
   ro.observe(root);
-  const mo = new MutationObserver(later);
-  mo.observe(root, { childList: true, subtree: true });
+  // DOM changes (a replay step) are handled in the same task, so the attribute is never a frame behind the
+  // content: stepping Back restores the identical DOM. Our own attribute writes are filtered out.
+  const mo = new MutationObserver((records) => { if (records.some((r) => r.type === 'childList' || r.attributeName !== 'tabindex')) sync(); });
+  mo.observe(root, { childList: true, subtree: true, characterData: true });
   window.addEventListener('resize', later);
   later();
   return () => { cancelAnimationFrame(frame); ro.disconnect(); mo.disconnect(); window.removeEventListener('resize', later); };

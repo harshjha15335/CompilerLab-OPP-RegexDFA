@@ -3,22 +3,25 @@
 //
 // Every input has two values: the *draft* (what is typed) and the *submitted* value the results were
 // computed from. `…Dirty` flags say when they differ, so no screen presents results for text it no longer shows.
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { EXPR_SAMPLE, GRAMMAR_SAMPLES, MODES_SAMPLE, REGEX_SAMPLES, type GrammarSample, type RegexSample } from './data/samples.ts';
 import { analyzeGrammar, analyzeRegex, runCompare, runParse, runSimulation, type OkGrammar } from './replay/pipelines.ts';
 import { pickCompareString } from './replay/transfer.ts';
-import { readSession, writeSession } from './ui/store.ts';
+import { readSession, useSessionPatch } from './ui/store.ts';
 import type { Mode } from './core/index.ts';
 
 const NONE: string[] = [];
 const isSampleText = (t: string) => GRAMMAR_SAMPLES.some((s) => s.text === t);
 
-interface OppSession { draft: string; committed: string; custom: string | null; parseDraft: string; parseInput: string; mode: Mode; cmpText: string; cmpInput: string }
+interface OppSession { draft: string; committed: string; checked: boolean; custom: string | null; parseDraft: string; parseInput: string; mode: Mode; cmpText: string; cmpInput: string }
 
 export function useOppModel() {
   const saved = useMemo(() => readSession<{ opp: OppSession }>().opp ?? null, []);
   const [draft, setDraft] = useState(saved?.draft ?? EXPR_SAMPLE.text);
   const [committed, setCommitted] = useState(saved?.committed ?? EXPR_SAMPLE.text);
+  // Nothing is analysed on screen until the user presses Check grammar (or picks a grammar on stages 2–4):
+  // a grammar in the editor is just text until it has been checked.
+  const [checked, setChecked] = useState(saved?.checked ?? false);
   // the user's own grammar is kept here whenever a sample replaces it, so choosing a sample never loses work
   const [custom, setCustom] = useState<string | null>(saved?.custom ?? null);
   const [parseDraft, setParseDraft] = useState(saved?.parseDraft ?? EXPR_SAMPLE.strings[0]);
@@ -40,29 +43,28 @@ export function useOppModel() {
   const cmpSample = GRAMMAR_SAMPLES.find((s) => s.text === cmpText) ?? null;
   const cmpRows = useMemo(() => (cmpOk ? (cmpSample?.strings ?? []).map((s) => runCompare(cmpOk, s)) : []), [cmpOk, cmpSample]);
 
-  useEffect(() => {
-    writeSession({ opp: { draft, committed, custom, parseDraft, parseInput: parseReq.input, mode: parseReq.mode, cmpText, cmpInput } satisfies OppSession });
-  }, [draft, committed, custom, parseDraft, parseReq, cmpText, cmpInput]);
+  useSessionPatch({ opp: { draft, committed, checked, custom, parseDraft, parseInput: parseReq.input, mode: parseReq.mode, cmpText, cmpInput } satisfies OppSession });
 
   const [checks, setChecks] = useState(0);   // bumps on every Check, so an unchanged re-check is still acknowledged
   const commit = useCallback(() => {
-    setCommitted(draft); setChecks((n) => n + 1);
+    setCommitted(draft); setChecked(true); setChecks((n) => n + 1);
     if (draft.trim() && !isSampleText(draft)) setCustom(draft);
   }, [draft]);
   /** Unchecked edits that a sample would replace (the confirmation dialog asks first). */
   const unsavedEdits = draft !== committed && draft.trim() !== '' && !isSampleText(draft);
-  const loadSample = useCallback((s: GrammarSample) => {
+  /** `check`: also check it (the header menu on stages 2–4). Stage 1 only fills the editor. */
+  const loadSample = useCallback((s: GrammarSample, { check = false }: { check?: boolean } = {}) => {
     // keep whatever the user wrote, checked or not, as "Your grammar"
     if (draft.trim() && !isSampleText(draft)) setCustom(draft);
     else if (!isSampleText(committed) && committed.trim()) setCustom(committed);
-    setDraft(s.text); setCommitted(s.text);
+    setDraft(s.text); setCommitted(s.text); setChecked(check);
     const str = s.strings[0] ?? '';
     setParseDraft(str);
     setParseReq((r) => ({ ...r, input: str }));
   }, [draft, committed]);
-  const restoreCustom = useCallback(() => {
+  const restoreCustom = useCallback(({ check = false }: { check?: boolean } = {}) => {
     if (custom == null) return;
-    setDraft(custom); setCommitted(custom);
+    setDraft(custom); setCommitted(custom); setChecked(check);
   }, [custom]);
   const parse = useCallback((input: string, mode: Mode) => { setParseDraft(input); setParseReq({ input, mode }); }, []);
   /** Changing the reduction mode re-runs the string that is on display, never an unsubmitted draft. */
@@ -74,7 +76,7 @@ export function useOppModel() {
     [ok, parseReq.input, sample, strings]);
 
   return {
-    draft, setDraft, committed, commit, checks, dirty: draft !== committed, unsavedEdits, analysis, ok, sample, strings, canParse,
+    draft, setDraft, committed, commit, checks, checked, dirty: draft !== committed, unsavedEdits, analysis, ok, sample, strings, canParse,
     custom, restoreCustom,
     parseDraft, setParseDraft, parseReq, parse, setMode, run, loadSample, parseDirty: parseDraft !== parseReq.input,
     cmpText, cmpInput, setCmpInput, cmpAnalysis, cmp, cmpRows, cmpSample, compareWith, stage1CompareString,
@@ -82,7 +84,8 @@ export function useOppModel() {
 }
 type RawOppModel = ReturnType<typeof useOppModel>;
 /** The model the screens see: loading a sample may ask first, so it resolves to whether it happened. */
-export type OppModel = Omit<RawOppModel, 'loadSample' | 'restoreCustom'> & { loadSample: (s: GrammarSample) => Promise<boolean>; restoreCustom: () => Promise<void> };
+type LoadOpts = { check?: boolean };
+export type OppModel = Omit<RawOppModel, 'loadSample' | 'restoreCustom'> & { loadSample: (s: GrammarSample, o?: LoadOpts) => Promise<boolean>; restoreCustom: (o?: LoadOpts) => Promise<void> };
 
 interface RegexSession { draft: string; committed: string; simDraft: string; simInput: string }
 
@@ -100,7 +103,7 @@ export function useRegexModel() {
   const strings = sample?.strings ?? NONE;
   const sim = useMemo(() => (ok ? runSimulation(ok.dfa, simInput) : null), [ok, simInput]);
 
-  useEffect(() => { writeSession({ regex: { draft, committed, simDraft, simInput } satisfies RegexSession }); }, [draft, committed, simDraft, simInput]);
+  useSessionPatch({ regex: { draft, committed, simDraft, simInput } satisfies RegexSession });
 
   const commit = useCallback(() => setCommitted(draft), [draft]);
   const loadSample = useCallback((s: RegexSample) => {

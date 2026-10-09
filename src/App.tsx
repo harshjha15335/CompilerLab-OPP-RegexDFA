@@ -54,23 +54,23 @@ export default function App() {
   // Choosing a sample over unchecked edits asks first (Cancel keeps the editor exactly as it is).
   // Checked custom grammars are kept as "Your grammar", so they need no question.
   const { unsavedEdits, loadSample: load, restoreCustom: restore, draft, custom } = rawOpp;
-  const loadSample = useCallback(async (s: GrammarSample) => {
+  const loadSample = useCallback(async (s: GrammarSample, o?: { check?: boolean }) => {
     if (unsavedEdits && !(await confirm({
       title: 'Replace your unchecked edits?',
       body: <><p>The editor on stage 1 has changes that have not been checked yet. Loading “{s.title}” replaces them.</p>
         <p>They stay available afterwards as “Your grammar” in the grammar menu.</p></>,
       confirm: 'Replace',
     }))) return false;
-    load(s);
+    load(s, o);
     return true;
   }, [unsavedEdits, load, confirm]);
-  const restoreCustom = useCallback(async () => {
+  const restoreCustom = useCallback(async (o?: { check?: boolean }) => {
     if (unsavedEdits && draft !== custom && !(await confirm({
       title: 'Replace your unchecked edits?',
       body: <p>The editor on stage 1 has changes that have not been checked yet. Bringing back your earlier grammar replaces them.</p>,
       confirm: 'Replace',
     }))) return;
-    restore();
+    restore(o);
   }, [unsavedEdits, draft, custom, restore, confirm]);
   const opp = useMemo(() => ({ ...rawOpp, loadSample, restoreCustom }), [rawOpp, loadSample, restoreCustom]);
 
@@ -87,6 +87,14 @@ export default function App() {
     if (chapter.id === 'opp') {
       if (stage.id === 'grammar') return <GrammarStage chapter={chapter} stage={stage} model={opp} />;
       if (stage.id === 'modes') return <ModesStage chapter={chapter} stage={stage} model={opp} />;
+      if (!opp.checked)
+        return (
+          <Plate chapter={chapter} stage={stage}>
+            <Empty title="The grammar has not been checked yet." action={<a className="btn btn--primary" href={hashFor('opp', 'grammar')}>Open 1 Grammar</a>}>
+              Press <b>Check grammar</b> on stage 1, or pick a grammar from the menu above.
+            </Empty>
+          </Plate>
+        );
       if (!opp.ok)
         return (
           <Plate chapter={chapter} stage={stage}>

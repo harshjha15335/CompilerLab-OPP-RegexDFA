@@ -60,7 +60,7 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
       <button type="submit" className="btn btn--primary">Compare</button>
       {usingOwn
         ? <button type="button" className="btn btn--quiet" onClick={() => { setNoString(false); setDraft(MODES_SAMPLE.compare!); compareWith(MODES_SAMPLE.text, MODES_SAMPLE.compare!); }}>Back to S → A + B</button>
-        : ok?.conflictFree && committed !== MODES_SAMPLE.text && <button type="button" className="btn btn--quiet" onClick={useStage1}>Use the grammar from stage 1</button>}
+        : model.checked && ok?.conflictFree && committed !== MODES_SAMPLE.text && <button type="button" className="btn btn--quiet" onClick={useStage1}>Use the grammar from stage 1</button>}
       {dirty && cmp && <DirtyHint shown={cmpInput} action="Compare" what="string" />}
     </form>
   );

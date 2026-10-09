@@ -47,12 +47,16 @@ const check = (group, name, ok, detail = '') => {
   console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${name}${ok || !detail ? '' : `\n         ${String(detail).slice(0, 600).replace(/\n/g, '\n         ')}`}`);
 };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Most checks look at stages 2–4, which only show results once the grammar has been checked: start those
+// sessions as a user who pressed Check grammar on the default grammar (the "repair" group tests the unchecked start).
 const SEEN = () => { try { localStorage.setItem('cl.intro.seen.v2', '1'); localStorage.setItem('cl.note.keys.v1', '1'); } catch {} };
+const CHECKED = () => { try { if (!sessionStorage.getItem('cl.session.v1')) sessionStorage.setItem('cl.session.v1', JSON.stringify({ opp: { checked: true } })); } catch {} };
 
 /* ── page plumbing ─────────────────────────────────────── */
 const allNet = [], allErrors = [];
 async function open(browser, { viewport = [1366, 768], reduced = false, init = SEEN, storage = {} } = {}) {
   const ctx = await browser.newContext({ viewport: { width: viewport[0], height: viewport[1] }, reducedMotion: reduced ? 'reduce' : 'no-preference', offline: true, deviceScaleFactor: 1 });
+  await ctx.addInitScript(CHECKED);
   if (init) await ctx.addInitScript(init);
   if (Object.keys(storage).length) await ctx.addInitScript((s) => { try { for (const [k, v] of Object.entries(s)) localStorage.setItem(k, v); } catch {} }, storage);
   const page = await ctx.newPage();
@@ -500,6 +504,7 @@ if (want('grayscale')) {
   const { ctx, page } = await open(browser);
   await go(page, '#/opp/grammar');
   await clickText(page, 'Ambiguous expressions', '.sample');
+  await page.click('text=Check grammar'); await sleep(150);   // examples only fill the editor; the check analyses them
   await page.evaluate(() => { location.hash = '#/opp/table'; }); await sleep(300);
   await keys(page, 'End');
   await page.addStyleTag({ content: 'html { filter: grayscale(1); }' });
@@ -575,6 +580,7 @@ console.log('\n— runs without WebGL —');
 if (want('intro')) {
   const noGl = await launch({ webgl: false });
   const c4 = await noGl.newContext({ viewport: { width: 1366, height: 768 }, offline: true });
+  await c4.addInitScript(CHECKED);
   const p4 = await c4.newPage();
   p4.on('pageerror', (e) => allErrors.push(`pageerror (no WebGL) ${e.message}`));
   await p4.goto(BASE + '#/'); await sleep(800);
@@ -628,6 +634,24 @@ if (want('repair')) {
   const p4 = await specCount();
   check('repair', `D-01 specimen: Space pauses (${s0}, frame ${p0} → ${p1}), resumes (${s2}, → ${p2}), pauses again (${p3} → ${p4})`,
     s0 === 'Paused' && p1 === p0 && /Running/.test(s2) && p2 > p0 && p4 === p3);
+  // Nothing is shown as checked until the user presses Check grammar
+  {
+    const fresh = await browser.newContext({ viewport: { width: 1366, height: 768 }, offline: true });
+    await fresh.addInitScript(() => { try { localStorage.setItem('cl.intro.seen.v2', '1'); } catch {} });
+    const fp = await fresh.newPage();
+    await fp.goto(BASE + '#/opp/grammar'); await sleep(300);
+    const before = await fp.evaluate(() => ({ result: document.querySelector('.result')?.textContent ?? '', valid: Boolean(document.querySelector('.result--ok')), prods: Boolean(document.querySelector('.prodlist')) }));
+    await fp.goto(BASE + '#/opp/sets'); await sleep(300);
+    const blocked = await fp.evaluate(() => /not been checked/.test(document.querySelector('.plate__body')?.textContent ?? '') && !document.querySelector('.setblock'));
+    await fp.goto(BASE + '#/opp/grammar'); await sleep(300);
+    await fp.click('text=Check grammar'); await sleep(200);
+    const after = await fp.evaluate(() => Boolean(document.querySelector('.result--ok')));
+    await fp.goto(BASE + '#/opp/sets'); await sleep(300);
+    const sets = Boolean(await fp.$('.setblock'));
+    check('repair', 'stage 1 shows no result until Check grammar; stages 2–4 wait for it; after the check both appear',
+      /Not checked yet/.test(before.result) && !before.valid && !before.prods && blocked && after && sets, JSON.stringify({ before, blocked, after, sets }));
+    await fresh.close();
+  }
   // D-06: the disabled stage arrow is a real disabled button with a name
   await go(page, '#/opp/grammar');
   const arrow = await page.$eval('.stages__step.is-off', (e) => ({ tag: e.tagName, disabled: e.disabled, name: e.getAttribute('aria-label') }));
@@ -665,6 +689,7 @@ if (want('repair')) {
   // D-02: an edited parse string is flagged; switching the mode re-runs the shown string, not the draft
   await go(page, '#/opp/grammar');
   await page.click('.samples .sample >> nth=0'); await sleep(200);
+  await page.click('text=Check grammar'); await sleep(200);
   await page.goto(BASE + '#/opp/parse'); await sleep(300);
   const input = '.plate__controls .field__input';
   await page.fill(input, 'id * id');
@@ -684,7 +709,7 @@ if (want('repair')) {
   await page.goto(BASE + '#/opp/grammar'); await sleep(200);
   await page.fill('#grammar-text', 'S -> a + S | a');
   await page.reload(); await sleep(400);
-  check('repair', 'D-22 a refresh keeps the unchecked grammar', (await page.$eval('#grammar-text', (e) => e.value)) === 'S -> a + S | a');
+  check('repair', 'D-22 a refresh keeps the unchecked grammar', (await page.$eval('#grammar-text', (e) => e.value)) === 'S -> a + S | a', await page.$eval('#grammar-text', (e) => e.value).catch((e) => String(e)));
   await page.evaluate(() => sessionStorage.clear());
   // D-17: the LR placeholder's title names the chapter once
   await go(page, '#/lr');

@@ -1,3 +1,4 @@
+import { useEffect, useLayoutEffect, useRef } from 'react';
 // localStorage for per-viewer conveniences only (settings). Every access
 // is guarded: private windows and blocked storage simply fall back to "not remembered".
 export const KEYS = { reduced: 'cl.reduced' } as const;
@@ -21,4 +22,17 @@ export function readSession<T extends object>(): Partial<T> {
 }
 export function writeSession(patch: object) {
   try { window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...readSession(), ...patch })); } catch { /* not remembered */ }
+}
+
+/** Keeps a session patch saved: written whenever it changes (by the caller) and once more as the page is
+ *  being hidden or reloaded, so a refresh straight after an edit never loses it. */
+export function useSessionPatch(patch: object) {
+  const latest = useRef(patch);
+  latest.current = patch;
+  useLayoutEffect(() => { writeSession(latest.current); });
+  useEffect(() => {
+    const save = () => writeSession(latest.current);
+    window.addEventListener('pagehide', save);
+    return () => window.removeEventListener('pagehide', save);
+  }, []);
 }

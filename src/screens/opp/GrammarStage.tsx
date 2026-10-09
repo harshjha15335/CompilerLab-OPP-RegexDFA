@@ -21,7 +21,9 @@ const KIND: Record<string, { tag: 'accept' | 'conflict' | 'reject'; word: string
 const lineOf = (e: GrammarError, g: Grammar) => e.line ?? g.productions.find((p) => p.id === e.productionId)?.line ?? null;
 
 function Result({ model }: { model: OppModel }) {
-  const { analysis, dirty } = model;
+  const { analysis, dirty, checked } = model;
+  if (!checked)
+    return <div className="result" role="status"><p className="result__head">Not checked yet.</p><p>Press <b>Check grammar</b> (Ctrl + Enter) to see whether this is an operator grammar.</p></div>;
   if (dirty)
     return <div className="result" role="status"><p className="result__head">Edited. Press <b>Check grammar</b> (Ctrl + Enter) to check it again.</p></div>;
   if (analysis.status === 'empty')
@@ -66,13 +68,13 @@ function Result({ model }: { model: OppModel }) {
 }
 
 export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: OppModel }) {
-  const { draft, setDraft, commit, dirty, analysis, loadSample, committed, custom, restoreCustom } = model;
+  const { draft, setDraft, commit, dirty, analysis, loadSample, committed, custom, restoreCustom, checked } = model;
   const gutter = useRef<HTMLDivElement>(null);
   // Checking an unchanged grammar still gets a visible answer (the result itself would not change).
   const [recheck, setRecheck] = useState(false);
-  const check = () => { setRecheck(!dirty); commit(); };
+  const check = () => { setRecheck(checked && !dirty); commit(); };   // the first check is not a re-check
   const lines = draft.split('\n');
-  const errorLines = new Set(dirty ? [] : analysis.errors.map((e) => lineOf(e, analysis.grammar)).filter((x): x is number => x !== null));
+  const errorLines = new Set(dirty || !checked ? [] : analysis.errors.map((e) => lineOf(e, analysis.grammar)).filter((x): x is number => x !== null));
   return (
     <Plate chapter={chapter} stage={stage} className="plate--grammar">
       <div className="split split--grammar">
@@ -92,13 +94,13 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
           <div className="actions">
             <button type="button" className="btn btn--primary" onClick={check} aria-keyshortcuts="Control+Enter">Check grammar</button>
             <span className={cx('actions__state', dirty && 'is-dirty')} role="status">
-              {dirty ? 'Edited, not checked yet' : recheck ? 'Checked again: nothing changed since the last check' : 'Checked'}</span>
+              {!checked ? 'Not checked yet' : dirty ? 'Edited, not checked yet' : recheck ? 'Checked again: nothing changed since the last check' : 'Checked'}</span>
           </div>
         </section>
         <section className="pane pane--scroll" aria-label="Check result">
           <h2 className="label">Result</h2>
           <Result model={model} />
-          {!dirty && analysis.grammar.productions.length > 0 && (
+          {checked && !dirty && analysis.grammar.productions.length > 0 && (
             <ProductionList productions={analysis.grammar.productions} caption="Numbered productions, one per alternative" />
           )}
           <h2 className="label label--gap" id="grammar-examples">Examples</h2>
@@ -133,19 +135,20 @@ const CUSTOM = '__custom';
 
 /** Switch the analysed grammar from any later stage, so a viva never has to walk back to stage 1. */
 export function GrammarPicker({ model }: { model: OppModel }) {
-  const { committed, loadSample, custom, restoreCustom } = model;
+  const { committed, loadSample, custom, restoreCustom, checked } = model;
   const current = GRAMMAR_SAMPLES.find((s) => s.text === committed);
   // "Your grammar" is listed whenever there is one: the one on display, or one a sample replaced.
   const hasCustom = !current || custom !== null;
   return (
     <label className="picker">
       <span className="picker__label">Grammar</span>
-      <select className="picker__select" value={current?.id ?? CUSTOM}
+      <select className="picker__select" value={checked ? current?.id ?? CUSTOM : ''}
         onChange={(e) => {
-          if (e.target.value === CUSTOM) { void restoreCustom(); return; }
+          if (e.target.value === CUSTOM) { void restoreCustom({ check: true }); return; }
           const s = GRAMMAR_SAMPLES.find((x) => x.id === e.target.value);
-          if (s) void loadSample(s);
+          if (s) void loadSample(s, { check: true });
         }}>
+        {!checked && <option value="" disabled>Choose a grammar…</option>}
         {hasCustom && <option value={CUSTOM}>Your grammar</option>}
         {GRAMMAR_SAMPLES.map((s) => <option key={s.id} value={s.id}>{s.title} ({KIND[s.kind].word.toLowerCase()})</option>)}
       </select>

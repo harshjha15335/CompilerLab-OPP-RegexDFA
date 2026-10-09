@@ -52,6 +52,7 @@ b, strong { font-weight: 600; }
   background: var(--plate); color: var(--ink); border: 1px solid var(--line);
 }
 .btn:hover { background: var(--plate-2); }
+.btn { white-space: nowrap; }
 .btn--primary { background: var(--ink); color: var(--plate); border-color: var(--ink); }
 .btn--primary:hover { background: #33363b; }
 .btn--quiet { border-color: transparent; background: transparent; color: var(--ink-2); min-height: 30px; padding: 4px 8px; text-decoration: underline; text-underline-offset: 3px; }

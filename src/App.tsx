@@ -15,6 +15,7 @@ import { ModesStage } from './screens/opp/ModesStage.tsx';
 import { LrStage } from './screens/lr/LrStage.tsx';
 import { DfaStage, FollowStage, PropsStage, RegexBlocked, SimStage, TreeStage } from './screens/regex/RegexStages.tsx';
 import { useConfirm } from './ui/confirm.tsx';
+import { watchScrollRegions } from './ui/scrollFocus.ts';
 import { Empty, Tag } from './ui/kit.tsx';
 import { Plate, PlateNotice, PlateTools } from './ui/plate.tsx';
 import { KEYS, read, write } from './ui/store.ts';
@@ -37,6 +38,7 @@ export default function App() {
   });
   const setReduced = useCallback((r: boolean) => { write(KEYS.reduced, r ? '1' : '0'); setReducedState(r); }, []);
   const settings = useMemo<Settings>(() => ({ reduced, setReduced }), [reduced, setReduced]);
+  useEffect(() => watchScrollRegions(document.body), []);
   useEffect(() => { document.documentElement.dataset.motion = reduced ? 'reduced' : 'full'; if (reduced) cancelAllFx(); }, [reduced]);
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');

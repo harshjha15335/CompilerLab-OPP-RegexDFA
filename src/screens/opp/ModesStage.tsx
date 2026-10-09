@@ -88,7 +88,7 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
       <div className="split split--figure">
         <div className="figure figure--duo">
           {(['classic', 'safeguarded'] as const).map((k) => (
-            <section key={k} className={cx('duo', `duo--${k}`)} aria-label={k === 'classic' ? 'Classic N' : 'Safeguarded'} tabIndex={0}>
+            <section key={k} className={cx('duo', `duo--${k}`)} aria-label={k === 'classic' ? 'Classic N' : 'Safeguarded'}>
               <Bench compact title={<>{k === 'classic' ? 'Classic N' : 'Safeguarded'} <Result r={cmp[k].result} /></>} mode={k} tokens={cmp.tokens}
                 fx={replay.animate && count <= cmp[k].steps.length ? (replay.rich ? 'rich' : 'fast') : null}
                 step={side(k)} finished={count > cmp[k].steps.length || Boolean(step && !step[k] && count > 0)} />

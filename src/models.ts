@@ -87,13 +87,15 @@ type RawOppModel = ReturnType<typeof useOppModel>;
 type LoadOpts = { check?: boolean };
 export type OppModel = Omit<RawOppModel, 'loadSample' | 'restoreCustom'> & { loadSample: (s: GrammarSample, o?: LoadOpts) => Promise<boolean>; restoreCustom: (o?: LoadOpts) => Promise<void> };
 
-interface RegexSession { draft: string; committed: string; simDraft: string; simInput: string }
+interface RegexSession { draft: string; committed: string; built: boolean; simDraft: string; simInput: string }
 
 export function useRegexModel() {
   const first = REGEX_SAMPLES[0];
   const saved = useMemo(() => readSession<{ regex: RegexSession }>().regex ?? null, []);
   const [draft, setDraft] = useState(saved?.draft ?? first.source);
   const [committed, setCommitted] = useState(saved?.committed ?? first.source);
+  // as with grammars: nothing is built on screen until the user presses Build tree
+  const [built, setBuilt] = useState(saved?.built ?? false);
   const [simDraft, setSimDraft] = useState(saved?.simDraft ?? first.strings[0]);
   const [simInput, setSimInput] = useState(saved?.simInput ?? first.strings[0]);
 
@@ -103,16 +105,17 @@ export function useRegexModel() {
   const strings = sample?.strings ?? NONE;
   const sim = useMemo(() => (ok ? runSimulation(ok.dfa, simInput) : null), [ok, simInput]);
 
-  useSessionPatch({ regex: { draft, committed, simDraft, simInput } satisfies RegexSession });
+  useSessionPatch({ regex: { draft, committed, built, simDraft, simInput } satisfies RegexSession });
 
-  const commit = useCallback(() => setCommitted(draft), [draft]);
+  const commit = useCallback(() => { setCommitted(draft); setBuilt(true); }, [draft]);
+  /** An example only fills the field; Build tree reads it. */
   const loadSample = useCallback((s: RegexSample) => {
-    setDraft(s.source); setCommitted(s.source);
+    setDraft(s.source); setCommitted(s.source); setBuilt(false);
     setSimDraft(s.strings[0] ?? ''); setSimInput(s.strings[0] ?? '');
   }, []);
   const simulate = useCallback((input: string) => { setSimDraft(input); setSimInput(input); }, []);
 
-  return { draft, setDraft, committed, commit, dirty: draft !== committed, analysis, ok, sample, strings,
+  return { draft, setDraft, committed, commit, built, dirty: draft !== committed, analysis, ok, sample, strings,
     simDraft, setSimDraft, simInput, simulate, sim, loadSample, simDirty: simDraft !== simInput };
 }
 export type RegexModel = ReturnType<typeof useRegexModel>;

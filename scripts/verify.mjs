@@ -50,7 +50,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Most checks look at stages 2–4, which only show results once the grammar has been checked: start those
 // sessions as a user who pressed Check grammar on the default grammar (the "repair" group tests the unchecked start).
 const SEEN = () => { try { localStorage.setItem('cl.intro.seen.v2', '1'); localStorage.setItem('cl.note.keys.v1', '1'); } catch {} };
-const CHECKED = () => { try { if (!sessionStorage.getItem('cl.session.v1')) sessionStorage.setItem('cl.session.v1', JSON.stringify({ opp: { checked: true } })); } catch {} };
+const CHECKED = () => { try { if (!sessionStorage.getItem('cl.session.v1')) sessionStorage.setItem('cl.session.v1', JSON.stringify({ opp: { checked: true }, regex: { built: true } })); } catch {} };
 
 /* ── page plumbing ─────────────────────────────────────── */
 const allNet = [], allErrors = [];
@@ -229,8 +229,8 @@ const SCREENS = [
   { id: 'opp-modes-end', hash: '#/opp/modes', act: (p) => keys(p, 'End') },
   { id: 'lr', hash: '#/lr' },
   { id: 'regex-tree', hash: '#/regex/tree' },
-  { id: 'regex-malformed', hash: '#/regex/tree', act: (p) => clickText(p, 'ab(c|d', '.sample') },
-  { id: 'regex-reserved-hash', hash: '#/regex/tree', act: (p) => clickText(p, 'a#b', '.sample') },
+  { id: 'regex-malformed', hash: '#/regex/tree', act: async (p) => { await clickText(p, 'ab(c|d', '.sample'); await p.click('button:has-text("Build tree")'); } },
+  { id: 'regex-reserved-hash', hash: '#/regex/tree', act: async (p) => { await clickText(p, 'a#b', '.sample'); await p.click('button:has-text("Build tree")'); } },
   { id: 'regex-props', hash: '#/regex/props', act: (p) => keys(p, 'ArrowRight', 7) },
   { id: 'regex-props-end', hash: '#/regex/props', act: (p) => keys(p, 'End') },
   { id: 'regex-follow', hash: '#/regex/follow', act: (p) => keys(p, 'ArrowRight', 3) },
@@ -650,6 +650,18 @@ if (want('repair')) {
     const sets = Boolean(await fp.$('.setblock'));
     check('repair', 'stage 1 shows no result until Check grammar; stages 2–4 wait for it; after the check both appear',
       /Not checked yet/.test(before.result) && !before.valid && !before.prods && blocked && after && sets, JSON.stringify({ before, blocked, after, sets }));
+    // the same for the regex chapter: nothing is built until Build tree
+    await fp.goto(BASE + '#/regex/tree'); await sleep(300);
+    const r0 = await fp.evaluate(() => ({ msg: /Not built yet/.test(document.querySelector('.figure--tree')?.textContent ?? ''), tree: Boolean(document.querySelector('.tree')) }));
+    await fp.goto(BASE + '#/regex/dfa'); await sleep(300);
+    const rBlocked = await fp.evaluate(() => /has not been built/.test(document.querySelector('.plate__body')?.textContent ?? '') && !document.querySelector('.dfa'));
+    await fp.goto(BASE + '#/regex/tree'); await sleep(300);
+    await fp.click('button:has-text("Build tree")'); await sleep(200);
+    const rTree = Boolean(await fp.$('.tree'));
+    await fp.goto(BASE + '#/regex/dfa'); await sleep(300);
+    const rDfa = Boolean(await fp.$('.dfa'));
+    check('repair', 'regex stage 1 builds nothing until Build tree; stages 2–5 wait for it; after building both appear',
+      r0.msg && !r0.tree && rBlocked && rTree && rDfa, JSON.stringify({ r0, rBlocked, rTree, rDfa }));
     await fresh.close();
   }
   // D-06: the disabled stage arrow is a real disabled button with a name

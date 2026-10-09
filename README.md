@@ -46,7 +46,8 @@ npm run build             # dist/: index.html + assets/ (one app script, five La
 Navigation uses the URL hash (`#/opp/table`, `#/regex/dfa`, …), so refresh and Back/Forward work everywhere. The
 grammar, regex and input strings (checked and unchecked) are kept in `sessionStorage` for the tab, so a refresh keeps
 them; closing the tab starts fresh. A grammar is only analysed once you press **Check grammar** (or pick one from
-the grammar menu on stages 2–4): loading an example just fills the editor, and stages 2–4 wait for the check. If storage is blocked the app still works and simply starts from the examples.
+the grammar menu on stages 2–4): loading an example just fills the editor, and stages 2–4 wait for the check.
+Likewise a regular expression is only parsed when you press **Build tree**; regex stages 2–5 wait for it. If storage is blocked the app still works and simply starts from the examples.
 
 ## Verify
 

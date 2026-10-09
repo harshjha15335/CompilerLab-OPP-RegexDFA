@@ -51,7 +51,8 @@ function ErrorSource({ source, position }: { source: string; position: number })
 }
 
 export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: RegexModel }) {
-  const { draft, setDraft, commit, dirty, analysis, ok, loadSample, committed } = model;
+  const { draft, setDraft, commit, dirty, analysis, ok, loadSample, committed, built } = model;
+  const shown = built && !dirty;   // results appear only once Build tree has read this exact text
   const controls = (
     <form className="controls" onSubmit={(e) => { e.preventDefault(); commit(); }}>
       <label className="field field--wide">
@@ -67,16 +68,17 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
     <Plate chapter={chapter} stage={stage} controls={controls}>
       <div className="split split--figure">
         <div className="figure figure--tree">
-          {dirty && <p className="result">Edited. Press <b>Build tree</b> (Enter) to read it again.</p>}
-          {!dirty && analysis.status === 'empty' && <Empty title="The expression is empty.">Try <code>(a|b)*abb</code>, or pick an example.</Empty>}
-          {!dirty && analysis.status === 'error' && (
+          {!built && <div className="result" role="status"><p className="result__head">Not built yet.</p><p>Press <b>Build tree</b> (Enter) to parse the expression and number its positions.</p></div>}
+          {built && dirty && <p className="result">Edited. Press <b>Build tree</b> (Enter) to read it again.</p>}
+          {shown && analysis.status === 'empty' && <Empty title="The expression is empty.">Try <code>(a|b)*abb</code>, or pick an example.</Empty>}
+          {shown && analysis.status === 'error' && (
             <div className="result result--bad" role="alert">
               <p className="result__head"><Tag kind="reject">{analysis.position === null ? 'Too large' : 'Malformed'}</Tag> {analysis.error}</p>
               {analysis.position !== null && <ErrorSource source={analysis.source} position={analysis.position} />}
               {analysis.position !== null && <p className="help">{errorPlace(analysis.source, analysis.position)}</p>}
             </div>
           )}
-          {!dirty && ok && (
+          {shown && ok && (
             <>
               <p className="augmented"><span className="label">Augmented</span> <span className="mono">( {ok.source} ) <b>#</b></span></p>
               <div className="figure__canvas"><SyntaxTree root={ok.root} nodes={ok.nodes} /></div>
@@ -85,7 +87,7 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
           )}
         </div>
         <aside className="inspector">
-          {!dirty && ok && (
+          {shown && ok && (
             <section className="block">
               <h2 className="section-title">Positions</h2>
               <table className="ftable ftable--pos">

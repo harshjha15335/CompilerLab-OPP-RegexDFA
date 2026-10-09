@@ -109,6 +109,14 @@ export default function App() {
       return <ParseStage chapter={chapter} stage={stage} model={opp} a={opp.ok} />;
     }
     if (stage.id === 'tree') return <TreeStage chapter={chapter} stage={stage} model={regex} />;
+    if (!regex.built)
+      return (
+        <Plate chapter={chapter} stage={stage}>
+          <Empty title="The syntax tree has not been built yet." action={<a className="btn btn--primary" href={hashFor('regex', 'tree')}>Open 1 Syntax tree</a>}>
+            Press <b>Build tree</b> on stage 1 first.
+          </Empty>
+        </Plate>
+      );
     if (!regex.ok) return <RegexBlocked chapter={chapter} stage={stage} model={regex} />;
     if (stage.id === 'props') return <PropsStage chapter={chapter} stage={stage} r={regex.ok} />;
     if (stage.id === 'follow') return <FollowStage chapter={chapter} stage={stage} r={regex.ok} />;
@@ -121,9 +129,9 @@ export default function App() {
   // checked input) but are labelled as such, with the one action that brings them up to date.
   const stageId = route.page === 'chapter' ? route.stage?.id ?? '' : '';
   const chapterId = route.page === 'chapter' ? route.chapter.id : '';
-  const stale = chapterId === 'opp' && ['sets', 'table', 'parse'].includes(stageId) && opp.dirty
+  const stale = chapterId === 'opp' && ['sets', 'table', 'parse'].includes(stageId) && opp.checked && opp.dirty
     ? { what: 'grammar', on: 'stage 1', action: 'Check grammar', run: opp.commit, href: hashFor('opp', 'grammar') }
-    : chapterId === 'regex' && stageId !== 'tree' && regex.dirty
+    : chapterId === 'regex' && stageId !== 'tree' && regex.built && regex.dirty
       ? { what: 'expression', on: 'stage 1', action: 'Build tree', run: regex.commit, href: hashFor('regex', 'tree') }
       : null;
   const notice = stale ? (

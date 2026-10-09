@@ -71,7 +71,7 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
           {!dirty && analysis.status === 'empty' && <Empty title="The expression is empty.">Try <code>(a|b)*abb</code>, or pick an example.</Empty>}
           {!dirty && analysis.status === 'error' && (
             <div className="result result--bad" role="alert">
-              <p className="result__head"><Tag kind="reject">Malformed</Tag> {analysis.error}</p>
+              <p className="result__head"><Tag kind="reject">{analysis.position === null ? 'Too large' : 'Malformed'}</Tag> {analysis.error}</p>
               {analysis.position !== null && <ErrorSource source={analysis.source} position={analysis.position} />}
               {analysis.position !== null && <p className="help">{errorPlace(analysis.source, analysis.position)}</p>}
             </div>

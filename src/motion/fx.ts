@@ -151,8 +151,9 @@ export function beam(from: Element | null | undefined, to: Element | null | unde
   const opts = { duration, delay, easing: EASE, fill: 'both' as const };
   const a1 = path.animate([{ strokeDasharray: '1 1', strokeDashoffset: 1 }, { strokeDasharray: '1 1', strokeDashoffset: 0 }], opts);
   const a2 = dot.animate([{ offsetDistance: '0%', opacity: 0 }, { offsetDistance: '15%', opacity: 1, offset: 0.15 }, { offsetDistance: '100%', opacity: 1 }], opts);
-  const a3 = svg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.normal, delay: delay + duration + 180, fill: 'both' });
-  const a4 = dot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.normal, delay: delay + duration + 180, fill: 'forwards' });
+  // a short hold, then a fast fade: the whole beam stays within the 700 ms per-step motion budget
+  const a3 = svg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, delay: delay + duration + 120, fill: 'both' });
+  const a4 = dot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: DUR.fast, delay: delay + duration + 120, fill: 'forwards' });
   const stop = track(() => { a1.cancel(); a2.cancel(); a3.cancel(); a4.cancel(); svg.remove(); dot.remove(); });
   a3.finished.then(stop, stop);
   return stop;

@@ -20,8 +20,8 @@ const KIND: Record<string, { tag: 'accept' | 'conflict' | 'reject'; word: string
 
 const lineOf = (e: GrammarError, g: Grammar) => e.line ?? g.productions.find((p) => p.id === e.productionId)?.line ?? null;
 
-function Result({ model }: { model: OppModel }) {
-  const { analysis, dirty, checked } = model;
+function Result({ model, checked }: { model: OppModel; checked: boolean }) {
+  const { analysis, dirty } = model;
   if (!checked)
     return <div className="result" role="status"><p className="result__head">Not checked yet.</p><p>Press <b>Check grammar</b> (Ctrl + Enter) to see whether this is an operator grammar.</p></div>;
   if (dirty)
@@ -68,11 +68,14 @@ function Result({ model }: { model: OppModel }) {
 }
 
 export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: OppModel }) {
-  const { draft, setDraft, commit, dirty, analysis, loadSample, committed, custom, restoreCustom, checked } = model;
+  const { draft, setDraft, commit, dirty, analysis, loadSample, committed, custom, restoreCustom } = model;
+  // The result is shown only after Check grammar is pressed on this visit: coming back to stage 1 always
+  // starts unchecked, so the grammar can be checked again and again. Later stages keep the last check.
+  const [checked, setChecked] = useState(false);
   const gutter = useRef<HTMLDivElement>(null);
   // Checking an unchanged grammar still gets a visible answer (the result itself would not change).
   const [recheck, setRecheck] = useState(false);
-  const check = () => { setRecheck(checked && !dirty); commit(); };   // the first check is not a re-check
+  const check = () => { setRecheck(checked && !dirty); setChecked(true); commit(); };   // the first check is not a re-check
   const lines = draft.split('\n');
   const errorLines = new Set(dirty || !checked ? [] : analysis.errors.map((e) => lineOf(e, analysis.grammar)).filter((x): x is number => x !== null));
   return (
@@ -99,7 +102,7 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
         </section>
         <section className="pane pane--scroll" aria-label="Check result">
           <h2 className="label">Result</h2>
-          <Result model={model} />
+          <Result model={model} checked={checked} />
           {checked && !dirty && analysis.grammar.productions.length > 0 && (
             <ProductionList productions={analysis.grammar.productions} caption="Numbered productions, one per alternative" />
           )}
@@ -107,7 +110,7 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
           <ul className="samples">
             {custom !== null && custom !== committed && (
               <li>
-                <button type="button" className="sample" onClick={() => { setRecheck(false); void restoreCustom(); }}>
+                <button type="button" className="sample" onClick={() => { setRecheck(false); setChecked(false); void restoreCustom(); }}>
                   <span className="sample__title">Your grammar</span>
                   <Tag kind="plain">Saved</Tag>
                   <span className="sample__shows">Bring back the grammar you wrote before loading an example.</span>
@@ -116,7 +119,7 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
             )}
             {GRAMMAR_SAMPLES.map((s) => (
               <li key={s.id}>
-                <button type="button" className={cx('sample', s.text === committed && !dirty && 'is-current')} onClick={() => { setRecheck(false); void loadSample(s); }}
+                <button type="button" className={cx('sample', s.text === committed && !dirty && 'is-current')} onClick={() => { setRecheck(false); setChecked(false); void loadSample(s); }}
                   aria-pressed={s.text === committed && !dirty}>
                   <span className="sample__title">{s.title}</span>
                   <Tag kind={KIND[s.kind].tag}>{KIND[s.kind].word}</Tag>

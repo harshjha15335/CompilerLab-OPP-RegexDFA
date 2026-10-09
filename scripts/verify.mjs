@@ -366,6 +366,9 @@ if (want('keyboard')) {
   log('Tab to door I', ok);
   await page.keyboard.press('Enter'); await sleep(300);
   log('Enter opens 1 Grammar', (await page.evaluate(() => location.hash)) === '#/opp/grammar');
+  ok = await tabTo(page, () => document.activeElement?.textContent === 'Check grammar');
+  await page.keyboard.press('Enter'); await sleep(200);
+  log('Tab to "Check grammar" and press it (the result only appears after the check)', ok && Boolean(await page.$('.result--ok')));
   ok = await tabTo(page, () => document.activeElement?.textContent?.includes('Derive LEADING and TRAILING'));
   log('Tab to "Derive LEADING and TRAILING"', ok);
   await page.keyboard.press('Enter'); await arrive(page, '#/opp/sets');
@@ -717,9 +720,30 @@ if (want('repair')) {
   const handed = await page.$eval('.controls .field__input', (e) => e.value);
   const safe = await page.$$eval('.duo .bench__title .tag', (t) => t.map((x) => x.textContent));
   check('repair', `D-05 stage 5 receives "${handed}" (a sentence, not the terminal list) and Safeguarded accepts it`, handed !== '+ * ( ) id' && safe[1] === 'Accepted', JSON.stringify(safe));
+  // Coming back to stage 1 always starts unchecked (check again and again); later stages keep the last check
+  await page.goto(BASE + '#/opp/grammar'); await sleep(200);
+  await page.click('text=Check grammar'); await sleep(150);
+  const shownAfterCheck = Boolean(await page.$('.result--ok'));
+  await page.goto(BASE + '#/opp/sets'); await sleep(300);
+  const setsStill = Boolean(await page.$('.setblock'));
+  await page.goto(BASE + '#/opp/grammar'); await sleep(300);
+  const hiddenAgain = !(await page.$('.result--ok')) && /Not checked yet/.test(await page.$eval('.actions__state', (e) => e.textContent));
+  await page.click('text=Check grammar'); await sleep(150);
+  const firstAgain = (await page.$eval('.actions__state', (e) => e.textContent)) === 'Checked';
+  check('repair', 'stage 1 resets to "Not checked yet" on every visit and can be checked again; stage 2 keeps the last check',
+    shownAfterCheck && setsStill && hiddenAgain && firstAgain && Boolean(await page.$('.result--ok')), JSON.stringify({ shownAfterCheck, setsStill, hiddenAgain, firstAgain }));
+  // LR parsing is its own chapter: the Bottom-Up (operator precedence) tab is not marked current there
+  await page.goto(BASE + '#/lr'); await sleep(200);
+  const railLr = await page.$$eval('.rail__link.is-current, .rail__link[aria-current]', (e) => e.map((x) => x.textContent));
+  const plateNo = await page.$('.plate__no');
+  check('repair', `LR page marks no operator-precedence tab as current (${JSON.stringify(railLr)}); no "Plate …" line`, railLr.length === 0 && !plateNo);
   // D-22: a refresh keeps the inputs (sessionStorage)
   await page.goto(BASE + '#/opp/grammar'); await sleep(200);
   await page.fill('#grammar-text', 'S -> a + S | a');
+  // A refresh a human could make: Chromium commits sessionStorage asynchronously, and a reload in the same
+  // millisecond under heavy test load can read an older snapshot even though the app's last write (also on
+  // pagehide) held the new text (traced while diagnosing this check).
+  await sleep(300);
   await page.reload(); await sleep(400);
   check('repair', 'D-22 a refresh keeps the unchecked grammar', (await page.$eval('#grammar-text', (e) => e.value)) === 'S -> a + S | a', await page.$eval('#grammar-text', (e) => e.value).catch((e) => String(e)));
   await page.evaluate(() => sessionStorage.clear());

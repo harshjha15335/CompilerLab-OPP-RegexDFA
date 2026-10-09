@@ -37,7 +37,7 @@ export function Rail({ route }: { route: Route }) {
         <span className="wordmark">Parse<span className="wordmark__lens">Lens</span></span>
       </a>
       <nav className="rail__nav" aria-label="Chapters">
-        <a href={hashFor('opp', 'grammar')} className={cx('rail__link', (ch === 'opp' || ch === 'lr') && 'is-current')} aria-current={ch === 'opp' || ch === 'lr' ? 'page' : undefined}>Bottom-Up</a>
+        <a href={hashFor('opp', 'grammar')} className={cx('rail__link', ch === 'opp' && 'is-current')} aria-current={ch === 'opp' ? 'page' : undefined}>Bottom-Up</a>
         <a href={hashFor('regex', 'tree')} className={cx('rail__link', ch === 'regex' && 'is-current')} aria-current={ch === 'regex' ? 'page' : undefined}>Regex → DFA</a>
       </nav>
     </header>

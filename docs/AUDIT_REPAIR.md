@@ -11,7 +11,7 @@ A read-only audit of `4152567` found **0 P0/P1, 7 P2 and 28 P3 defects**, plus o
 - **No silent data loss.**
   - Loading a sample over unchecked edits asks first, in a native `<dialog>` (Cancel is focused; Escape cancels; focus returns).
   - The user's own grammar stays available as "Your grammar".
-- **Nothing is checked for the user.** Stage 1 shows no result until **Check grammar** is pressed; loading an example only fills the editor; stages 2–4 ask for the check first (picking a grammar in their header menu checks it). The same holds for regular expressions: nothing is built until **Build tree**, and regex stages 2–5 wait for it.
+- **Nothing is checked for the user.** Stage 1 shows no result until **Check grammar** is pressed; loading an example only fills the editor; stages 2–4 ask for the check first (picking a grammar in their header menu checks it). The same holds for regular expressions: nothing is built until **Build tree**, and regex stages 2–5 wait for it. Coming back to stage 1 always starts unchecked, so a grammar can be checked again and again; stages 2–4 keep the last check.
 - **Inputs survive a refresh** (sessionStorage, for the tab).
 - **Stage 1 → stage 5** hands over the checked grammar plus a sentence it derives, never its terminal list.
 - **The homepage specimen** pauses and resumes correctly with Space.

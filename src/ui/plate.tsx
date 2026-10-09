@@ -101,7 +101,6 @@ export function Plate({ chapter, stage, title, aside, children, dock, controls, 
     <article className={cx('plate', className)} aria-labelledby="plate-title">
       <header className="plate__head">
         <div className="plate__titles">
-          <p className="plate__no">Plate {chapter.numeral}{stage ? `.${stage.no}` : ''} · {chapter.title}</p>
           <h1 className="plate__title" id="plate-title">{title ?? stage?.title ?? chapter.title}</h1>
         </div>
         {stage && <p className="plate__does">{stage.does}</p>}

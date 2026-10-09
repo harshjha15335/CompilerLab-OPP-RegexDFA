@@ -3,7 +3,7 @@
 Generated from `artifacts/report.json` by `scripts/report-md.mjs`.
 Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a renamed, nested copy of `dist/`, opened from file:// with the network off).
 
-**670 passed, 0 failed.**
+**672 passed, 0 failed.**
 
 ## layout (610/610)
 
@@ -677,10 +677,10 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/236 (runs: 0/235, 0/236, 1/235); 5 step commits, worst 17 ms |
-| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/236 (runs: 1/236, 1/236, 1/235); 3 step commits, worst 17 ms |
-| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/235, 1/235, 2/235); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 0/238 (runs: 0/237, 0/238, 1/234); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/235 (runs: 0/236, 0/235, 0/235); 6 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/236, 1/235, 1/235); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/235, 2/235, 2/234); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/237, 1/235, 2/236); 3 step commits, worst 17 ms |
 
 ## intro (1/1)
 
@@ -696,7 +696,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | every relation glyph ⋖ ⋗ ≐ is inline SVG, no glyph font needed (32/32) |
 | pass | no IBM Plex Math face is declared |
 
-## repair (16/16)
+## repair (18/18)
 
 | Result | Check |
 | --- | --- |
@@ -710,11 +710,13 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | D-03 stage 3 marks results "Out of date" while stage 1 is unchecked; "Check grammar now" updates them (axes Stack terminal down, lookahead across + id z $) |
 | pass | D-02 parse: "Not run yet" names the shown string; the mode switch keeps it (id + id * id $) |
 | pass | D-05 stage 5 receives "id + id * id" (a sentence, not the terminal list) and Safeguarded accepts it |
+| pass | stage 1 resets to "Not checked yet" on every visit and can be checked again; stage 2 keeps the last check |
+| pass | LR page marks no operator-precedence tab as current ([]); no "Plate …" line |
 | pass | D-22 a refresh keeps the unchecked grammar |
 | pass | D-17 title "LR parsing · ParseLens" |
 | pass | D-35 DFA summary at step 2 lists only what is drawn |
 | pass | D-25 32-state DFA: opens at "80% of actual size", zoom in "112% of actual size", Fit "Whole graph", Reset "80% of actual size" |
-| pass | D-26 a 1,024-state DFA stops in 234 ms with a plain message |
+| pass | D-26 a 1,024-state DFA stops in 232 ms with a plain message |
 | pass | D-11 150 nested parentheses and a 6,001-character expression give friendly diagnostics, no page overflow |
 
 ## bundle (6/6)
@@ -726,7 +728,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-BIMxq1e3.js 423 KB |
+| pass | bundle sizes: index-Cy49IcFO.js 423 KB |
 
 ## offline (2/2)
 

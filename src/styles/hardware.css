@@ -29,11 +29,15 @@
   transform: translateY(5px) translateZ(1px) rotateX(0deg);
 }
 .keycap:active:not(:disabled) .keycap__skirt, .keycap[data-down] .keycap__skirt { box-shadow: 0 1px 1px var(--cap-shadow); }
-.keycap[aria-pressed='true'] .keycap__face { background: linear-gradient(180deg, #f4efe2, #ebe4d4); transform: translateY(4px) translateZ(2px) rotateX(3deg); }
+.keycap[aria-pressed='true'] .keycap__face {   /* latched (e.g. Pause while playing): same size and position, pressed-in look */
+  background: linear-gradient(180deg, #ece6d7, #f6f2e8); border-color: #d3cbb7;
+  box-shadow: inset 0 1px 3px rgba(48, 40, 24, 0.22); transform: translateY(1px) translateZ(4px) rotateX(5deg);
+}
+.keycap[aria-pressed='true'] .keycap__skirt { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 2px 3px var(--cap-shadow); }
 .keycap:disabled { cursor: default; }
 .keycap:disabled .keycap__face { color: var(--ink-3); opacity: 0.55; }
 .keycap:disabled .keycap__skirt { opacity: 0.6; }
-.keycap:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.keycap:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 [data-motion='reduced'] .keycap__face, [data-motion='reduced'] .keycap__skirt { transition: none; }
 
 /* ── Dock (transport tray) ───────────────────────────── */

@@ -106,7 +106,6 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
                   <button type="button" className={cx('sample', s.source === committed && !dirty && 'is-current')} onClick={() => loadSample(s)} aria-pressed={s.source === committed && !dirty}>
                     <span className="sample__title mono">{s.source}</span>
                     {s.error && <Tag kind="reject">Malformed</Tag>}
-                    <span className="sample__shows">{s.shows}</span>
                   </button>
                 </li>
               ))}

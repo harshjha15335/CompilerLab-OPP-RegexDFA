@@ -630,7 +630,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | 3b. all three doors open their tool with Enter |
 | pass | 4. zero network requests so far |
 | pass | 5. logo-removed screenshot written for review (artifacts/screenshots/home-without-logo.png) |
-| pass | project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note |
+| pass | project title block (project, team, members, semester) is fully visible in the first view; no course row, no navigation note |
 
 ## keyboard (6/6)
 
@@ -677,10 +677,10 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/235 (runs: 0/236, 0/235, 0/235); 6 step commits, worst 17 ms |
-| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/236, 1/235, 1/235); 3 step commits, worst 17 ms |
-| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/235 (runs: 1/235, 2/235, 2/234); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 1/235 (runs: 1/237, 1/235, 2/236); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/236 (runs: 0/235, 0/236, 0/235); 5 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/235, 2/234, 2/234); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/232 (runs: 2/234, 2/232, 3/233); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 2/234, 2/234, 3/231); 3 step commits, worst 17 ms |
 
 ## intro (1/1)
 
@@ -716,7 +716,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | D-17 title "LR parsing · ParseLens" |
 | pass | D-35 DFA summary at step 2 lists only what is drawn |
 | pass | D-25 32-state DFA: opens at "80% of actual size", zoom in "112% of actual size", Fit "Whole graph", Reset "80% of actual size" |
-| pass | D-26 a 1,024-state DFA stops in 232 ms with a plain message |
+| pass | D-26 a 1,024-state DFA stops in 235 ms with a plain message |
 | pass | D-11 150 nested parentheses and a 6,001-character expression give friendly diagnostics, no page overflow |
 
 ## bundle (6/6)
@@ -728,7 +728,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-Cy49IcFO.js 423 KB |
+| pass | bundle sizes: index-MGa3RTJq.js 423 KB |
 
 ## offline (2/2)
 

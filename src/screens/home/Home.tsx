@@ -60,7 +60,7 @@ export function Home({ onUse }: { onUse: () => void }) {
           <div><dt>Project</dt><dd><b className="titleblock__name wordmark">Parse<span className="wordmark__lens">Lens</span></b><span>Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)</span></dd></div>
           <div><dt>Team</dt><dd>Team Compilers</dd></div>
           <div><dt>Members</dt><dd><span>Harsh Jha <span className="titleblock__id">24BCE0568</span></span><span>Anuj Deshpande <span className="titleblock__id">24BCE0794</span></span></dd></div>
-          <div><dt>Year</dt><dd>2026</dd></div>
+          <div><dt>Semester</dt><dd>Fall Semester 26–27</dd></div>
         </dl>
       </section>
 

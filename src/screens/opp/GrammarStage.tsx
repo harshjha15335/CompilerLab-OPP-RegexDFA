@@ -23,7 +23,7 @@ const lineOf = (e: GrammarError, g: Grammar) => e.line ?? g.productions.find((p)
 function Result({ model, checked }: { model: OppModel; checked: boolean }) {
   const { analysis, dirty } = model;
   if (!checked)
-    return <div className="result" role="status"><p className="result__head">Not checked yet.</p><p>Press <b>Check grammar</b> (Ctrl + Enter) to see whether this is an operator grammar.</p></div>;
+    return <div className="result" role="status"><p className="result__head">Not checked yet.</p></div>;
   if (dirty)
     return <div className="result" role="status"><p className="result__head">Edited. Press <b>Check grammar</b> (Ctrl + Enter) to check it again.</p></div>;
   if (analysis.status === 'empty')
@@ -113,7 +113,6 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
                 <button type="button" className="sample" onClick={() => { setRecheck(false); setChecked(false); void restoreCustom(); }}>
                   <span className="sample__title">Your grammar</span>
                   <Tag kind="plain">Saved</Tag>
-                  <span className="sample__shows">Bring back the grammar you wrote before loading an example.</span>
                 </button>
               </li>
             )}
@@ -123,7 +122,6 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
                   aria-pressed={s.text === committed && !dirty}>
                   <span className="sample__title">{s.title}</span>
                   <Tag kind={KIND[s.kind].tag}>{KIND[s.kind].word}</Tag>
-                  <span className="sample__shows">{s.shows}</span>
                 </button>
               </li>
             ))}

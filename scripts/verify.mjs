@@ -336,8 +336,8 @@ if (want('home')) {
     const r = el.getBoundingClientRect();
     return { text: el.textContent, inView: r.top >= 0 && r.bottom <= innerHeight, note: Boolean(document.querySelector('.firstnote')) };
   });
-  check('home', 'project title block (project, team, members, year) is fully visible in the first view; no course row, no navigation note',
-    Boolean(tb) && tb.inView && !tb.note && !tb.text.includes('Course') && ['ParseLens', 'Interactive GUI for Operator Precedence Parsing', 'Team Compilers', 'Harsh Jha', '24BCE0568', 'Anuj Deshpande', '24BCE0794', '2026'].every((t) => tb.text.includes(t)),
+  check('home', 'project title block (project, team, members, semester) is fully visible in the first view; no course row, no navigation note',
+    Boolean(tb) && tb.inView && !tb.note && !tb.text.includes('Course') && ['ParseLens', 'Interactive GUI for Operator Precedence Parsing', 'Team Compilers', 'Harsh Jha', '24BCE0568', 'Anuj Deshpande', '24BCE0794', 'Fall Semester 26–27'].every((t) => tb.text.includes(t)),
     JSON.stringify(tb));
   await ctx.close();
 }

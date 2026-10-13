@@ -1,0 +1,89 @@
+/* LR parsing: item-set cards, the ACTION/GOTO table, the state stack and the input tape.
+   Same signals as the other figures: highlighter fill + corner brackets = written by this step;
+   dashed brass outline = read by this step; conflict = crimson wash. */
+
+/* ── Item sets ── */
+.figure--items { justify-content: flex-start; gap: 10px; min-height: 0; overflow-y: auto; }
+.figure--items .istates { flex: none; }
+.istates { display: grid; align-items: start; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px; align-content: start; padding: 2px; }
+.istates__empty { grid-column: 1 / -1; }
+.istate { display: grid; gap: 6px; align-content: start; padding: 8px 10px; background: var(--plate); border: 1px solid var(--line); border-radius: var(--r-mark); }
+.istate.is-source { outline: 2px dashed var(--read); outline-offset: -2px; }
+.istate.is-target-new { background: var(--changed); border-color: var(--changed-edge); }
+.istate.is-target-old { border: 1px dashed var(--changed-edge); box-shadow: inset 0 0 0 1px var(--changed-edge); }
+.istate__head { display: flex; align-items: center; gap: 8px; }
+.istate__name { font: var(--t-section); margin: 0; }
+.istate__items { display: grid; gap: 2px; font: var(--t-formal); }
+.istate__items li { padding: 1px 4px; border-radius: var(--r-mark); border: 1px solid transparent; }
+.istate__items li.is-closure { color: var(--ink-2); box-shadow: inset 2px 0 0 var(--rule); }
+.istate__items li.is-moved { border: 1px dashed var(--read); }
+.istate__out { display: flex; flex-wrap: wrap; gap: 4px 10px; border-top: 1px solid var(--rule); padding-top: 5px; font: var(--t-caption); color: var(--ink-2); }
+.istate__out li.is-on { color: var(--ink); font-weight: 600; }
+.item { display: inline-flex; flex-wrap: wrap; gap: 0 5px; align-items: baseline; }
+.item__lhs { font-weight: 500; }
+.item__arrow { color: var(--ink-3); }
+.item__dot { font-weight: 700; color: var(--brass-lo); }
+.item__eps { color: var(--ink-3); }
+.legend__closure { width: 16px; height: 16px; display: inline-block; border: 1px solid var(--line); box-shadow: inset 3px 0 0 var(--rule); }
+.legend__moved { width: 16px; height: 16px; display: inline-block; border: 1px dashed var(--read); }
+
+/* ── ACTION / GOTO table ── */
+.ltable-wrap { max-width: 100%; overflow: auto; flex: 0 1 auto; }
+.ltable { border-collapse: collapse; font: var(--t-formal); background: var(--plate); }
+.ltable th, .ltable td { border: 1px solid var(--line); min-width: 42px; height: clamp(24px, calc((100dvh - 330px) / 14.5), 32px); padding: 2px 6px; text-align: center; position: relative; white-space: nowrap; }
+.ltable-wrap--compact .ltable th, .ltable-wrap--compact .ltable td { min-width: 28px; height: 26px; padding: 1px 2px; font-size: 0.8125rem; }
+.ltable-wrap--compact { flex: none; }
+.ltable thead th { font: var(--t-label); color: var(--ink-2); background: var(--plate-2); }
+.ltable tbody th { background: var(--plate-2); font-weight: 500; }
+.ltable th.is-band { background: var(--band); }
+.ltable .ltable__goto { border-left: 3px double var(--line); }
+.ltable tr > td:nth-child(n) { font-family: var(--font-mono); font-size: 0.875rem; }
+.lcell.is-accept { font-weight: 700; }
+.lcell.is-changed { background: var(--changed); }
+.lcell.is-read { outline: 2px dashed var(--read); outline-offset: -3px; }
+.lcell.is-conflict { background: var(--conflict-wash); box-shadow: inset 0 0 0 2px var(--conflict); color: var(--conflict); font-weight: 600; }
+.lcell__slash { margin: 0 2px; }
+
+/* ── Parse: stack and tape ── */
+.figure--lrparse { justify-content: flex-start; gap: 10px; }
+.figure--lrparse > .block, .figure--lrparse > .note { flex: none; }
+.lstack, .ltape { display: flex; flex-wrap: wrap; gap: 4px; align-items: stretch; }
+.lstack__cell { display: grid; grid-template-rows: 1fr 1fr; min-width: 40px; border: 1px solid var(--line); border-radius: var(--r-mark); background: var(--plate); text-align: center; font: var(--t-formal); }
+.lstack__cell.is-new { background: var(--changed); border-color: var(--changed-edge); }
+.lstack__sym { grid-row: 1; padding: 2px 6px; border-bottom: 1px solid var(--rule); }
+.lstack__state { grid-row: 2; padding: 2px 6px; font-family: var(--font-mono); color: var(--ink-2); }
+.lstack__popped { align-self: center; font: var(--t-caption); color: var(--ink-2); padding: 0 6px; }
+.ltape__cell { min-width: 36px; padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--r-mark); text-align: center; font: var(--t-formal); background: var(--plate); }
+.ltape__cell.is-read { color: var(--ink-3); background: var(--plate-2); }
+.ltape__cell.is-at { background: var(--changed); border-color: var(--changed-edge); font-weight: 600; }
+
+/* parse tree: leaves on the bottom row, parents above */
+.figure--lrparse > .block--ptree { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+.figure__canvas--ptree { flex: 1 1 0; min-height: 0; display: flex; align-items: flex-end; justify-content: center; }
+.ptree { width: 100%; height: 100%; max-height: 340px; }
+.ptree__edge { stroke: var(--ink-2); stroke-width: 1.2; }
+.ptree__edge.is-new { stroke: var(--changed-edge); stroke-width: 2; }
+.ptree__node rect, .ptree__node circle { fill: var(--plate); stroke: var(--ink); stroke-width: 1.2; }
+.ptree__node.is-nt circle { fill: var(--plate-2); }
+.ptree__node.is-new rect, .ptree__node.is-new circle { fill: var(--changed); stroke: var(--changed-edge); stroke-width: 2; }
+.ptree__node text { font: 500 13px var(--font-mono); text-anchor: middle; fill: var(--ink); }
+
+/* regex stage 1: the position just numbered */
+.ftable--pos td.is-active { background: var(--changed); }
+
+@media (max-width: 640px) {
+  /* phones: the table fits the screen width instead of scrolling sideways */
+  .ltable { width: 100%; table-layout: fixed; }
+  .ltable th, .ltable td, .ltable-wrap--compact .ltable th, .ltable-wrap--compact .ltable td { min-width: 0; height: 26px; padding: 1px 0; font-size: 0.6875rem; }
+  .ltable tr > td:nth-child(n) { font-size: 0.6875rem; letter-spacing: -0.02em; }
+  .ltable thead th { font-size: 0.6875rem; }
+  .lstack__cell { min-width: 44px; }
+  .ltape__cell { min-width: 44px; min-height: 44px; }
+}
+
+/* Where the page is the one scroller (phones, short desktop windows), LR regions run at full height too. */
+@media (max-width: 999px), (min-width: 1000px) and (max-height: 719px), (min-width: 1000px) and (max-width: 1199px) and (max-height: 859px) {
+  .figure--items { overflow-y: visible; }
+  .figure--lrparse > .block--ptree { flex: none; }
+  .figure__canvas--ptree { flex: none; height: 220px; }
+}

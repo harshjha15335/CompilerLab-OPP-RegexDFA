@@ -178,10 +178,6 @@
 .sample__shows { grid-column: 1 / -1; font: var(--t-caption); color: var(--ink-3); }
 
 /* LR placeholder */
-.lr { display: grid; gap: 14px; max-width: 70ch; padding: 10px 4px; align-content: start; }
-.lr__lead { font: var(--t-section); }
-.lr__plan { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 10px; }
-.lr__plan li { display: flex; gap: 12px; align-items: center; color: var(--ink-2); }
 
 /* ── Narrower screens ─────────────────────────────────
    Below 1000 px the desktop rule (no page scroll, one inner scroller) gives way to its phone equivalent:
@@ -226,7 +222,8 @@
 @media (max-width: 640px) {
   :root { --gutter: 12px; }
   .rail__brand { margin-right: 0; }
-  .rail__nav { width: 100%; margin-left: -10px; }
+  .rail__nav { width: 100%; margin-left: -10px; flex-wrap: wrap; gap: 0 2px; }
+  .rail__link { padding: 8px 8px; font-size: 0.875rem; }
   .main { padding: 4px var(--gutter) 16px; }
   .plate__head { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 6px; }
   .plate__aside:empty { display: none; }

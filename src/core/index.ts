@@ -6,9 +6,11 @@ import * as PT from '../algorithms/precedence.js';
 import * as PA from '../algorithms/parser.js';
 import * as RX from '../algorithms/regex.js';
 import * as DM from '../algorithms/direct.js';
+import * as LR from '../algorithms/lr.js';
 import type {
   Comparison, CoreTable, Dfa, DirectStep, Grammar, GrammarError, LeafNode, Mode, ParseRun, RegexNode,
-  SetKind, SetMap, SetStep, SimRun,
+  SetKind, SetMap, SetStep, SimRun, TreeStep,
+  LrGrammar, FfStep, Lr0, SlrTable, LrAction, LrRun, LrItem,
 } from './types.ts';
 
 export * from './types.ts';
@@ -32,3 +34,16 @@ export const MAX_REGEX_NESTING = RX.MAX_REGEX_NESTING as number;
 export const MAX_DFA_STATES = DM.MAX_DFA_STATES as number;
 export const DfaLimitError = DM.DfaLimitError as unknown as { new (limit: number): Error & { limit: number } };
 export const simulateDfa = DM.simulateDfa as (dfa: Dfa, input: string) => SimRun;
+export const treeSteps = DM.treeSteps as (root: RegexNode, nodes: RegexNode[]) => TreeStep[];
+
+export const EPSILON = LR.EPSILON as 'ε';
+export const MAX_LR_STATES = LR.MAX_LR_STATES as number;
+export const LrLimitError = LR.LrLimitError as unknown as { new (limit: number): Error & { limit: number } };
+export const prepareLrGrammar = LR.prepareLrGrammar as (text: string) =>
+  { ok: true; errors: GrammarError[]; grammar: Grammar; augmented: LrGrammar } | { ok: false; errors: GrammarError[]; grammar: Grammar };
+export const computeFirstFollow = LR.computeFirstFollow as (g: Grammar) => { first: SetMap; follow: SetMap; steps: FfStep[] };
+export const buildLr0 = LR.buildLr0 as (g: LrGrammar) => Lr0;
+export const buildSlrTable = LR.buildSlrTable as (g: LrGrammar, lr0: Lr0, follow: SetMap) => SlrTable;
+export const parseLr = LR.parseLr as (g: LrGrammar, t: SlrTable, tokens: string[]) => LrRun;
+export const actionText = LR.actionText as (a: LrAction) => string;
+export const itemKey = LR.itemKey as (it: Pick<LrItem, 'prod' | 'dot'>) => string;

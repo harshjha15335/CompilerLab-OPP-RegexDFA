@@ -78,3 +78,43 @@ export type SimStep =
   | { type: 'MOVE'; from: string; to: string; symbol: string; index: number; message: string }
   | { type: 'ACCEPT' | 'REJECT'; state: string; index: number; symbol?: string; message: string };
 export interface SimRun { result: 'ACCEPT' | 'REJECT'; steps: SimStep[] }
+
+export type TreeStep =
+  | { phase: 'TREE'; type: 'TREE_LEAF' | 'TREE_END'; nodeId: number; symbol: string; pos: number; message: string }
+  | { phase: 'TREE'; type: 'TREE_NODE' | 'TREE_ROOT'; nodeId: number; op: Exclude<RegexNodeType, 'leaf'>; children: number[]; message: string };
+
+/* LR parsing (SLR(1)) */
+export interface LrGrammar { productions: Production[]; nonterminals: string[]; terminals: string[]; start: string; original: string }
+export type FfRule = 'F1' | 'F2' | 'F3' | 'W1' | 'W2' | 'W3';
+export type FfSnapshot = { first: SetMap; follow: SetMap };
+export type FfStep =
+  | { phase: 'FIRST' | 'FOLLOW'; type: 'PASS'; pass: number; message: string; snapshot: FfSnapshot }
+  | { phase: 'FIRST' | 'FOLLOW'; type: 'DONE'; message: string; snapshot: FfSnapshot }
+  | { phase: 'FIRST' | 'FOLLOW'; type: 'ADD'; nonTerminal: string; element: string; rule: FfRule; productionId: number | null;
+      via: string | null; skipped?: string[]; beta?: string[]; position?: number; message: string; snapshot: FfSnapshot };
+export type FfAddStep = Extract<FfStep, { type: 'ADD' }>;
+
+export interface LrItem { prod: number; dot: number; kernel: boolean; from: string | null }
+export interface LrState { id: number; items: LrItem[] }
+export interface LrTransition { from: number; symbol: string; to: number }
+export type Lr0Step =
+  | { phase: 'ITEMS'; type: 'START'; state: number; message: string }
+  | { phase: 'ITEMS'; type: 'GOTO'; from: number; symbol: string; to: number; isNew: boolean; moved: string[]; message: string }
+  | { phase: 'ITEMS'; type: 'DONE'; message: string };
+export interface Lr0 { states: LrState[]; transitions: LrTransition[]; steps: Lr0Step[]; start: number }
+
+export type LrAction = { kind: 'shift'; to: number } | { kind: 'reduce'; prod: number } | { kind: 'accept' } | { kind: 'goto'; to: number };
+export type SlrStep =
+  | { phase: 'TABLE'; type: 'ENTRY'; state: number; symbol: string; action: LrAction; changed: boolean; conflict: boolean;
+      kind: 'shift/reduce' | 'reduce/reduce' | null; rule: 'GOTO' | 'SHIFT' | 'REDUCE' | 'ACCEPT'; items: string[]; followOf?: string; message: string }
+  | { phase: 'TABLE'; type: 'VERDICT'; ok: boolean; conflicts: { state: number; symbol: string }[]; message: string };
+export type SlrEntryStep = Extract<SlrStep, { type: 'ENTRY' }>;
+export interface SlrTable { cells: Map<string, LrAction[]>; conflicts: { state: number; symbol: string }[]; steps: SlrStep[]; get: (state: number, symbol: string) => LrAction[] }
+
+export interface LrStackEntry { state: number; symbol: string | null }
+export interface LrParseStep {
+  phase: 'PARSE'; type: 'SHIFT' | 'REDUCE' | 'ACCEPT' | 'REJECT'; state: number; lookahead: string; pointer: number;
+  stack: LrStackEntry[]; stackBefore?: LrStackEntry[]; action?: LrAction; production?: Production; popped?: LrStackEntry[];
+  exposed?: number; goto?: number; message: string;
+}
+export interface LrRun { result: 'ACCEPT' | 'REJECT'; steps: LrParseStep[] }

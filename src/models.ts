@@ -4,8 +4,8 @@
 // Every input has two values: the *draft* (what is typed) and the *submitted* value the results were
 // computed from. `…Dirty` flags say when they differ, so no screen presents results for text it no longer shows.
 import { useCallback, useMemo, useState } from 'react';
-import { EXPR_SAMPLE, GRAMMAR_SAMPLES, MODES_SAMPLE, REGEX_SAMPLES, type GrammarSample, type RegexSample } from './data/samples.ts';
-import { analyzeGrammar, analyzeRegex, runCompare, runParse, runSimulation, type OkGrammar } from './replay/pipelines.ts';
+import { EXPR_SAMPLE, GRAMMAR_SAMPLES, LR_SAMPLES, MODES_SAMPLE, REGEX_SAMPLES, type GrammarSample, type LrSample, type RegexSample } from './data/samples.ts';
+import { analyzeGrammar, analyzeLr, analyzeRegex, runCompare, runLrParse, runParse, runSimulation, type OkGrammar } from './replay/pipelines.ts';
 import { pickCompareString } from './replay/transfer.ts';
 import { readSession, useSessionPatch } from './ui/store.ts';
 import type { Mode } from './core/index.ts';
@@ -119,3 +119,36 @@ export function useRegexModel() {
     simDraft, setSimDraft, simInput, simulate, sim, loadSample, simDirty: simDraft !== simInput };
 }
 export type RegexModel = ReturnType<typeof useRegexModel>;
+
+interface LrSession { draft: string; committed: string; checked: boolean; parseDraft: string; parseInput: string }
+
+export function useLrModel() {
+  const first = LR_SAMPLES[0];
+  const saved = useMemo(() => readSession<{ lr: LrSession }>().lr ?? null, []);
+  const [draft, setDraft] = useState(saved?.draft ?? first.text);
+  const [committed, setCommitted] = useState(saved?.committed ?? first.text);
+  // as in the other chapters: nothing is analysed on screen until Check grammar is pressed
+  const [checked, setChecked] = useState(saved?.checked ?? false);
+  const [parseDraft, setParseDraft] = useState(saved?.parseDraft ?? first.strings[0]);
+  const [parseInput, setParseInput] = useState(saved?.parseInput ?? first.strings[0]);
+
+  const analysis = useMemo(() => analyzeLr(committed), [committed]);
+  const ok = analysis.status === 'ok' ? analysis : null;
+  const sample = LR_SAMPLES.find((s) => s.text === committed) ?? null;
+  const strings = sample?.strings ?? NONE;
+  const run = useMemo(() => (ok?.conflictFree ? runLrParse(ok, parseInput) : null), [ok, parseInput]);
+
+  useSessionPatch({ lr: { draft, committed, checked, parseDraft, parseInput } satisfies LrSession });
+
+  const commit = useCallback(() => { setCommitted(draft); setChecked(true); }, [draft]);
+  /** An example fills the editor; `check` also checks it (the header menu on stages 2–5). */
+  const loadSample = useCallback((s: LrSample, { check = false }: { check?: boolean } = {}) => {
+    setDraft(s.text); setCommitted(s.text); setChecked(check);
+    setParseDraft(s.strings[0] ?? ''); setParseInput(s.strings[0] ?? '');
+  }, []);
+  const parse = useCallback((input: string) => { setParseDraft(input); setParseInput(input); }, []);
+
+  return { draft, setDraft, committed, commit, checked, dirty: draft !== committed, analysis, ok, sample, strings,
+    parseDraft, setParseDraft, parseInput, parse, run, loadSample, parseDirty: parseDraft !== parseInput };
+}
+export type LrModel = ReturnType<typeof useLrModel>;

@@ -57,7 +57,7 @@ export function Home({ onUse }: { onUse: () => void }) {
         <h1 className="home__title" id="home-title">How a compiler decides what to do next.</h1>
         <p className="home__sub">Build the precedence table for a grammar, one relation at a time. Then watch a parser use it.</p>
         <dl className="titleblock" aria-label="Project">
-          <div><dt>Project</dt><dd><b className="titleblock__name wordmark">Parse<span className="wordmark__lens">Lens</span></b><span>Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)</span></dd></div>
+          <div><dt>Project</dt><dd><b className="titleblock__name wordmark">Parse<span className="wordmark__lens">Lens</span></b><span>Interactive GUI for Operator Precedence Parsing, LR Parsing and RE → DFA (direct method)</span></dd></div>
           <div><dt>Team</dt><dd>Team Compilers</dd></div>
           <div><dt>Members</dt><dd><span>Harsh Jha <span className="titleblock__id">24BCE0568</span></span><span>Anuj Deshpande <span className="titleblock__id">24BCE0794</span></span></dd></div>
           <div><dt>Semester</dt><dd>Fall Semester 26–27</dd></div>

@@ -6,6 +6,7 @@ import './styles/shell.css';
 import './styles/hardware.css';
 import './styles/figures.css';
 import './styles/home.css';
+import './styles/lr.css';
 import './styles/motion.css';
 import App from './App.tsx';
 

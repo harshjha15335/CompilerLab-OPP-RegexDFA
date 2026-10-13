@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { hashFor, parseHash, type Route } from './data/nav.ts';
 import { EXPR_SAMPLE, type GrammarSample } from './data/samples.ts';
-import { useOppModel, useRegexModel } from './models.ts';
+import { useLrModel, useOppModel, useRegexModel } from './models.ts';
 import { SettingsContext, type Settings } from './replay/useReplay.ts';
 import { cancelAllFx } from './motion/fx.ts';
 import { Rail } from './shell/Shell.tsx';
@@ -12,7 +12,7 @@ import { TableStage } from './screens/opp/TableStage.tsx';
 import { ConflictBlock, ParseStage } from './screens/opp/ParseStage.tsx';
 import { GrammarPicker } from './screens/opp/GrammarStage.tsx';
 import { ModesStage } from './screens/opp/ModesStage.tsx';
-import { LrStage } from './screens/lr/LrStage.tsx';
+import { ItemsStage, LrBlocked, LrConflictBlock, LrGrammarStage, LrParseStage, LrPicker, LrSetsStage, LrTableStage } from './screens/lr/LrStages.tsx';
 import { DfaStage, FollowStage, PropsStage, RegexBlocked, SimStage, TreeStage } from './screens/regex/RegexStages.tsx';
 import { useConfirm } from './ui/confirm.tsx';
 import { watchScrollRegions } from './ui/scrollFocus.ts';
@@ -50,6 +50,7 @@ export default function App() {
   const route = useRoute();
   const rawOpp = useOppModel();
   const regex = useRegexModel();
+  const lr = useLrModel();
   const [confirm, confirmDialog] = useConfirm();
   // Choosing a sample over unchecked edits asks first (Cancel keeps the editor exactly as it is).
   // Checked custom grammars are kept as "Your grammar", so they need no question.
@@ -83,7 +84,16 @@ export default function App() {
     if (route.page === 'home')
       return <Home onUse={() => { void opp.loadSample(EXPR_SAMPLE).then((done) => { if (done) window.location.hash = hashFor('opp', 'grammar'); }); }} />;
     const { chapter, stage } = route;
-    if (chapter.id === 'lr' || !stage) return <LrStage chapter={chapter} />;
+    if (!stage) return null;
+    if (chapter.id === 'lr') {
+      if (stage.id === 'grammar') return <LrGrammarStage chapter={chapter} stage={stage} model={lr} />;
+      if (!lr.checked || !lr.ok) return <LrBlocked chapter={chapter} stage={stage} model={lr} />;
+      if (stage.id === 'items') return <ItemsStage chapter={chapter} stage={stage} a={lr.ok} />;
+      if (stage.id === 'sets') return <LrSetsStage chapter={chapter} stage={stage} a={lr.ok} />;
+      if (stage.id === 'table') return <LrTableStage chapter={chapter} stage={stage} a={lr.ok} />;
+      if (!lr.ok.conflictFree) return <LrConflictBlock chapter={chapter} stage={stage} a={lr.ok} />;
+      return <LrParseStage chapter={chapter} stage={stage} model={lr} a={lr.ok} />;
+    }
     if (chapter.id === 'opp') {
       if (stage.id === 'grammar') return <GrammarStage chapter={chapter} stage={stage} model={opp} />;
       if (stage.id === 'modes') return <ModesStage chapter={chapter} stage={stage} model={opp} />;
@@ -124,13 +134,16 @@ export default function App() {
     return <SimStage chapter={chapter} stage={stage} model={regex} r={regex.ok} />;
   })();
   const picker = route.page === 'chapter' && route.chapter.id === 'opp' && ['sets', 'table', 'parse'].includes(route.stage?.id ?? '')
-    ? <GrammarPicker model={opp} /> : null;
+    ? <GrammarPicker model={opp} />
+    : route.page === 'chapter' && route.chapter.id === 'lr' && route.stage?.id !== 'grammar' ? <LrPicker model={lr} /> : null;
   // Results downstream of an edited-but-unchecked input are kept (they are still correct for the last
   // checked input) but are labelled as such, with the one action that brings them up to date.
   const stageId = route.page === 'chapter' ? route.stage?.id ?? '' : '';
   const chapterId = route.page === 'chapter' ? route.chapter.id : '';
   const stale = chapterId === 'opp' && ['sets', 'table', 'parse'].includes(stageId) && opp.checked && opp.dirty
     ? { what: 'grammar', on: 'stage 1', action: 'Check grammar', run: opp.commit, href: hashFor('opp', 'grammar') }
+    : chapterId === 'lr' && stageId !== 'grammar' && lr.checked && lr.dirty
+      ? { what: 'grammar', on: 'stage 1', action: 'Check grammar', run: lr.commit, href: hashFor('lr', 'grammar') }
     : chapterId === 'regex' && stageId !== 'tree' && regex.built && regex.dirty
       ? { what: 'expression', on: 'stage 1', action: 'Build tree', run: regex.commit, href: hashFor('regex', 'tree') }
       : null;

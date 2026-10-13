@@ -3,9 +3,9 @@
 Generated from `artifacts/report.json` by `scripts/report-md.mjs`.
 Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a renamed, nested copy of `dist/`, opened from file:// with the network off).
 
-**672 passed, 0 failed.**
+**829 passed, 0 failed.**
 
-## layout (610/610)
+## layout (760/760)
 
 | Result | Check |
 | --- | --- |
@@ -409,21 +409,141 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | opp-modes-end @ 1920x1080: no text overlapping other text or a control |
 | pass | opp-modes-end @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | opp-modes-end @ 1920x1080: no horizontal page scroll |
-| pass | lr @ 1366x768: no clipped text |
-| pass | lr @ 1366x768: no overlapping interactive elements |
-| pass | lr @ 1366x768: no text overlapping other text or a control |
-| pass | lr @ 1366x768: at most one vertical scrollbar, no page scroll |
-| pass | lr @ 1366x768: no horizontal page scroll |
-| pass | lr @ 1280x720: no clipped text |
-| pass | lr @ 1280x720: no overlapping interactive elements |
-| pass | lr @ 1280x720: no text overlapping other text or a control |
-| pass | lr @ 1280x720: at most one vertical scrollbar, no page scroll |
-| pass | lr @ 1280x720: no horizontal page scroll |
-| pass | lr @ 1920x1080: no clipped text |
-| pass | lr @ 1920x1080: no overlapping interactive elements |
-| pass | lr @ 1920x1080: no text overlapping other text or a control |
-| pass | lr @ 1920x1080: at most one vertical scrollbar, no page scroll |
-| pass | lr @ 1920x1080: no horizontal page scroll |
+| pass | lr-grammar @ 1366x768: no clipped text |
+| pass | lr-grammar @ 1366x768: no overlapping interactive elements |
+| pass | lr-grammar @ 1366x768: no text overlapping other text or a control |
+| pass | lr-grammar @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-grammar @ 1366x768: no horizontal page scroll |
+| pass | lr-grammar @ 1280x720: no clipped text |
+| pass | lr-grammar @ 1280x720: no overlapping interactive elements |
+| pass | lr-grammar @ 1280x720: no text overlapping other text or a control |
+| pass | lr-grammar @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-grammar @ 1280x720: no horizontal page scroll |
+| pass | lr-grammar @ 1920x1080: no clipped text |
+| pass | lr-grammar @ 1920x1080: no overlapping interactive elements |
+| pass | lr-grammar @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-grammar @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-grammar @ 1920x1080: no horizontal page scroll |
+| pass | lr-items @ 1366x768: no clipped text |
+| pass | lr-items @ 1366x768: no overlapping interactive elements |
+| pass | lr-items @ 1366x768: no text overlapping other text or a control |
+| pass | lr-items @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-items @ 1366x768: no horizontal page scroll |
+| pass | lr-items @ 1280x720: no clipped text |
+| pass | lr-items @ 1280x720: no overlapping interactive elements |
+| pass | lr-items @ 1280x720: no text overlapping other text or a control |
+| pass | lr-items @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-items @ 1280x720: no horizontal page scroll |
+| pass | lr-items @ 1920x1080: no clipped text |
+| pass | lr-items @ 1920x1080: no overlapping interactive elements |
+| pass | lr-items @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-items @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-items @ 1920x1080: no horizontal page scroll |
+| pass | lr-items-end @ 1366x768: no clipped text |
+| pass | lr-items-end @ 1366x768: no overlapping interactive elements |
+| pass | lr-items-end @ 1366x768: no text overlapping other text or a control |
+| pass | lr-items-end @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-items-end @ 1366x768: no horizontal page scroll |
+| pass | lr-items-end @ 1280x720: no clipped text |
+| pass | lr-items-end @ 1280x720: no overlapping interactive elements |
+| pass | lr-items-end @ 1280x720: no text overlapping other text or a control |
+| pass | lr-items-end @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-items-end @ 1280x720: no horizontal page scroll |
+| pass | lr-items-end @ 1920x1080: no clipped text |
+| pass | lr-items-end @ 1920x1080: no overlapping interactive elements |
+| pass | lr-items-end @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-items-end @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-items-end @ 1920x1080: no horizontal page scroll |
+| pass | lr-sets @ 1366x768: no clipped text |
+| pass | lr-sets @ 1366x768: no overlapping interactive elements |
+| pass | lr-sets @ 1366x768: no text overlapping other text or a control |
+| pass | lr-sets @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-sets @ 1366x768: no horizontal page scroll |
+| pass | lr-sets @ 1280x720: no clipped text |
+| pass | lr-sets @ 1280x720: no overlapping interactive elements |
+| pass | lr-sets @ 1280x720: no text overlapping other text or a control |
+| pass | lr-sets @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-sets @ 1280x720: no horizontal page scroll |
+| pass | lr-sets @ 1920x1080: no clipped text |
+| pass | lr-sets @ 1920x1080: no overlapping interactive elements |
+| pass | lr-sets @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-sets @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-sets @ 1920x1080: no horizontal page scroll |
+| pass | lr-table @ 1366x768: no clipped text |
+| pass | lr-table @ 1366x768: no overlapping interactive elements |
+| pass | lr-table @ 1366x768: no text overlapping other text or a control |
+| pass | lr-table @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-table @ 1366x768: no horizontal page scroll |
+| pass | lr-table @ 1280x720: no clipped text |
+| pass | lr-table @ 1280x720: no overlapping interactive elements |
+| pass | lr-table @ 1280x720: no text overlapping other text or a control |
+| pass | lr-table @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-table @ 1280x720: no horizontal page scroll |
+| pass | lr-table @ 1920x1080: no clipped text |
+| pass | lr-table @ 1920x1080: no overlapping interactive elements |
+| pass | lr-table @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-table @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-table @ 1920x1080: no horizontal page scroll |
+| pass | lr-table-conflict @ 1366x768: no clipped text |
+| pass | lr-table-conflict @ 1366x768: no overlapping interactive elements |
+| pass | lr-table-conflict @ 1366x768: no text overlapping other text or a control |
+| pass | lr-table-conflict @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-table-conflict @ 1366x768: no horizontal page scroll |
+| pass | lr-table-conflict @ 1280x720: no clipped text |
+| pass | lr-table-conflict @ 1280x720: no overlapping interactive elements |
+| pass | lr-table-conflict @ 1280x720: no text overlapping other text or a control |
+| pass | lr-table-conflict @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-table-conflict @ 1280x720: no horizontal page scroll |
+| pass | lr-table-conflict @ 1920x1080: no clipped text |
+| pass | lr-table-conflict @ 1920x1080: no overlapping interactive elements |
+| pass | lr-table-conflict @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-table-conflict @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-table-conflict @ 1920x1080: no horizontal page scroll |
+| pass | lr-parse @ 1366x768: no clipped text |
+| pass | lr-parse @ 1366x768: no overlapping interactive elements |
+| pass | lr-parse @ 1366x768: no text overlapping other text or a control |
+| pass | lr-parse @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse @ 1366x768: no horizontal page scroll |
+| pass | lr-parse @ 1280x720: no clipped text |
+| pass | lr-parse @ 1280x720: no overlapping interactive elements |
+| pass | lr-parse @ 1280x720: no text overlapping other text or a control |
+| pass | lr-parse @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse @ 1280x720: no horizontal page scroll |
+| pass | lr-parse @ 1920x1080: no clipped text |
+| pass | lr-parse @ 1920x1080: no overlapping interactive elements |
+| pass | lr-parse @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-parse @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse @ 1920x1080: no horizontal page scroll |
+| pass | lr-parse-end @ 1366x768: no clipped text |
+| pass | lr-parse-end @ 1366x768: no overlapping interactive elements |
+| pass | lr-parse-end @ 1366x768: no text overlapping other text or a control |
+| pass | lr-parse-end @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-end @ 1366x768: no horizontal page scroll |
+| pass | lr-parse-end @ 1280x720: no clipped text |
+| pass | lr-parse-end @ 1280x720: no overlapping interactive elements |
+| pass | lr-parse-end @ 1280x720: no text overlapping other text or a control |
+| pass | lr-parse-end @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-end @ 1280x720: no horizontal page scroll |
+| pass | lr-parse-end @ 1920x1080: no clipped text |
+| pass | lr-parse-end @ 1920x1080: no overlapping interactive elements |
+| pass | lr-parse-end @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-parse-end @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-end @ 1920x1080: no horizontal page scroll |
+| pass | lr-parse-lookup @ 1366x768: no clipped text |
+| pass | lr-parse-lookup @ 1366x768: no overlapping interactive elements |
+| pass | lr-parse-lookup @ 1366x768: no text overlapping other text or a control |
+| pass | lr-parse-lookup @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-lookup @ 1366x768: no horizontal page scroll |
+| pass | lr-parse-lookup @ 1280x720: no clipped text |
+| pass | lr-parse-lookup @ 1280x720: no overlapping interactive elements |
+| pass | lr-parse-lookup @ 1280x720: no text overlapping other text or a control |
+| pass | lr-parse-lookup @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-lookup @ 1280x720: no horizontal page scroll |
+| pass | lr-parse-lookup @ 1920x1080: no clipped text |
+| pass | lr-parse-lookup @ 1920x1080: no overlapping interactive elements |
+| pass | lr-parse-lookup @ 1920x1080: no text overlapping other text or a control |
+| pass | lr-parse-lookup @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | lr-parse-lookup @ 1920x1080: no horizontal page scroll |
 | pass | regex-tree @ 1366x768: no clipped text |
 | pass | regex-tree @ 1366x768: no overlapping interactive elements |
 | pass | regex-tree @ 1366x768: no text overlapping other text or a control |
@@ -439,6 +559,36 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | regex-tree @ 1920x1080: no text overlapping other text or a control |
 | pass | regex-tree @ 1920x1080: at most one vertical scrollbar, no page scroll |
 | pass | regex-tree @ 1920x1080: no horizontal page scroll |
+| pass | regex-tree-steps @ 1366x768: no clipped text |
+| pass | regex-tree-steps @ 1366x768: no overlapping interactive elements |
+| pass | regex-tree-steps @ 1366x768: no text overlapping other text or a control |
+| pass | regex-tree-steps @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-steps @ 1366x768: no horizontal page scroll |
+| pass | regex-tree-steps @ 1280x720: no clipped text |
+| pass | regex-tree-steps @ 1280x720: no overlapping interactive elements |
+| pass | regex-tree-steps @ 1280x720: no text overlapping other text or a control |
+| pass | regex-tree-steps @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-steps @ 1280x720: no horizontal page scroll |
+| pass | regex-tree-steps @ 1920x1080: no clipped text |
+| pass | regex-tree-steps @ 1920x1080: no overlapping interactive elements |
+| pass | regex-tree-steps @ 1920x1080: no text overlapping other text or a control |
+| pass | regex-tree-steps @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-steps @ 1920x1080: no horizontal page scroll |
+| pass | regex-tree-end @ 1366x768: no clipped text |
+| pass | regex-tree-end @ 1366x768: no overlapping interactive elements |
+| pass | regex-tree-end @ 1366x768: no text overlapping other text or a control |
+| pass | regex-tree-end @ 1366x768: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-end @ 1366x768: no horizontal page scroll |
+| pass | regex-tree-end @ 1280x720: no clipped text |
+| pass | regex-tree-end @ 1280x720: no overlapping interactive elements |
+| pass | regex-tree-end @ 1280x720: no text overlapping other text or a control |
+| pass | regex-tree-end @ 1280x720: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-end @ 1280x720: no horizontal page scroll |
+| pass | regex-tree-end @ 1920x1080: no clipped text |
+| pass | regex-tree-end @ 1920x1080: no overlapping interactive elements |
+| pass | regex-tree-end @ 1920x1080: no text overlapping other text or a control |
+| pass | regex-tree-end @ 1920x1080: at most one vertical scrollbar, no page scroll |
+| pass | regex-tree-end @ 1920x1080: no horizontal page scroll |
 | pass | regex-malformed @ 1366x768: no clipped text |
 | pass | regex-malformed @ 1366x768: no overlapping interactive elements |
 | pass | regex-malformed @ 1366x768: no text overlapping other text or a control |
@@ -677,10 +827,10 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/236 (runs: 0/235, 0/236, 0/235); 5 step commits, worst 17 ms |
-| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 1/235, 2/234, 2/234); 3 step commits, worst 17 ms |
-| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/232 (runs: 2/234, 2/232, 3/233); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 2/234, 2/234, 3/231); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 0/236, 1/234, 2/234); 6 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 2/233 (runs: 1/235, 2/233, 7/225); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/233 (runs: 1/235, 2/233, 4/231); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 4/232 (runs: 1/235, 4/232, 10/224); 3 step commits, worst 17 ms |
 
 ## intro (1/1)
 
@@ -696,7 +846,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | every relation glyph ⋖ ⋗ ≐ is inline SVG, no glyph font needed (32/32) |
 | pass | no IBM Plex Math face is declared |
 
-## repair (18/18)
+## repair (19/19)
 
 | Result | Check |
 | --- | --- |
@@ -711,13 +861,25 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | D-02 parse: "Not run yet" names the shown string; the mode switch keeps it (id + id * id $) |
 | pass | D-05 stage 5 receives "id + id * id" (a sentence, not the terminal list) and Safeguarded accepts it |
 | pass | stage 1 resets to "Not checked yet" on every visit and can be checked again; stage 2 keeps the last check |
-| pass | LR page marks no operator-precedence tab as current ([]); no "Plate …" line |
+| pass | LR page marks only the LR tab as current (["LR Parsing"]); no "Plate …" line |
 | pass | D-22 a refresh keeps the unchecked grammar |
-| pass | D-17 title "LR parsing · ParseLens" |
+| pass | D-17 title "Grammar · LR parsing · ParseLens" |
+| pass | regex syntax tree builds one node per step (0 → 3 → 12) |
 | pass | D-35 DFA summary at step 2 lists only what is drawn |
 | pass | D-25 32-state DFA: opens at "80% of actual size", zoom in "112% of actual size", Fit "Whole graph", Reset "80% of actual size" |
-| pass | D-26 a 1,024-state DFA stops in 235 ms with a plain message |
+| pass | D-26 a 1,024-state DFA stops in 243 ms with a plain message |
 | pass | D-11 150 nested parentheses and a 6,001-character expression give friendly diagnostics, no page overflow |
+
+## lr (6/6)
+
+| Result | Check |
+| --- | --- |
+| pass | stage 1 shows nothing until Check grammar, then 12 item sets for the expression grammar |
+| pass | item sets appear one step at a time (0 → 1 → 12) |
+| pass | the finished SLR table is conflict-free with one accept entry |
+| pass | id + id * id is accepted in 14 steps with a 5-leaf parse tree (GrammarExpression grammar (SLR(1))Adjacent non-terminals (SLR(1))Balanced parentheses (with ε) (SLR(1))Assignments L = R (Conflict)Ambiguous expressions (Conflict)Accepted, 5 leaves) |
+| pass | S → L = R shows the s6/r5 conflict in state 2 (["s6/r5"]) |
+| pass | a grammar with a conflict has nothing to parse with |
 
 ## bundle (6/6)
 
@@ -728,7 +890,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-MGa3RTJq.js 423 KB |
+| pass | bundle sizes: index-3IfxsrYM.js 476 KB |
 
 ## offline (2/2)
 

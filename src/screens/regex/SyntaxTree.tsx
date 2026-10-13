@@ -26,15 +26,17 @@ function layoutTree(root: RegexNode) {
 /** Hand-written SVG of the real AST from the core (including the augmenting # leaf).
  *  props: nodes whose nullable/firstpos/lastpos are known. built: ids that exist so far (others are
  *  drawn as faint outlines). arcs: followpos arrows between leaves for the current step. */
-export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = 'none', arcs, built }: {
+export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = 'none', arcs, built, only }: {
   root: RegexNode; nodes: RegexNode[]; props?: Map<number, NodeProps>; activeId?: number | null; readIds?: Set<number>;
   annotate?: 'none' | 'active' | 'all'; arcs?: { from: number; to: number[]; changed: boolean } | null; built?: Set<number>;
+  /** draw only these nodes (and the edges between them): the tree as built so far, in its final layout */
+  only?: Set<number>;
 }) {
   const { place, width, height } = useMemo(() => layoutTree(root), [root]);
   const leafByPos = useMemo(() => new Map(nodes.filter((n) => n.type === 'leaf').map((n) => [n.pos!, n])), [nodes]);
   const baseY = height - PAD_BOTTOM + 16;
   return (
-    <svg className={cx('tree', built && 'tree--build')} viewBox={`0 0 ${width} ${height}`} role="group"
+    <svg className={cx('tree', (built || only) && 'tree--build')} viewBox={`0 0 ${width} ${height}`} role="group"
       aria-label="Syntax tree of the augmented regular expression" preserveAspectRatio="xMidYMid meet">
       <defs>
         <marker id="tree-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -42,10 +44,10 @@ export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = '
         </marker>
       </defs>
       <g className="tree__edges">
-        {nodes.flatMap((n) => (n.children ?? []).map((c) => {
+        {nodes.flatMap((n) => (n.children ?? []).filter((c) => !only || (only.has(n.id) && only.has(c.id))).map((c) => {
           const p = place.get(n.id)!, q = place.get(c.id)!;
           return <line key={`${n.id}-${c.id}`} x1={q.x} y1={q.y} x2={p.x} y2={p.y} pathLength={1}
-            className={cx(activeId === n.id && readIds?.has(c.id) && 'is-read', built && !built.has(n.id) && 'is-ghost', built && activeId === n.id && 'is-drawing')} />;
+            className={cx(activeId === n.id && readIds?.has(c.id) && 'is-read', built && !built.has(n.id) && 'is-ghost', (built || only) && activeId === n.id && 'is-drawing')} />;
         }))}
       </g>
       {arcs && arcs.to.map((qpos) => {
@@ -58,7 +60,7 @@ export function SyntaxTree({ root, nodes, props, activeId, readIds, annotate = '
           : `M ${a.x} ${y0} C ${a.x} ${baseY + 34}, ${b.x} ${baseY + 34}, ${b.x} ${y1}`;
         return <path key={qpos} d={d} pathLength={1} className={cx('tree__arc', !arcs.changed && 'is-dup')} markerEnd="url(#tree-arrow)" />;
       })}
-      {nodes.map((n) => {
+      {nodes.filter((n) => !only || only.has(n.id)).map((n) => {
         const { x, y } = place.get(n.id)!;
         const p = props?.get(n.id);
         const leaf = n.type === 'leaf';

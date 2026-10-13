@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { REGEX_SAMPLES } from '../../data/samples.ts';
 import { hashFor, type Chapter, type Stage } from '../../data/nav.ts';
-import type { FollowStep, PropStep, RegexNode } from '../../core/index.ts';
+import type { FollowStep, PropStep, RegexNode, TreeStep } from '../../core/index.ts';
 import type { RegexModel } from '../../models.ts';
 import type { OkRegex } from '../../replay/pipelines.ts';
 import { dfaAt, followposAt, followposProvenance, nodePropsAt, phaseMarkers, simAt } from '../../replay/selectors.ts';
@@ -19,6 +19,29 @@ const SHORT: Record<string, string> = { or: 'union', cat: 'concat', star: 'star'
 const short = (n: RegexNode) => (n.type === 'leaf' ? `${n.symbol}${n.pos}` : SHORT[n.type]);
 const describe = (n: RegexNode) => (n.type === 'leaf' ? `${n.symbol}${n.pos}` : `${SHORT[n.type]}(${n.children!.map(short).join(', ')})`);
 const braces = (a: number[]) => `{${a.join(',')}}`;
+const NO_TREE: TreeStep[] = [];
+
+/** The part of the expression a subtree stands for, written back as a regular expression. */
+const SPECIAL = new Set(['|', '*', '+', '?', '(', ')', '\\', '#']);
+function toRegex(n: RegexNode): string {
+  const k = n.children ?? [];
+  const wrap = (c: RegexNode, need: boolean) => (need ? `(${toRegex(c)})` : toRegex(c));
+  switch (n.type) {
+    case 'leaf': return n.isEnd ? '#' : SPECIAL.has(n.symbol!) || /\s/.test(n.symbol!) ? `\\${n.symbol}` : n.symbol!;
+    case 'or': return `${toRegex(k[0])}|${toRegex(k[1])}`;
+    case 'cat': return `${wrap(k[0], k[0].type === 'or')}${wrap(k[1], k[1].type === 'or')}`;
+    default: return `${wrap(k[0], k[0].type !== 'leaf')}${GLYPH_OF[n.type]}`;
+  }
+}
+const GLYPH_OF: Record<string, string> = { star: '*', plus: '+', opt: '?' };
+const TREE_RULE: Record<string, string> = {
+  leaf: 'Every symbol occurrence becomes its own leaf. Positions are numbered left to right.',
+  or: 'r|s becomes a union node with r and s as its children.',
+  cat: 'rs becomes a concatenation node: r on the left, s on the right.',
+  star: 'r* becomes a star node with r as its only child.',
+  plus: 'r+ becomes a plus node with r as its only child.',
+  opt: 'r? becomes an optional node with r as its only child.',
+};
 
 
 export function RegexBlocked({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: RegexModel }) {
@@ -53,6 +76,24 @@ function ErrorSource({ source, position }: { source: string; position: number })
 export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: Stage; model: RegexModel }) {
   const { draft, setDraft, commit, dirty, analysis, ok, loadSample, committed, built } = model;
   const shown = built && !dirty;   // results appear only once Build tree has read this exact text
+  // The tree is built one node at a time, bottom-up, like every other stage's replay.
+  const steps = shown && ok ? ok.treeSteps : NO_TREE;
+  const replay = useReplay(steps);
+  const { count, step } = replay;
+  const byId = useMemo(() => new Map((ok?.nodes ?? []).map((n) => [n.id, n])), [ok]);
+  const made = useMemo(() => new Set(steps.slice(0, count).map((s) => s.nodeId)), [steps, count]);
+  const node = step ? byId.get(step.nodeId) ?? null : null;
+  const readIds = useMemo(() => new Set((node?.children ?? []).map((c) => c.id)), [node]);
+  const leavesSoFar = (ok?.leaves ?? []).filter((l) => made.has(l.id));
+  const done = steps.length > 0 && count === steps.length;
+  const fig = useRef<HTMLDivElement>(null);
+  useStepFx(replay, ({ rich }) => {
+    const root = fig.current;
+    const active = root?.querySelector('.tnode.is-active');
+    if (!rich) return pop(active, { from: 0.9 });
+    return all(...[...(root?.querySelectorAll<SVGLineElement>('.tree__edges line.is-drawing') ?? [])].map((l) => drawOver(l, { duration: 220 })),
+      pop(active, { from: 0.85, delay: 120 }));
+  });
   const controls = (
     <form className="controls" onSubmit={(e) => { e.preventDefault(); commit(); }}>
       <label className="field field--wide">
@@ -65,9 +106,10 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
     </form>
   );
   return (
-    <Plate chapter={chapter} stage={stage} controls={controls}>
+    <Plate chapter={chapter} stage={stage} controls={controls}
+      dock={shown && ok ? <Dock replay={replay} label="Syntax tree" next={nextStageOf(chapter, stage)} /> : undefined}>
       <div className="split split--figure">
-        <div className="figure figure--tree">
+        <div className="figure figure--tree" ref={fig}>
           {!built && <div className="result" role="status"><p className="result__head">Not built yet.</p></div>}
           {built && dirty && <p className="result">Edited. Press <b>Build tree</b> (Enter) to read it again.</p>}
           {shown && analysis.status === 'empty' && <Empty title="The expression is empty.">Try <code>(a|b)*abb</code>, or pick an example.</Empty>}
@@ -81,21 +123,42 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
           {shown && ok && (
             <>
               <p className="augmented"><span className="label">Augmented</span> <span className="mono">( {ok.source} ) <b>#</b></span></p>
-              <div className="figure__canvas"><SyntaxTree root={ok.root} nodes={ok.nodes} /></div>
+              <div className="figure__canvas"><SyntaxTree root={ok.root} nodes={ok.nodes} only={made} activeId={step?.nodeId} readIds={readIds} /></div>
               <TreeLegend />
             </>
           )}
         </div>
         <aside className="inspector">
           {shown && ok && (
+            <StepNote replay={replay} idle="Nothing is built yet. Press → to read the first symbol; each step adds one node, children before their parent.">
+              {node && step && (
+                <>
+                  <p className="note__headline">
+                    {node.type === 'leaf' ? <>Leaf <span className="mono">{node.isEnd ? '#' : node.symbol}</span>, position {node.pos}</> : <span className="mono">{describe(node)}</span>}{' '}
+                    <Tag kind="new">{step.type === 'TREE_END' ? 'End marker' : step.type === 'TREE_ROOT' ? 'Root' : NODE_NAME[node.type]}</Tag>
+                  </p>
+                  <p>{step.message}</p>
+                  <Row label="Stands for"><span className="mono">{step.type === 'TREE_ROOT' ? `(${ok.source})#` : toRegex(node)}</span></Row>
+                  <Row label="Rule">{step.type === 'TREE_END' || step.type === 'TREE_ROOT'
+                    ? 'The direct method appends the end marker #. A DFA state that contains its position will accept.'
+                    : TREE_RULE[node.type]}</Row>
+                </>
+              )}
+            </StepNote>
+          )}
+          {shown && ok && (
             <section className="block">
               <h2 className="section-title">Positions</h2>
-              <table className="ftable ftable--pos">
-                <thead><tr><th scope="col">Position</th>{ok.leaves.map((l) => <th key={l.pos} scope="col">{l.pos}</th>)}</tr></thead>
-                <tbody><tr><th scope="row">Symbol</th>{ok.leaves.map((l) => <td key={l.pos}>{l.symbol}</td>)}</tr></tbody>
-              </table>
-              <p className="help">A DFA state will accept when it contains position {ok.endPos}, the end marker.</p>
-              <a className="btn btn--primary" href={hashFor('regex', 'props')}>Compute node properties</a>
+              {leavesSoFar.length === 0 ? <p className="help">No leaves yet. Each leaf gets the next position number.</p> : (
+                <div className="scroll" tabIndex={0} role="region" aria-label="Positions, scrollable">
+                  <table className="ftable ftable--pos">
+                    <thead><tr><th scope="col">Position</th>{leavesSoFar.map((l) => <th key={l.pos} scope="col">{l.pos}</th>)}</tr></thead>
+                    <tbody><tr><th scope="row">Symbol</th>{leavesSoFar.map((l) => <td key={l.pos} className={cx(l.id === step?.nodeId && 'is-active')}>{l.symbol}</td>)}</tr></tbody>
+                  </table>
+                </div>
+              )}
+              {done && <p className="help">A DFA state will accept when it contains position {ok.endPos}, the end marker.</p>}
+              {done && <a className="btn btn--primary" href={hashFor('regex', 'props')}>Compute node properties</a>}
             </section>
           )}
           <section className="block">

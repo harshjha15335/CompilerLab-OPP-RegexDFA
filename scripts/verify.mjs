@@ -50,7 +50,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Most checks look at stages 2–4, which only show results once the grammar has been checked: start those
 // sessions as a user who pressed Check grammar on the default grammar (the "repair" group tests the unchecked start).
 const SEEN = () => { try { localStorage.setItem('cl.intro.seen.v2', '1'); localStorage.setItem('cl.note.keys.v1', '1'); } catch {} };
-const CHECKED = () => { try { if (!sessionStorage.getItem('cl.session.v1')) sessionStorage.setItem('cl.session.v1', JSON.stringify({ opp: { checked: true }, regex: { built: true } })); } catch {} };
+const CHECKED = () => { try { if (!sessionStorage.getItem('cl.session.v1')) sessionStorage.setItem('cl.session.v1', JSON.stringify({ opp: { checked: true }, regex: { built: true }, lr: { checked: true } })); } catch {} };
 
 /* ── page plumbing ─────────────────────────────────────── */
 const allNet = [], allErrors = [];
@@ -227,8 +227,18 @@ const SCREENS = [
   { id: 'opp-modes-open', hash: '#/opp/modes' },
   { id: 'opp-modes-diverge', hash: '#/opp/modes', act: (p) => keys(p, 'ArrowRight', 10) },
   { id: 'opp-modes-end', hash: '#/opp/modes', act: (p) => keys(p, 'End') },
-  { id: 'lr', hash: '#/lr' },
+  { id: 'lr-grammar', hash: '#/lr/grammar', act: async (p) => { await p.click('button:has-text("Check grammar")'); } },
+  { id: 'lr-items', hash: '#/lr/items', act: (p) => keys(p, 'ArrowRight', 3) },
+  { id: 'lr-items-end', hash: '#/lr/items', act: (p) => keys(p, 'End') },
+  { id: 'lr-sets', hash: '#/lr/sets', act: (p) => keys(p, 'ArrowRight', 6) },
+  { id: 'lr-table', hash: '#/lr/table', act: (p) => keys(p, 'ArrowRight', 20) },
+  { id: 'lr-table-conflict', hash: '#/lr/table', act: async (p) => { await p.selectOption('.picker__select', 'assign'); await sleep(200); await keys(p, 'End'); } },
+  { id: 'lr-parse', hash: '#/lr/parse', act: (p) => keys(p, 'ArrowRight', 5) },
+  { id: 'lr-parse-end', hash: '#/lr/parse', act: (p) => keys(p, 'End') },
+  { id: 'lr-parse-lookup', hash: '#/lr/parse', act: async (p) => { await keys(p, 'End'); await p.click('#lrtab-table'); } },
   { id: 'regex-tree', hash: '#/regex/tree' },
+  { id: 'regex-tree-steps', hash: '#/regex/tree', act: (p) => keys(p, 'ArrowRight', 4) },
+  { id: 'regex-tree-end', hash: '#/regex/tree', act: (p) => keys(p, 'End') },
   { id: 'regex-malformed', hash: '#/regex/tree', act: async (p) => { await clickText(p, 'ab(c|d', '.sample'); await p.click('button:has-text("Build tree")'); } },
   { id: 'regex-reserved-hash', hash: '#/regex/tree', act: async (p) => { await clickText(p, 'a#b', '.sample'); await p.click('button:has-text("Build tree")'); } },
   { id: 'regex-props', hash: '#/regex/props', act: (p) => keys(p, 'ArrowRight', 7) },
@@ -312,7 +322,7 @@ if (want('home')) {
   const okOrder = !order.includes('other') && firstOf('door') >= 0 && firstOf('door') > lastOf('headline') && firstOf('specimen') > lastOf('door') && order.filter((x) => x === 'door').length === 3;
   check('home', `3a. Tab order is headline → doors (3) → specimen controls`, okOrder, order.join(' → '));
   const doors = [];
-  for (const [idx, want] of [[0, '#/opp/grammar'], [1, '#/lr'], [2, '#/regex/tree']]) {
+  for (const [idx, want] of [[0, '#/opp/grammar'], [1, '#/lr/grammar'], [2, '#/regex/tree']]) {
     await go(page, '#/');
     await page.focus(`.doors .door:nth-child(${idx + 1}) a`);
     await page.keyboard.press('Enter');
@@ -410,6 +420,9 @@ if (want('keyboard')) {
   ok = await tabTo(page, () => document.activeElement?.classList.contains('field__input--regex'));
   await page.keyboard.press('Control+A'); await page.keyboard.type('(a|b)*abb'); await page.keyboard.press('Enter'); await sleep(200);
   log2('Type (a|b)*abb and build with Enter', ok && (await page.$('.tree')) !== null);
+  // the tree is built step by step: leave the field, then End shows the whole tree
+  await page.keyboard.press('Tab'); await page.keyboard.press('End'); await sleep(200);
+  log2('End builds the whole syntax tree', (await page.$$eval('.tnode', (e) => e.length)) === 12);
   ok = await tabTo(page, () => document.activeElement?.textContent?.includes('Compute node properties'));
   await page.keyboard.press('Enter'); await arrive(page, '#/regex/props');
   log2('Open 2 node properties', ok && (await page.evaluate(() => location.hash)) === '#/regex/props');
@@ -732,11 +745,11 @@ if (want('repair')) {
   const firstAgain = (await page.$eval('.actions__state', (e) => e.textContent)) === 'Checked';
   check('repair', 'stage 1 resets to "Not checked yet" on every visit and can be checked again; stage 2 keeps the last check',
     shownAfterCheck && setsStill && hiddenAgain && firstAgain && Boolean(await page.$('.result--ok')), JSON.stringify({ shownAfterCheck, setsStill, hiddenAgain, firstAgain }));
-  // LR parsing is its own chapter: the Bottom-Up (operator precedence) tab is not marked current there
+  // LR parsing is its own chapter: only its own tab is marked current there
   await page.goto(BASE + '#/lr'); await sleep(200);
   const railLr = await page.$$eval('.rail__link.is-current, .rail__link[aria-current]', (e) => e.map((x) => x.textContent));
   const plateNo = await page.$('.plate__no');
-  check('repair', `LR page marks no operator-precedence tab as current (${JSON.stringify(railLr)}); no "Plate …" line`, railLr.length === 0 && !plateNo);
+  check('repair', `LR page marks only the LR tab as current (${JSON.stringify(railLr)}); no "Plate …" line`, railLr.length === 1 && railLr[0] === 'LR Parsing' && !plateNo);
   // D-22: a refresh keeps the inputs (sessionStorage)
   await page.goto(BASE + '#/opp/grammar'); await sleep(200);
   await page.fill('#grammar-text', 'S -> a + S | a');
@@ -747,9 +760,50 @@ if (want('repair')) {
   await page.reload(); await sleep(400);
   check('repair', 'D-22 a refresh keeps the unchecked grammar', (await page.$eval('#grammar-text', (e) => e.value)) === 'S -> a + S | a', await page.$eval('#grammar-text', (e) => e.value).catch((e) => String(e)));
   await page.evaluate(() => sessionStorage.clear());
-  // D-17: the LR placeholder's title names the chapter once
+  // D-17: a stage title names the stage, then the chapter, once
   await go(page, '#/lr');
-  check('repair', `D-17 title "${await page.title()}"`, (await page.title()) === 'LR parsing · ParseLens');
+  check('repair', `D-17 title "${await page.title()}"`, (await page.title()) === 'Grammar · LR parsing · ParseLens');
+  // LR parsing: nothing until Check grammar; then item sets, table and parse replay step by step
+  await page.evaluate(() => sessionStorage.clear());
+  await go(page, '#/lr/grammar');
+  const lrUnchecked = /Not checked yet/.test(await page.$eval('.result', (e) => e.textContent));
+  await page.click('button:has-text("Check grammar")'); await sleep(150);
+  const lrFacts = await page.$eval('.result--ok', (e) => e.textContent).catch(() => '');
+  check('lr', 'stage 1 shows nothing until Check grammar, then 12 item sets for the expression grammar', lrUnchecked && /Item sets\s*12/.test(lrFacts), lrFacts);
+  await go(page, '#/lr/items');
+  const cards0 = await page.$$eval('.istate', (e) => e.length);
+  await keys(page, 'ArrowRight'); await sleep(150);
+  const cards1 = await page.$$eval('.istate', (e) => e.length);
+  await keys(page, 'End'); await sleep(150);
+  const cardsEnd = await page.$$eval('.istate', (e) => e.length);
+  check('lr', `item sets appear one step at a time (${cards0} → ${cards1} → ${cardsEnd})`, cards0 === 0 && cards1 === 1 && cardsEnd === 12);
+  await go(page, '#/lr/table'); await keys(page, 'End'); await sleep(150);
+  const acc = await page.$$eval('.lcell.is-accept', (e) => e.map((x) => x.textContent));
+  check('lr', 'the finished SLR table is conflict-free with one accept entry', acc.length === 1 && acc[0] === 'acc' && !(await page.$('.lcell.is-conflict')));
+  await go(page, '#/lr/parse'); await keys(page, 'End'); await sleep(200);
+  const verdict = await page.$eval('.plate__aside', (e) => e.textContent);
+  const leaves = await page.$$eval('.ptree__node.is-terminal', (e) => e.length);
+  check('lr', `id + id * id is accepted in 14 steps with a 5-leaf parse tree (${verdict}, ${leaves} leaves)`, /Accepted/.test(verdict) && leaves === 5
+    && (await page.$eval('.dock__readout', (e) => e.textContent)).includes('14'));
+  await go(page, '#/lr/table');
+  await page.selectOption('.picker__select', 'assign'); await sleep(200); await keys(page, 'End'); await sleep(150);
+  const conflict = await page.$$eval('.lcell.is-conflict', (e) => e.map((x) => x.textContent));
+  check('lr', `S → L = R shows the s6/r5 conflict in state 2 (${JSON.stringify(conflict)})`, conflict.length === 1 && conflict[0] === 's6/r5');
+  // in-app navigation (as a user would click the stage arrow); a reload would depend on sessionStorage timing (see D-22)
+  await page.evaluate(() => { location.hash = '#/lr/parse'; }); await sleep(300);
+  const lrBlock = await page.$eval('.plate__body', (e) => e.textContent).catch(() => '');
+  check('lr', 'a grammar with a conflict has nothing to parse with', /has a conflict/.test(lrBlock),
+    `${lrBlock.slice(0, 200)} | session ${await page.evaluate(() => sessionStorage.getItem('cl.session.v1'))}`);
+  // Regex stage 1: the syntax tree is built one node per step
+  await go(page, '#/regex/tree');
+  await page.click('button:has-text("Build tree")'); await sleep(150);
+  const n0 = await page.$$eval('.tnode', (e) => e.length);
+  await page.locator('.plate__title').click(); await keys(page, 'ArrowRight', 3); await sleep(150);
+  const n3 = await page.$$eval('.tnode', (e) => e.length);
+  await keys(page, 'End'); await sleep(150);
+  const nEnd = await page.$$eval('.tnode', (e) => e.length);
+  check('repair', `regex syntax tree builds one node per step (${n0} → ${n3} → ${nEnd})`, n0 === 0 && n3 === 3 && nEnd === 12);
+  await page.evaluate(() => sessionStorage.clear());
   // D-35: the DFA's accessible summary at step 2 does not reveal the finished automaton
   await go(page, '#/regex/dfa');
   await keys(page, 'ArrowRight', 2); await sleep(200);

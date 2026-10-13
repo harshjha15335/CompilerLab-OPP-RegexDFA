@@ -2,9 +2,12 @@
 // No algorithm logic lives here; this file only sequences the tested modules.
 import {
   buildDirect, buildPrecedenceTable, DfaLimitError, MAX_DFA_STATES, compareModes, computeSets, parseGrammar, parseRegex, parseString,
-  simulateDfa, tokenize, validateOperatorGrammar,
+  simulateDfa, tokenize, validateOperatorGrammar, treeSteps,
+  buildLr0, buildSlrTable, computeFirstFollow, LrLimitError, MAX_LR_STATES, parseLr, prepareLrGrammar,
 } from '../core/index.ts';
-import type { Comparison, CoreTable, Dfa, Grammar, GrammarError, Mode, ParseRun, SetStep, SimRun } from '../core/index.ts';
+import type {
+  Comparison, CoreTable, Dfa, FfStep, Grammar, GrammarError, Lr0, LrGrammar, LrRun, Mode, ParseRun, SetMap, SetStep, SimRun, SlrTable, TreeStep,
+} from '../core/index.ts';
 
 export type GrammarAnalysis =
   | { status: 'empty' | 'syntax' | 'invalid'; errors: GrammarError[]; grammar: Grammar }
@@ -48,6 +51,7 @@ export type RegexAnalysis =
       propSteps: Extract<ReturnType<typeof buildDirect>['steps'][number], { phase: 'PROPERTIES' }>[];
       followSteps: Extract<ReturnType<typeof buildDirect>['steps'][number], { phase: 'FOLLOWPOS' }>[];
       dfaSteps: Extract<ReturnType<typeof buildDirect>['steps'][number], { phase: 'DFA' }>[];
+      treeSteps: TreeStep[];
     });
 export type OkRegex = Extract<RegexAnalysis, { status: 'ok' }>;
 
@@ -70,8 +74,44 @@ export function analyzeRegex(source: string): RegexAnalysis {
     propSteps: direct.steps.filter((s) => s.phase === 'PROPERTIES'),
     followSteps: direct.steps.filter((s) => s.phase === 'FOLLOWPOS'),
     dfaSteps: direct.steps.filter((s) => s.phase === 'DFA'),
+    treeSteps: treeSteps(direct.root, direct.nodes),
   } as OkRegex;
 }
 
 export interface SimResult extends SimRun { input: string }
 export const runSimulation = (dfa: Dfa, input: string): SimResult => ({ ...simulateDfa(dfa, input), input });
+
+export type LrAnalysis =
+  | { status: 'empty' | 'syntax' | 'invalid' | 'too-large'; errors: GrammarError[]; grammar: Grammar }
+  | {
+      status: 'ok'; errors: GrammarError[]; grammar: Grammar; augmented: LrGrammar;
+      first: SetMap; follow: SetMap; ffSteps: FfStep[]; lr0: Lr0; table: SlrTable; conflictFree: boolean;
+    };
+export type OkLr = Extract<LrAnalysis, { status: 'ok' }>;
+
+export function analyzeLr(text: string): LrAnalysis {
+  const prep = prepareLrGrammar(text);
+  if (!prep.ok)
+    return { status: prep.errors.every((e) => e.code === 'EMPTY') ? 'empty' : prep.errors.some((e) => e.code === 'SYNTAX') ? 'syntax' : 'invalid',
+      errors: prep.errors, grammar: prep.grammar };
+  const { grammar, augmented } = prep;
+  let lr0: Lr0;
+  try {
+    lr0 = buildLr0(augmented);
+  } catch (e) {
+    if (e instanceof LrLimitError)
+      return { status: 'too-large', grammar, errors: [{ code: 'SYNTAX', message: `This grammar needs more than ${MAX_LR_STATES} LR(0) item sets, so construction was stopped. Use a smaller grammar.` }] };
+    throw e;
+  }
+  const ff = computeFirstFollow(grammar);
+  const table = buildSlrTable(augmented, lr0, ff.follow);
+  return { status: 'ok', errors: [], grammar, augmented, first: ff.first, follow: ff.follow, ffSteps: ff.steps, lr0, table,
+    conflictFree: table.conflicts.length === 0 };
+}
+
+export interface LrParseResult extends LrRun { input: string; tokens: string[]; tokenError: string | null }
+export function runLrParse(a: OkLr, input: string): LrParseResult {
+  const tk = tokenize(input, a.grammar.terminals);
+  if (!tk.ok) return { result: 'REJECT', steps: [], input, tokens: [], tokenError: tk.error };
+  return { ...parseLr(a.augmented, a.table, tk.tokens), input, tokens: tk.tokens, tokenError: null };
+}

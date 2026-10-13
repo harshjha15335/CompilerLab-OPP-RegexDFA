@@ -1,6 +1,6 @@
 # ParseLens
 
-**Interactive GUI for Operator Precedence Parsing and RE → DFA (direct method)**
+**Interactive GUI for Operator Precedence Parsing, LR Parsing and RE → DFA (direct method)**
 Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · Fall Semester 26–27
 
 A step-by-step teaching instrument. Every screen replays the `steps[]` emitted by a tested algorithm
@@ -10,8 +10,8 @@ which rule caused it, and what happens next.
 | Chapter | Plates |
 | --- | --- |
 | I Operator precedence | Grammar check · LEADING and TRAILING · precedence table (with provenance and conflicts) · shift/reduce parse · Classic N vs Safeguarded |
-| II LR parsing | Placeholder, honestly labelled *Planned* (nothing on it runs) |
-| III Regex → DFA | Syntax tree · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
+| II LR parsing (SLR(1)) | Grammar check and augmentation · LR(0) item sets (closure and GOTO) · FIRST and FOLLOW · SLR ACTION/GOTO table (with conflicts) · shift/reduce parse with a stack of states and a parse tree built bottom-up |
+| III Regex → DFA | Syntax tree (built one node per step) · nullable/firstpos/lastpos · followpos · DFA construction · simulation |
 
 The homepage shows the project title block, the three chapters and a live specimen: the real algorithm builds the
 precedence table for `E → E + T | T …` and then parses `id + id * id`, in a loop. Click any cell (on the homepage or on
@@ -26,7 +26,7 @@ the 3D intro, loupe, View Transitions, Examples sheet, the motion library, the s
 ```bash
 npm ci --ignore-scripts   # exact versions from package-lock.json; no install scripts run
 npm run dev               # development server
-npm test                  # 42 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout, specimen
+npm test                  # 62 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout, specimen
 npm run typecheck         # TypeScript, strict
 npm run check:contrast    # WCAG contrast of every meaning-bearing colour pair
 npm run audit:deps        # npm audit, fails on high severity
@@ -109,10 +109,10 @@ src/core/               typed facade + step schema types over the core
 src/replay/             pipelines (run each algorithm once), selectors (pure folds of steps[]), useReplay
 src/motion/fx.ts        one-shot WAAPI effects for a single forward step; cancelled on any other move
 src/ui/                 kit (SVG relation glyphs, tags, verdicts), hardware (keycaps, timeline), plate
-src/screens/            home, opp (5 plates), regex (5 plates), lr (placeholder)
-src/styles/             tokens, base, shell, hardware, figures, home, motion
+src/screens/            home, opp (5 plates), lr (5 plates), regex (5 plates)
+src/styles/             tokens, base, shell, hardware, figures, home, lr, motion
 scripts/                verify.mjs, report-md.mjs, check-contrast.ts, serve-dist.mjs
-test/                   partA, partB (core), audit-regressions, schema, replay, specimen, repair (audit defects D-xx)
+test/                   partA, partB (core), lr (SLR(1) and tree steps), audit-regressions, schema, replay, specimen, repair (audit defects D-xx)
 audit/review1/          Review-1 probes (fuzz, differential, UI) and their outputs
 ```
 
@@ -122,7 +122,9 @@ React never recomputes LEADING/TRAILING, relations, handles, followpos or DFA st
 ## Input conventions and limits
 
 - Grammar symbols are separated by spaces (`F -> ( E ) | id`): `id` is one terminal. `|` and `->`/`→` cannot be terminals;
-  `$` is reserved. ε-productions and adjacent non-terminals are rejected. Parsing needs a conflict-free table.
+  `$` is reserved. For operator precedence, ε-productions and adjacent non-terminals are rejected; LR parsing accepts
+  any context-free grammar (write `ε` for an empty alternative) and reports SLR(1) conflicts in its table, and stops
+  above 300 item sets. Parsing needs a conflict-free table.
 - Input strings may omit spaces (`id/id+id*id`); the core splits them by longest match.
 - Regex syntax: `|`, concatenation, `*`, `+`, `?`, `( )`, `\` escapes. No ε, classes or ranges. An unescaped `#` is reserved
   (the app adds the end marker). The DFA is partial: a missing transition means reject.

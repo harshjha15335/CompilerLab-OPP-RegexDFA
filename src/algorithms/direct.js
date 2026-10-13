@@ -112,3 +112,20 @@ export function simulateDfa(dfa, input) {
     message: ok ? `Input consumed in accepting state ${cur}.` : `Input consumed but ${cur} is not accepting.` });
   return { result: ok ? 'ACCEPT' : 'REJECT', steps };
 }
+
+const NAME = { or: 'union', cat: 'concatenation', star: 'star', plus: 'plus', opt: 'optional' };
+/** Building the augmented syntax tree bottom-up, one node per step, in the order buildDirect numbered
+ *  them (post-order): each leaf gets the next position; each operator joins the subtrees just built.
+ *  The last two steps add the end marker # and the concatenation that joins it to the expression. */
+export function treeSteps(root, nodes) {
+  return nodes.map((n) => {
+    const kids = n.children ?? [];
+    const top = n === root;
+    if (n.type === 'leaf')
+      return { phase: 'TREE', type: n.isEnd ? 'TREE_END' : 'TREE_LEAF', nodeId: n.id, symbol: n.symbol, pos: n.pos,
+        message: n.isEnd ? `Augment: add the end marker # as a leaf, position ${n.pos}.` : `Read ${n.symbol}: a leaf, numbered position ${n.pos}.` };
+    return { phase: 'TREE', type: top ? 'TREE_ROOT' : 'TREE_NODE', nodeId: n.id, op: n.type, children: kids.map((c) => c.id),
+      message: top ? 'Join the expression and # with a concatenation: this is the root of the augmented tree.'
+        : `${NAME[n.type][0].toUpperCase()}${NAME[n.type].slice(1)} node over the ${kids.length === 1 ? 'subtree' : 'two subtrees'} just built.` };
+  });
+}

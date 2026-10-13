@@ -39,6 +39,18 @@ export const GRAMMAR_SAMPLES: GrammarSample[] = [
   },
 ];
 
+// LR samples: any context-free grammar may be tried; SLR(1) decides whether its table is conflict-free.
+export type LrKind = 'valid' | 'conflict';
+export interface LrSample { id: string; title: string; kind: LrKind; text: string; strings: string[] }
+export const LR_SAMPLES: LrSample[] = [
+  { id: 'expr', title: 'Expression grammar', kind: 'valid', text: 'E -> E + T | T\nT -> T * F | F\nF -> ( E ) | id',
+    strings: ['id + id * id', '( id + id ) * id', 'id * ( id + id )', 'id + * id'] },
+  { id: 'adjacent', title: 'Adjacent non-terminals', kind: 'valid', text: 'S -> A B\nA -> a\nB -> b', strings: ['a b', 'a', 'b a'] },
+  { id: 'balanced', title: 'Balanced parentheses (with ε)', kind: 'valid', text: 'S -> ( S ) S | ε', strings: ['( ) ( )', '( ( ) )', '( ( )', ''] },
+  { id: 'assign', title: 'Assignments L = R', kind: 'conflict', text: 'S -> L = R | R\nL -> * R | id\nR -> L', strings: [] },
+  { id: 'ambiguous', title: 'Ambiguous expressions', kind: 'conflict', text: 'E -> E + E | E * E | id', strings: [] },
+];
+
 export const EXPR_SAMPLE = GRAMMAR_SAMPLES[0];
 export const MODES_SAMPLE = GRAMMAR_SAMPLES[1];
 

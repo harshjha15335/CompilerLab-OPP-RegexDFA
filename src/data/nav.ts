@@ -14,7 +14,16 @@ export const CHAPTERS: Chapter[] = [
       { id: 'modes', no: 5, title: 'Classic N vs Safeguarded', does: 'See where forgetting non-terminal names goes wrong.' },
     ],
   },
-  { id: 'lr', numeral: 'II', title: 'LR parsing', short: 'Bottom-up parsing', pipeline: ['items', 'table', 'parse'], stages: [] },
+  {
+    id: 'lr', numeral: 'II', title: 'LR parsing', short: 'SLR(1)', pipeline: ['items', 'table', 'parse'],
+    stages: [
+      { id: 'grammar', no: 1, title: 'Grammar', does: 'Check the grammar and add the start rule S′ → S.' },
+      { id: 'items', no: 2, title: 'LR(0) item sets', does: 'Build the canonical collection with closure and GOTO.' },
+      { id: 'sets', no: 3, title: 'FIRST and FOLLOW', does: 'Find which terminals may follow each non-terminal.' },
+      { id: 'table', no: 4, title: 'SLR parsing table', does: 'Fill ACTION and GOTO one entry at a time.' },
+      { id: 'parse', no: 5, title: 'Parse a string', does: 'Shift and reduce with a stack of states.' },
+    ],
+  },
   {
     id: 'regex', numeral: 'III', title: 'Regex → DFA', short: 'Direct method', pipeline: ['tree', 'followpos', 'DFA'],
     stages: [

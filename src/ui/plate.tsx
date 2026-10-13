@@ -18,7 +18,8 @@ export function nextStageOf(chapter: Chapter, stage: Stage | null) {
   const i = chapter.stages.findIndex((s) => s.id === stage?.id);
   const n = chapter.stages[i + 1];
   if (n) return { href: hashFor(chapter.id, n.id), title: `${n.no} ${n.title}` };
-  if (chapter.id === 'opp') { const r = CHAPTERS[2]; return { href: hashFor(r.id, r.stages[0].id), title: r.title }; }
+  const after = CHAPTERS[CHAPTERS.findIndex((c) => c.id === chapter.id) + 1];
+  if (after?.stages.length) return { href: hashFor(after.id, after.stages[0].id), title: after.title };
   return null;
 }
 

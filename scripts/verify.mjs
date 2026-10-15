@@ -145,6 +145,11 @@ function layoutProbe() {
         const cx = (Math.max(a.r.x1, b.r.x1) + Math.min(a.r.x2, b.r.x2)) / 2, cy = (Math.max(a.r.y1, b.r.y1) + Math.min(a.r.y2, b.r.y2)) / 2;
         if (stickyDock(document.elementFromPoint(cx, cy))) continue;
       }
+      // the open stage drawer is a popup: covering the controls beneath it is its job, provided it really is on top
+      if (w > 1 && h > 1 && Boolean(a.el.closest('.drawer')) !== Boolean(b.el.closest('.drawer'))) {
+        const cx = (Math.max(a.r.x1, b.r.x1) + Math.min(a.r.x2, b.r.x2)) / 2, cy = (Math.max(a.r.y1, b.r.y1) + Math.min(a.r.y2, b.r.y2)) / 2;
+        if (document.elementFromPoint(cx, cy)?.closest('.drawer')) continue;
+      }
       if (w > 1 && h > 1) out.overlaps.push(`${desc(a.el)}  ×  ${desc(b.el)}  (${Math.round(w)}×${Math.round(h)}px)`);
     }
   // text that collides with a control or with other text (tight line boxes from Range.getClientRects)

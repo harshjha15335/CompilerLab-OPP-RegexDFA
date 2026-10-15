@@ -8,6 +8,8 @@ import { useReplay } from '../../replay/useReplay.ts';
 import { Dock } from '../../ui/hardware.tsx';
 import { cx, DirtyHint, Empty, Production, Tag } from '../../ui/kit.tsx';
 import { Plate } from '../../ui/plate.tsx';
+import { StepTabs } from '../../ui/verify.tsx';
+import { verifyOppModes } from '../../verify/stages.ts';
 import { Bench } from './Bench.tsx';
 
 interface Pair { classic: ParseStep | null; safeguarded: ParseStep | null; message: string }
@@ -96,6 +98,7 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
           ))}
         </div>
         <aside className="inspector">
+          {(cmp && comparable) ? <StepTabs id="modes" subject={cmp} make={() => verifyOppModes(cmpAnalysis, cmp!)}>
           <section className="block">
             <h2 className="section-title">Why they can disagree</h2>
             <p><b>Classic N</b> forgets which non-terminal a reduction produced: every reduced handle becomes the same <span className="mono">N</span>.</p>
@@ -129,6 +132,41 @@ export function ModesStage({ chapter, stage, model }: { chapter: Chapter; stage:
               ))}
             </tbody>
           </table>
+        </StepTabs> : <>
+          <section className="block">
+            <h2 className="section-title">Why they can disagree</h2>
+            <p><b>Classic N</b> forgets which non-terminal a reduction produced: every reduced handle becomes the same <span className="mono">N</span>.</p>
+            <p><b>Safeguarded</b> keeps the set of non-terminals each reduced item could be, so it only accepts reductions the grammar allows.</p>
+            <p className="help">Limits that remain in both modes: a grammar with ε-productions or adjacent non-terminals cannot be used;
+              one symbol cannot have two precedences (unary and binary minus need separate tokens); and errors are found late,
+              only when a blank cell or an unmatched handle is reached. Classic N can also accept strings outside L(G), as above.</p>
+          </section>
+          {cmp.differ && rej && (
+            <section className="block block--alert" role="status">
+              <h2 className="section-title">Where Safeguarded stops</h2>
+              <p>At <button type="button" className="linkbtn" onClick={() => replay.api.goto(rej.step)}>step {rej.step}</button>
+                {rej.atReduction && rej.handle
+                  ? <>, the handle <b className="mono">{rej.handle.symbols.map((h) => h.symbol).join(' ')}</b> matches no production with those non-terminals.
+                    {!usingOwn && rej.handle.symbols.map((h) => h.symbol).join(' ') === '{B} + {A}'
+                      ? <> <span className="mono">S → A + B</span> needs A on the left and B on the right, but this stack has them the other way round.</> : null}
+                    {' '}Classic N sees only <span className="mono">N</span> in every non-terminal position, so it reduces anyway{cmp.classic.result === 'ACCEPT' ? ' and accepts a string the grammar does not generate' : ''}.</>
+                  : <>: {rej.reason}</>}</p>
+            </section>
+          )}
+          <table className="cmptable">
+            <caption className="label">Example strings for this grammar</caption>
+            <thead><tr><th scope="col">String</th><th scope="col">Classic N</th><th scope="col">Safeguarded</th></tr></thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.input} className={cx(r.input === cmp.input && 'is-current', r.differ && 'is-differ')}>
+                  <th scope="row"><button type="button" className="linkbtn mono" onClick={() => { setDraft(r.input); setCmpInput(r.input); }} aria-pressed={r.input === cmp.input}>{r.input || '(empty)'}</button></th>
+                  <td><Result r={r.classic.result} /></td>
+                  <td><Result r={r.safeguarded.result} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>}
         </aside>
       </div>
     </Plate>

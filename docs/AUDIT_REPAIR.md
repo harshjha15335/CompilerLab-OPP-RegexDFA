@@ -59,5 +59,5 @@ A read-only audit of `4152567` found **0 P0/P1, 7 P2 and 28 P3 defects**, plus o
 
 ## Tests
 
-- `test/repair.test.ts`: 11 tests covering D-05, D-08 to D-14, D-25, D-26 and D-35. `npm test` runs 62 tests (including `test/lr.test.js` for LR parsing and the syntax-tree steps).
+- `test/repair.test.ts`: 11 tests covering D-05, D-08 to D-14, D-25, D-26 and D-35. `npm test` runs 67 tests (including `test/lr.test.js` for LR parsing and the syntax-tree steps, and `test/verify.test.ts` for the Verification tab).
 - `scripts/verify.mjs --only=repair`: 16 browser checks covering D-01 to D-35. The full verifier and a 9-viewport matrix (320 px to 1920 px, plus 200% zoom) pass; see [verification-results.md](verification-results.md).

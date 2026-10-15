@@ -13,6 +13,8 @@ import { cx, DirtyHint, Empty, Row, SetText, Tag, Tx, Verdict } from '../../ui/k
 import { nextStageOf, Plate, StepNote, useStepFx } from '../../ui/plate.tsx';
 import { DfaGraph } from './DfaGraph.tsx';
 import { NODE_NAME, SyntaxTree, TreeLegend } from './SyntaxTree.tsx';
+import { StepTabs } from '../../ui/verify.tsx';
+import { verifyRegexDfa, verifyRegexFollow, verifyRegexProps, verifyRegexSim, verifyRegexTree } from '../../verify/stages.ts';
 import { DfaTable, FollowTable, SimTape } from './tables.tsx';
 
 const SHORT: Record<string, string> = { or: 'union', cat: 'concat', star: 'star', plus: 'plus', opt: 'optional' };
@@ -129,6 +131,7 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
           )}
         </div>
         <aside className="inspector">
+          {(shown && ok) ? <StepTabs id="tree" subject={ok} make={() => verifyRegexTree(ok!)}>
           {shown && ok && (
             <StepNote replay={replay} idle="Nothing is built yet. Press → to read the first symbol; each step adds one node, children before their parent.">
               {node && step && (
@@ -174,6 +177,53 @@ export function TreeStage({ chapter, stage, model }: { chapter: Chapter; stage: 
               ))}
             </ul>
           </section>
+        </StepTabs> : <>
+          {shown && ok && (
+            <StepNote replay={replay} idle="Nothing is built yet. Press → to read the first symbol; each step adds one node, children before their parent.">
+              {node && step && (
+                <>
+                  <p className="note__headline">
+                    {node.type === 'leaf' ? <>Leaf <span className="mono">{node.isEnd ? '#' : node.symbol}</span>, position {node.pos}</> : <span className="mono">{describe(node)}</span>}{' '}
+                    <Tag kind="new">{step.type === 'TREE_END' ? 'End marker' : step.type === 'TREE_ROOT' ? 'Root' : NODE_NAME[node.type]}</Tag>
+                  </p>
+                  <p>{step.message}</p>
+                  <Row label="Stands for"><span className="mono">{step.type === 'TREE_ROOT' ? `(${ok.source})#` : toRegex(node)}</span></Row>
+                  <Row label="Rule">{step.type === 'TREE_END' || step.type === 'TREE_ROOT'
+                    ? 'The direct method appends the end marker #. A DFA state that contains its position will accept.'
+                    : TREE_RULE[node.type]}</Row>
+                </>
+              )}
+            </StepNote>
+          )}
+          {shown && ok && (
+            <section className="block">
+              <h2 className="section-title">Positions</h2>
+              {leavesSoFar.length === 0 ? <p className="help">No leaves yet. Each leaf gets the next position number.</p> : (
+                <div className="scroll" tabIndex={0} role="region" aria-label="Positions, scrollable">
+                  <table className="ftable ftable--pos">
+                    <thead><tr><th scope="col">Position</th>{leavesSoFar.map((l) => <th key={l.pos} scope="col">{l.pos}</th>)}</tr></thead>
+                    <tbody><tr><th scope="row">Symbol</th>{leavesSoFar.map((l) => <td key={l.pos} className={cx(l.id === step?.nodeId && 'is-active')}>{l.symbol}</td>)}</tr></tbody>
+                  </table>
+                </div>
+              )}
+              {done && <p className="help">A DFA state will accept when it contains position {ok.endPos}, the end marker.</p>}
+              {done && <a className="btn btn--primary" href={hashFor('regex', 'props')}>Compute node properties</a>}
+            </section>
+          )}
+          <section className="block">
+            <h2 className="section-title">Examples</h2>
+            <ul className="samples samples--regex">
+              {REGEX_SAMPLES.map((s) => (
+                <li key={s.id}>
+                  <button type="button" className={cx('sample', s.source === committed && !dirty && 'is-current')} onClick={() => loadSample(s)} aria-pressed={s.source === committed && !dirty}>
+                    <span className="sample__title mono">{s.source}</span>
+                    {s.error && <Tag kind="reject">Malformed</Tag>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>}
         </aside>
       </div>
     </Plate>
@@ -210,6 +260,7 @@ export function PropsStage({ chapter, stage, r }: { chapter: Chapter; stage: Sta
           <TreeLegend sets />
         </div>
         <aside className="inspector">
+          <StepTabs id="props" subject={r} make={() => verifyRegexProps(r)}>
           <StepNote replay={replay} idle="Nothing is computed yet. Leaves come first, left to right; a parent only after its children.">
             {node && step && (
               <>
@@ -230,6 +281,7 @@ export function PropsStage({ chapter, stage, r }: { chapter: Chapter; stage: Sta
               </>
             )}
           </StepNote>
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -273,6 +325,7 @@ export function FollowStage({ chapter, stage, r }: { chapter: Chapter; stage: St
           <TreeLegend sets />
         </div>
         <aside className="inspector">
+          <StepTabs id="follow" subject={r} make={() => verifyRegexFollow(r)}>
           <FollowTable leaves={r.leaves} follow={follow} active={step} selected={selected} onSelect={(p) => setSelected((s) => (s === p ? null : p))} />
           {selected != null && (
             <section className="sheet" aria-label={`Where followpos(${selected}) came from`}>
@@ -301,6 +354,7 @@ export function FollowStage({ chapter, stage, r }: { chapter: Chapter; stage: St
               </>
             )}
           </StepNote>
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -339,6 +393,7 @@ export function DfaStage({ chapter, stage, r }: { chapter: Chapter; stage: Stage
           </div>
         </div>
         <aside className="inspector">
+          <StepTabs id="dfa" subject={r} make={() => verifyRegexDfa(r)}>
           <StepNote replay={replay} idle="No state yet. The start state is firstpos of the root.">
             {step?.type === 'DFA_START' && (
               <>
@@ -369,6 +424,7 @@ export function DfaStage({ chapter, stage, r }: { chapter: Chapter; stage: Stage
             <h2 className="label">followpos, from stage 3</h2>
             <FollowTable leaves={leaves} follow={followpos} used={usedSet} />
           </section>
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -415,6 +471,7 @@ export function SimStage({ chapter, stage, model, r }: { chapter: Chapter; stage
           </div>
         </div>
         <aside className="inspector">
+          <StepTabs id="sim" subject={sim} make={() => verifyRegexSim(r, sim!)}>
           <StepNote replay={replay} idle={`Press → to enter the start state ${dfa.start}.`}>
             {step && !s.verdict && <p className="note__headline"><Tx>{step.message}</Tx></p>}
             {step?.type === 'MOVE' && <p>Row <span className="mono">{step.from}</span>, column <span className="mono">{step.symbol}</span> of the table gives <span className="mono">{step.to}</span>.</p>}
@@ -427,6 +484,7 @@ export function SimStage({ chapter, stage, model, r }: { chapter: Chapter; stage
           <section className="block"><h2 className="label">Transition table</h2>
             <DfaTable alphabet={dfa.alphabet} states={dfa.states} transitions={dfa.transitions} start={dfa.start} hit={hit} rowState={s.edge ? s.edge.from : s.state} positions={false} />
           </section>
+        </StepTabs>
         </aside>
       </div>
     </Plate>

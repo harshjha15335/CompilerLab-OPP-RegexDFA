@@ -11,6 +11,8 @@ import { cx, DirtyHint, Empty, Rel, Tag, Verdict } from '../../ui/kit.tsx';
 import { nextStageOf, Plate } from '../../ui/plate.tsx';
 import { Bench, ModeSwitch } from './Bench.tsx';
 import { PrecTable } from './PrecTable.tsx';
+import { VerifyPanel } from '../../ui/verify.tsx';
+import { verifyOppParse } from '../../verify/stages.ts';
 
 const NONE: ParseStep[] = [];
 
@@ -57,7 +59,8 @@ export function ParseStage({ chapter, stage, model, a }: { chapter: Chapter; sta
   const steps = run?.steps ?? NONE;
   const markers = useMemo(() => { let k = 0; return steps.flatMap((s, i) => (s.type === 'REDUCE' ? [{ at: i + 1, label: `reduce ${++k}` }] : [])); }, [steps]);
   const replay = useReplay(steps, { markers });
-  const [tab, setTab] = useState<'trace' | 'table'>('trace');
+  const [tab, setTab] = useState<'trace' | 'table' | 'verify'>('trace');
+  const verification = useMemo(() => (run ? verifyOppParse(a, run) : { method: '', checks: [] }), [a, run]);
   const finalCells = useMemo(() => tableAt(a.table.steps, a.table.steps.length), [a]);
   const { step, count } = replay;
   const lookup = step && step.top && step.lookahead && !(step.top === '$' && step.lookahead === '$') ? { left: step.top, right: step.lookahead } : null;
@@ -102,13 +105,13 @@ export function ParseStage({ chapter, stage, model, a }: { chapter: Chapter; sta
         </div>
         <aside className="inspector inspector--tabs">
           <div className="tabs" role="tablist" aria-label="Parse views">
-            {([['trace', 'Trace'], ['table', 'Table lookup']] as const).map(([id, text]) => (
+            {([['trace', 'Trace'], ['table', 'Table lookup'], ['verify', `Verification ${verification.checks.some((c) => c.state === 'fail') ? '✗' : '✓'}`]] as const).map(([id, text]) => (
               <button key={id} type="button" role="tab" id={`tab-${id}`} aria-selected={tab === id} aria-controls={`panel-${id}`}
                 className={cx('tabs__tab', tab === id && 'is-on')} onClick={() => setTab(id)}>{text}</button>
             ))}
           </div>
           <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="tabs__panel">
-            {tab === 'trace'
+            {tab === 'verify' ? <VerifyPanel v={verification} /> : tab === 'trace'
               ? <TraceTable steps={steps} tokens={run.tokens} count={count} onJump={replay.api.goto} />
               : (
                 <div className="lookup">

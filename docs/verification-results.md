@@ -827,10 +827,10 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 
 | Result | Check |
 | --- | --- |
-| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 1/234 (runs: 0/236, 1/234, 2/234); 6 step commits, worst 17 ms |
-| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 2/233 (runs: 1/235, 2/233, 7/225); 3 step commits, worst 17 ms |
-| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 2/233 (runs: 1/235, 2/233, 4/231); 3 step commits, worst 17 ms |
-| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 4/232 (runs: 1/235, 4/232, 10/224); 3 step commits, worst 17 ms |
+| pass | homepage specimen running: median 59.9 fps; animation frames over 25 ms: 0/236 (runs: 0/236, 0/236, 2/232); 5 step commits, worst 17 ms |
+| pass | precedence table playing with motion: median 59.9 fps; animation frames over 25 ms: 1/236 (runs: 1/236, 1/236, 2/235); 3 step commits, worst 17 ms |
+| pass | parse bench playing with motion: median 59.9 fps; animation frames over 25 ms: 3/232 (runs: 3/233, 3/232, 3/230); 3 step commits, worst 17 ms |
+| pass | DFA simulation playing: median 59.9 fps; animation frames over 25 ms: 2/234 (runs: 2/235, 2/234, 3/235); 3 step commits, worst 17 ms |
 
 ## intro (1/1)
 
@@ -890,7 +890,7 @@ Run against `file:///tmp/compiler lab verify/nested/renamed build/index.html` (a
 | pass | no eval / new Function |
 | pass | no dangerouslySetInnerHTML in our source |
 | pass | no analytics hosts |
-| pass | bundle sizes: index-3IfxsrYM.js 476 KB |
+| pass | bundle sizes: index-CSYgQEuy.js 504 KB |
 
 ## offline (2/2)
 

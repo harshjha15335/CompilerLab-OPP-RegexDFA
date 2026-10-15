@@ -5,7 +5,9 @@ Team Compilers: Harsh Jha (24BCE0568), Anuj Deshpande (24BCE0794) · Fall Semest
 
 A step-by-step teaching instrument. Every screen replays the `steps[]` emitted by a tested algorithm
 core (`src/algorithms`), one step at a time or all at once. At each step it shows what changed, why,
-which rule caused it, and what happens next.
+which rule caused it, and what happens next. A **Verification** tab on every stage recomputes the result by an
+independent method (an Earley parser, a Thompson NFA, the browser's RegExp engine, a derivation search or graph
+reachability) and lists each check as pass or fail.
 
 | Chapter | Plates |
 | --- | --- |
@@ -26,7 +28,7 @@ the 3D intro, loupe, View Transitions, Examples sheet, the motion library, the s
 ```bash
 npm ci --ignore-scripts   # exact versions from package-lock.json; no install scripts run
 npm run dev               # development server
-npm test                  # 62 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout, specimen
+npm test                  # 67 tests: algorithm core, audit regressions, step schema, replay selectors, DFA layout, specimen
 npm run typecheck         # TypeScript, strict
 npm run check:contrast    # WCAG contrast of every meaning-bearing colour pair
 npm run audit:deps        # npm audit, fails on high severity
@@ -106,6 +108,7 @@ going back to stage 1.
 ```
 src/algorithms/*.js     tested core (plain JS): result + steps[]
 src/core/               typed facade + step schema types over the core
+src/verify/             independent checkers for the Verification tab (share no code with the core)
 src/replay/             pipelines (run each algorithm once), selectors (pure folds of steps[]), useReplay
 src/motion/fx.ts        one-shot WAAPI effects for a single forward step; cancelled on any other move
 src/ui/                 kit (SVG relation glyphs, tags, verdicts), hardware (keycaps, timeline), plate

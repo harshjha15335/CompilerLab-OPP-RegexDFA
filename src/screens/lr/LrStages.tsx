@@ -12,6 +12,8 @@ import { all, beam, nudge, pop, settle } from '../../motion/fx.ts';
 import { Dock } from '../../ui/hardware.tsx';
 import { cx, DirtyHint, Empty, Production, ProductionList, Row, SetText, Tag, Verdict } from '../../ui/kit.tsx';
 import { nextStageOf, Plate, StepNote, useStepFx } from '../../ui/plate.tsx';
+import { StepTabs, VerifyPanel } from '../../ui/verify.tsx';
+import { verifyLrGrammar, verifyLrItems, verifyLrParse, verifyLrSets, verifyLrTable } from '../../verify/stages.ts';
 import { Corners } from '../opp/PrecTable.tsx';
 
 const KIND: Record<string, { tag: 'accept' | 'conflict'; word: string }> = {
@@ -99,10 +101,17 @@ export function LrGrammarStage({ chapter, stage, model }: { chapter: Chapter; st
           </div>
         </section>
         <section className="pane pane--scroll" aria-label="Check result">
-          <h2 className="label">Result</h2>
-          <GrammarResult model={model} checked={checked} />
-          {checked && !dirty && analysis.status === 'ok' && (
-            <ProductionList productions={analysis.augmented.productions} caption="Augmented grammar, production 0 added" />
+          {checked && !dirty && analysis.status === 'ok' ? (
+            <StepTabs id="lrgrammar" first="Result" subject={analysis} make={() => verifyLrGrammar(analysis)}>
+              <h2 className="label">Result</h2>
+              <GrammarResult model={model} checked={checked} />
+              <ProductionList productions={analysis.augmented.productions} caption="Augmented grammar, production 0 added" />
+            </StepTabs>
+          ) : (
+            <>
+              <h2 className="label">Result</h2>
+              <GrammarResult model={model} checked={checked} />
+            </>
           )}
           <h2 className="label label--gap">Examples</h2>
           <ul className="samples">
@@ -250,6 +259,7 @@ export function ItemsStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
           </ul>
         </div>
         <aside className="inspector">
+          <StepTabs id="items" subject={a} make={() => verifyLrItems(a)}>
           <StepNote replay={replay} idle="No item set yet. Press → to build I0, the closure of the start item.">
             {step?.type === 'START' && target && (
               <>
@@ -278,6 +288,7 @@ export function ItemsStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
               </>
             )}
           </StepNote>
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -360,6 +371,7 @@ export function LrSetsStage({ chapter, stage, a }: { chapter: Chapter; stage: St
           </div>
         </div>
         <aside className="inspector">
+          <StepTabs id="lrsets" subject={a} make={() => verifyLrSets(a)}>
           <StepNote replay={replay} idle="Every set starts empty. Press → to start the first pass over the productions.">
             {step?.type === 'PASS' && <><p className="note__headline">{step.phase}, pass {step.pass}</p><p>{step.message} A pass that adds nothing is the last one.</p></>}
             {step?.type === 'DONE' && <><p className="note__headline">{step.phase} is complete</p><p>{step.message}</p></>}
@@ -375,6 +387,7 @@ export function LrSetsStage({ chapter, stage, a }: { chapter: Chapter; stage: St
           </StepNote>
           <p className="help">F2 and F3 also apply past symbols that can vanish (derive ε); W3 also applies when everything after B can vanish.
             SLR uses FOLLOW to decide where to reduce: by A → α only when the next input symbol can follow A.</p>
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -484,6 +497,7 @@ export function LrTableStage({ chapter, stage, a }: { chapter: Chapter; stage: S
           )}
         </div>
         <aside className="inspector">
+          <StepTabs id="lrtable" subject={a} make={() => verifyLrTable(a)}>
           <StepNote replay={replay} idle="The table starts blank. Each step writes one entry, state by state. Productions are numbered as on stage 1.">
             {e && st && (
               <>
@@ -507,6 +521,7 @@ export function LrTableStage({ chapter, stage, a }: { chapter: Chapter; stage: S
           </StepNote>
           {st && <StateCard s={st} a={a} visibleItems transitions={[]} role={null} moved={new Set(e?.items ?? [])} />}
           <ProductionList productions={P} caption="Numbered productions" activeId={e?.action.kind === 'reduce' ? e.action.prod : null} />
+        </StepTabs>
         </aside>
       </div>
     </Plate>
@@ -621,9 +636,10 @@ export function LrParseStage({ chapter, stage, model, a }: { chapter: Chapter; s
   const markers = useMemo(() => { let k = 0; return steps.flatMap((s, i) => (s.type === 'REDUCE' ? [{ at: i + 1, label: `reduce ${++k}` }] : [])); }, [steps]);
   const replay = useReplay(steps, { markers });
   const { count, step } = replay;
-  const [tab, setTab] = useState<'trace' | 'table'>('trace');
+  const [tab, setTab] = useState<'trace' | 'table' | 'verify'>('trace');
   const finished = count === steps.length && steps.length > 0;
   const tokens = run?.tokens ?? [];
+  const verification = useMemo(() => (run && !run.tokenError ? verifyLrParse(a, run) : { method: '', checks: [] }), [a, run]);
   const pointer = step ? step.pointer : 0;
   const stack = step ? step.stack : [{ state: 0, symbol: null }];
   const read = step ? { state: step.state, symbol: step.lookahead } : null;
@@ -696,13 +712,13 @@ export function LrParseStage({ chapter, stage, model, a }: { chapter: Chapter; s
         </div>
         <aside className="inspector inspector--tabs">
           <div className="tabs" role="tablist" aria-label="Parse views">
-            {([['trace', 'Trace'], ['table', 'Table lookup']] as const).map(([id, text]) => (
+            {([['trace', 'Trace'], ['table', 'Table lookup'], ['verify', `Verification ${verification.checks.some((c) => c.state === 'fail') ? '✗' : '✓'}`]] as const).map(([id, text]) => (
               <button key={id} type="button" role="tab" id={`lrtab-${id}`} aria-selected={tab === id} aria-controls={`lrpanel-${id}`}
                 className={cx('tabs__tab', tab === id && 'is-on')} onClick={() => setTab(id)}>{text}</button>
             ))}
           </div>
           <div role="tabpanel" id={`lrpanel-${tab}`} aria-labelledby={`lrtab-${tab}`} className="tabs__panel">
-            {tab === 'trace'
+            {tab === 'verify' ? <VerifyPanel v={verification} /> : tab === 'trace'
               ? <LrTrace steps={steps} tokens={tokens} count={count} onJump={replay.api.goto} />
               : (
                 <div className="lookup">

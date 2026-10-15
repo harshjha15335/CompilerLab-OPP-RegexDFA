@@ -7,6 +7,8 @@ import { useReplay } from '../../replay/useReplay.ts';
 import { all, beam, nudge, settle } from '../../motion/fx.ts';
 import { Dock } from '../../ui/hardware.tsx';
 import { cx, Production, ProductionList, Row, Tag } from '../../ui/kit.tsx';
+import { StepTabs } from '../../ui/verify.tsx';
+import { verifyOppSets } from '../../verify/stages.ts';
 import { nextStageOf, Plate, StepNote, useStepFx } from '../../ui/plate.tsx';
 
 export const SET_RULES: Record<string, string> = {
@@ -111,6 +113,7 @@ export function SetsStage({ chapter, stage, a }: { chapter: Chapter; stage: Stag
           </div>
         </div>
         <aside className="inspector">
+          <StepTabs id="sets" subject={a} make={() => verifyOppSets(a)}>
           <StepNote replay={replay} idle="Every set starts empty. Press → to try the first production.">
             {step?.type === 'PASS' && <><p className="note__headline">{step.phase}, pass {step.pass}</p><p>Every production is tried again, in order. A pass that changes nothing is the last one.</p></>}
             {step?.type === 'DONE' && <><p className="note__headline">{step.phase} is complete</p><p>{step.message}</p></>}
@@ -144,6 +147,7 @@ export function SetsStage({ chapter, stage, a }: { chapter: Chapter; stage: Stag
               )}
             </section>
           )}
+        </StepTabs>
         </aside>
       </div>
     </Plate>

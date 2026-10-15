@@ -9,6 +9,8 @@ import { all, beam, morph, nudge, pop } from '../../motion/fx.ts';
 import { Dock } from '../../ui/hardware.tsx';
 import { Production, Rel, Row, SetText, Tag, Tx } from '../../ui/kit.tsx';
 import { nextStageOf, Plate, StepNote, useStepFx } from '../../ui/plate.tsx';
+import { StepTabs } from '../../ui/verify.tsx';
+import { verifyOppTable } from '../../verify/stages.ts';
 import { PrecTable, RelationLegend, type CellMark } from './PrecTable.tsx';
 
 export const REL_RULES: Record<string, string> = {
@@ -120,6 +122,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
           )}
         </div>
         <aside className="inspector">
+          <StepTabs id="table" subject={a} make={() => verifyOppTable(a)}>
           {selectedCell && <Provenance key={cellKey(selectedCell.left, selectedCell.right)} cell={selectedCell} a={a} idPrefix="tbl"
             takeFocus={selected !== null} onClose={() => { setSelected(null); setDismissedAt(count); }} onJump={replay.api.goto} />}
           {shown && !selectedCell && (
@@ -157,6 +160,7 @@ export function TableStage({ chapter, stage, a }: { chapter: Chapter; stage: Sta
               </>
             )}
           </StepNote>
+        </StepTabs>
         </aside>
       </div>
     </Plate>

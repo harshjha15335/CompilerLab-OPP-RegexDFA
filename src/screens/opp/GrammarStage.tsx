@@ -6,6 +6,8 @@ import type { OppModel } from '../../models.ts';
 import { grammarWarnings } from '../../replay/warnings.ts';
 import { cx, ProductionList, Tag } from '../../ui/kit.tsx';
 import { Plate } from '../../ui/plate.tsx';
+import { StepTabs } from '../../ui/verify.tsx';
+import { verifyOppGrammar } from '../../verify/stages.ts';
 
 // Plain-language follow-up for each error code (the core's message says what; this says how to fix it).
 const FIX: Partial<Record<GrammarError['code'], string>> = {
@@ -101,11 +103,19 @@ export function GrammarStage({ chapter, stage, model }: { chapter: Chapter; stag
           </div>
         </section>
         <section className="pane pane--scroll" aria-label="Check result">
-          <h2 className="label">Result</h2>
-          <Result model={model} checked={checked} />
-          {checked && !dirty && analysis.grammar.productions.length > 0 && (
-            <ProductionList productions={analysis.grammar.productions} caption="Numbered productions, one per alternative" />
-          )}
+          {(() => {
+            const body = (
+              <>
+                <h2 className="label">Result</h2>
+                <Result model={model} checked={checked} />
+                {checked && !dirty && analysis.grammar.productions.length > 0 && (
+                  <ProductionList productions={analysis.grammar.productions} caption="Numbered productions, one per alternative" />
+                )}
+              </>
+            );
+            return checked && !dirty && (analysis.status === 'ok' || analysis.status === 'invalid')
+              ? <StepTabs id="grammar" first="Result" subject={analysis} make={() => verifyOppGrammar(analysis)}>{body}</StepTabs> : body;
+          })()}
           <h2 className="label label--gap" id="grammar-examples">Examples</h2>
           <ul className="samples">
             {custom !== null && custom !== committed && (

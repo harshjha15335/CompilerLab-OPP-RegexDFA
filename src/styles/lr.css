@@ -87,3 +87,14 @@
   .figure--lrparse > .block--ptree { flex: none; }
   .figure__canvas--ptree { flex: none; height: 220px; }
 }
+
+/* ── Verification tab ── */
+.steptabs__panel { display: flex; flex-direction: column; gap: 12px; }
+.verify { display: grid; gap: 8px; align-content: start; padding-top: 4px; }
+.verify__head { margin: 0; }
+.verify__method { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.verify__list { display: grid; gap: 6px; }
+.verify__item { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px; align-items: start; padding: 6px 8px; border: 1px solid var(--rule); border-radius: var(--r-mark); background: var(--plate); }
+.verify__item.is-fail { border-color: var(--conflict); background: var(--conflict-wash); }
+.verify__label { margin: 0; overflow-wrap: anywhere; }
+.verify__detail { margin: 2px 0 0; font: var(--t-caption); color: var(--ink-2); overflow-wrap: anywhere; }
